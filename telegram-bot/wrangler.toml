@@ -2,6 +2,10 @@ name = "familychurch-telegram-bot"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
+# Workers AI binding (free tier — for natural language parsing)
+[ai]
+binding = "AI"
+
 # Set these as secrets via: npx wrangler secret put TELEGRAM_BOT_TOKEN
 # Environment variables (set via Cloudflare dashboard or wrangler secret):
 # - TELEGRAM_BOT_TOKEN
