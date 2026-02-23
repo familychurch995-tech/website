@@ -96,7 +96,7 @@ async function loadEventDetail() {
     const container = document.getElementById('event-detail');
     container.innerHTML = `
       <!-- Event Hero -->
-      <section class="page-header" style="padding-bottom: 80px;">
+      <section class="page-header" style="padding-bottom: 80px;${event.image ? ` background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7)), url('${event.image}') center/cover no-repeat;` : ''}">
         <div class="container">
           <p style="color: rgba(255,255,255,0.6); margin-bottom: 12px;">
             <a href="/events/" style="color: rgba(255,255,255,0.8); text-decoration: underline;" data-en="← Back to Events" data-pt="← Voltar aos Eventos">${lang === 'en' ? '← Back to Events' : '← Voltar aos Eventos'}</a>

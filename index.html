@@ -32,8 +32,7 @@
       </div>
     </div>
 
-    <!-- Event slides injected here by JS -->
-    <div id="event-slides"></div>
+    <!-- Event slides injected here by JS (directly into .hero-slider) -->
 
     <!-- Slider Controls -->
     <div class="slider-arrows" id="slider-arrows" style="display:none;">
@@ -288,9 +287,9 @@
         const upcoming = events.filter(e => e.status === 'upcoming');
 
         // ── Build hero event slides ──
-        const slidesContainer = document.getElementById('event-slides');
-        const dotsContainer = document.getElementById('slider-dots');
+        const heroSlider = document.querySelector('.hero-slider');
         const arrowsEl = document.getElementById('slider-arrows');
+        const dotsContainer = document.getElementById('slider-dots');
         let slideIndex = 1; // 0 is the welcome slide
 
         upcoming.forEach(event => {
@@ -332,7 +331,7 @@
             </div>
           `;
 
-          slidesContainer.appendChild(slide);
+          heroSlider.insertBefore(slide, arrowsEl);
           slideIndex++;
         });
 
