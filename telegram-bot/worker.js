@@ -25,15 +25,28 @@
  *   GITHUB_REPO         — e.g. "familychurch995-tech/website"
  *
  * Bindings:
- *   AI — Workers AI binding (for natural language parsing)
+ *   AI              — Workers AI binding (for natural language parsing)
+ *   PENDING_ACTIONS — KV namespace for persistent state between messages
  */
 
 const EVENTS_PATH = 'data/events.json';
 const BRANCH = 'main';
+const PENDING_TTL = 300; // 5 minutes — pending actions expire after this
 
-// In-memory store for pending confirmations (per-worker instance)
-// In production, this resets on cold starts, which is fine — user just re-sends
-const pendingActions = new Map();
+// ── Persistent state helpers (Cloudflare KV) ──
+
+async function getPending(env, chatId) {
+  const data = await env.PENDING_ACTIONS.get(`pending:${chatId}`, 'json');
+  return data;
+}
+
+async function setPending(env, chatId, value) {
+  await env.PENDING_ACTIONS.put(`pending:${chatId}`, JSON.stringify(value), { expirationTtl: PENDING_TTL });
+}
+
+async function deletePending(env, chatId) {
+  await env.PENDING_ACTIONS.delete(`pending:${chatId}`);
+}
 
 export default {
   async fetch(request, env) {
@@ -85,7 +98,7 @@ export default {
         await handleCancel(env, chatId);
       } else if (!text.startsWith('/')) {
         // Check if there's a pending photo waiting for an event ID
-        const pending = pendingActions.get(String(chatId));
+        const pending = await getPending(env, chatId);
         if (pending && pending.action === 'photo_waiting') {
           await handlePhotoEventId(env, chatId, text, pending.fileId);
         } else {
@@ -118,6 +131,32 @@ async function sendTelegram(env, chatId, text) {
   });
 }
 
+// ── Encoding helpers ──
+
+function base64ToUtf8(base64) {
+  const binary = atob(base64);
+  const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+function utf8ToBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
 // ── GitHub API ──
 
 async function getEventsFromGitHub(env) {
@@ -136,12 +175,12 @@ async function getEventsFromGitHub(env) {
     throw new Error(`GitHub GET failed: ${res.status}`);
   }
   const data = await res.json();
-  const content = atob(data.content.replace(/\n/g, ''));
+  const content = base64ToUtf8(data.content.replace(/\n/g, ''));
   return { events: JSON.parse(content), sha: data.sha };
 }
 
 async function saveEventsToGitHub(env, events, sha, commitMessage) {
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(events, null, 2) + '\n')));
+  const content = utf8ToBase64(JSON.stringify(events, null, 2) + '\n');
   const body = {
     message: commitMessage,
     content: content,
@@ -170,40 +209,52 @@ async function saveEventsToGitHub(env, events, sha, commitMessage) {
 
 // ── Workers AI — Natural Language Parsing ──
 
-const AI_SYSTEM_PROMPT = `You are a helpful assistant for Family Church (a Brazilian church in Stamford, CT).
-Your job is to parse the admin's natural language message into a structured event action.
+function buildAIPrompt(events) {
+  const eventList = events.length > 0
+    ? '\n\nExisting events:\n' + events.map(e => `- ID: "${e.id}" | Title: "${e.title_pt}" | Date: ${e.date} | Time: ${e.time}`).join('\n')
+    : '\n\nNo events exist yet.';
 
-The current year is 2026. The church is at 18 Cushing Street, Stamford, CT.
+  return `You are a helpful assistant for Family Church (a Brazilian church in Stamford, CT).
+Parse the admin's natural language message into a structured JSON action.
 
-Return ONLY valid JSON (no markdown, no explanation) in this exact format:
-{
-  "action": "create" | "edit" | "delete" | "list" | "unknown",
-  "title_pt": "Título em português",
-  "title_en": "Title in English",
-  "description_pt": "Descrição em português",
-  "description_en": "Description in English",
-  "date": "YYYY-MM-DD" or "TBD",
-  "time": "HH:MM AM/PM" or "TBD",
-  "status": "upcoming",
-  "event_id": "only for edit/delete actions"
-}
+Current year: 2026. Church address: 18 Cushing Street, Stamford, CT.
+${eventList}
+
+Return ONLY valid JSON (no markdown, no code blocks, no explanation):
+
+For CREATE:
+{"action":"create","title_pt":"...","title_en":"...","description_pt":"...","description_en":"...","date":"YYYY-MM-DD","time":"HH:MM AM/PM","status":"upcoming"}
+
+For EDIT (only include fields being changed + event_id):
+{"action":"edit","event_id":"existing-event-id","date":"YYYY-MM-DD","time":"HH:MM AM/PM"}
+
+For DELETE:
+{"action":"delete","event_id":"existing-event-id"}
+
+For LIST:
+{"action":"list"}
+
+If you can't understand:
+{"action":"unknown"}
 
 Rules:
-- If the message is in Portuguese, generate both PT and EN versions (translate the title and description)
-- If the message is in English, generate both EN and PT versions
-- For dates, convert natural language to YYYY-MM-DD format
-- For times, use 12-hour format with AM/PM
-- If a field is not mentioned, use "TBD" for date/time or leave description empty
-- For the description, write 2-3 sentences expanding on what the admin said, making it sound inviting
-- If the message is about listing events, use action "list"
-- If the message is about deleting, use action "delete" and include the event_id if mentioned
-- If you can't understand the intent, use action "unknown"`;
+- For EDIT: event_id MUST be one of the existing event IDs listed above. Only include the fields the user wants to change.
+- For DELETE: event_id MUST be an existing ID. Match by name if the user doesn't say the exact ID.
+- Translate between PT and EN when needed (title, description)
+- Dates: natural language to YYYY-MM-DD. Times: 12-hour with AM/PM.
+- If date/time not mentioned, omit them (don't use TBD for edits)
+- For create: write 2-3 inviting sentences for the description`;
+}
 
 async function handleNaturalLanguage(env, chatId, text) {
   try {
+    // Fetch existing events so AI knows what can be edited/deleted
+    const { events } = await getEventsFromGitHub(env);
+    const systemPrompt = buildAIPrompt(events);
+
     const response = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
       messages: [
-        { role: 'system', content: AI_SYSTEM_PROMPT },
+        { role: 'system', content: systemPrompt },
         { role: 'user', content: text }
       ],
       max_tokens: 512,
@@ -215,17 +266,16 @@ async function handleNaturalLanguage(env, chatId, text) {
     // Try to extract JSON from the response
     let parsed;
     try {
-      // Handle cases where AI wraps in markdown code blocks
       const jsonMatch = aiText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error('No JSON found');
       parsed = JSON.parse(jsonMatch[0]);
     } catch {
-      await sendTelegram(env, chatId, '🤔 Não entendi. Tente descrever o que quer fazer com mais detalhes, ou use /help para ver os comandos estruturados.');
+      await sendTelegram(env, chatId, '🤔 Não entendi. Tente de novo com mais detalhes, ou use /help.');
       return;
     }
 
     if (parsed.action === 'unknown') {
-      await sendTelegram(env, chatId, '🤔 Não entendi o que você quer fazer. Tente algo como:\n\n"Cria um evento noite de oração dia 15 de março às 7pm"\n\nOu use /help para ver os comandos.');
+      await sendTelegram(env, chatId, '🤔 Não entendi. Tente algo como:\n"Cria um evento noite de oração dia 15 de março às 7pm"\n"Muda a data da Cristina Mel pra 20 de março"');
       return;
     }
 
@@ -234,25 +284,75 @@ async function handleNaturalLanguage(env, chatId, text) {
       return;
     }
 
+    // ── DELETE ──
     if (parsed.action === 'delete') {
-      if (parsed.event_id) {
-        // Store pending delete and ask for confirmation
-        pendingActions.set(String(chatId), { action: 'delete', event_id: parsed.event_id });
-        await sendTelegram(env, chatId, `🗑️ *Deletar evento:* \`${parsed.event_id}\`\n\n✅ /sim para confirmar\n❌ /nao para cancelar`);
+      const eventId = parsed.event_id || '';
+      const target = events.find(e => e.id === eventId);
+      if (target) {
+        await setPending(env, chatId, { action: 'delete', event_id: target.id });
+        await sendTelegram(env, chatId, `🗑️ Deletar *${target.title_pt}*?\n\n✅ /sim para confirmar\n❌ /nao para cancelar`);
       } else {
-        await sendTelegram(env, chatId, '❌ Qual evento deletar? Informe o ID.\n\nUse /listevents para ver os IDs.');
+        await sendTelegram(env, chatId, '❌ Não encontrei esse evento. Use /listevents para ver os eventos.');
       }
       return;
     }
 
-    // Create or edit — build preview and store pending action
+    // ── EDIT ──
+    if (parsed.action === 'edit') {
+      const eventId = parsed.event_id || '';
+      const target = events.find(e => e.id === eventId);
+
+      if (!target) {
+        // Try fuzzy match by title
+        const fuzzy = events.find(e =>
+          (parsed.title_pt && e.title_pt.toLowerCase().includes(parsed.title_pt.toLowerCase())) ||
+          (parsed.title_en && e.title_en.toLowerCase().includes(parsed.title_en.toLowerCase()))
+        );
+        if (!fuzzy) {
+          await sendTelegram(env, chatId, '❌ Não encontrei esse evento. Use /listevents para ver os eventos.');
+          return;
+        }
+        parsed.event_id = fuzzy.id;
+      }
+
+      const existing = events.find(e => e.id === parsed.event_id);
+
+      // Build changes object — only fields the AI returned (excluding action and event_id)
+      const changes = {};
+      if (parsed.title_pt) changes.title_pt = parsed.title_pt;
+      if (parsed.title_en) changes.title_en = parsed.title_en;
+      if (parsed.description_pt) changes.description_pt = parsed.description_pt;
+      if (parsed.description_en) changes.description_en = parsed.description_en;
+      if (parsed.date) changes.date = parsed.date;
+      if (parsed.time) changes.time = parsed.time;
+      if (parsed.status) changes.status = parsed.status;
+
+      await setPending(env, chatId, {
+        action: 'edit',
+        event_id: parsed.event_id,
+        changes: changes
+      });
+
+      // Build a friendly preview of what's changing
+      const changeLines = [];
+      if (changes.title_pt) changeLines.push(`📌 Título: ${changes.title_pt}`);
+      if (changes.date) changeLines.push(`📅 Data: ${changes.date}`);
+      if (changes.time) changeLines.push(`🕐 Horário: ${changes.time}`);
+      if (changes.description_pt) changeLines.push(`📝 Descrição: ${changes.description_pt.substring(0, 100)}...`);
+      if (changes.status) changeLines.push(`📊 Status: ${changes.status}`);
+
+      const preview = `✏️ Editar *${existing.title_pt}*:\n\n${changeLines.join('\n')}\n\n✅ /sim para confirmar\n❌ /nao para cancelar`;
+      await sendTelegram(env, chatId, preview);
+      return;
+    }
+
+    // ── CREATE ──
     const titlePt = parsed.title_pt || 'Sem título';
     const titleEn = parsed.title_en || titlePt;
     const date = parsed.date || 'TBD';
     const time = parsed.time || 'TBD';
     const descPt = parsed.description_pt || '';
     const descEn = parsed.description_en || descPt;
-    const status = parsed.status || 'upcoming';
 
     const id = titlePt.toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -272,19 +372,15 @@ async function handleNaturalLanguage(env, chatId, text) {
       location_pt: 'Family Church — 18 Cushing Street, Stamford, CT',
       image: `images/events/${id}/cover.jpg`,
       photos: [],
-      status
+      status: parsed.status || 'upcoming'
     };
 
-    // Store pending action
-    pendingActions.set(String(chatId), {
-      action: parsed.action === 'edit' ? 'edit' : 'create',
+    await setPending(env, chatId, {
+      action: 'create',
       event: eventData
     });
 
-    // Send preview
-    const actionLabel = parsed.action === 'edit' ? 'Editar' : 'Criar';
-    const preview = `🤖 *${actionLabel} evento:*\n\n📌 *${titlePt}*\n🇺🇸 ${titleEn}\n📅 ${date}\n🕐 ${time}\n📝 ${descPt.substring(0, 120)}${descPt.length > 120 ? '...' : ''}\n🆔 \`${id}\`\n\n✅ /sim para confirmar\n❌ /nao para cancelar`;
-
+    const preview = `➕ Criar evento:\n\n📌 *${titlePt}*\n🇺🇸 ${titleEn}\n📅 ${date}\n🕐 ${time}\n📝 ${descPt.substring(0, 120)}${descPt.length > 120 ? '...' : ''}\n\n✅ /sim para confirmar\n❌ /nao para cancelar`;
     await sendTelegram(env, chatId, preview);
 
   } catch (err) {
@@ -306,11 +402,11 @@ async function handlePhotoUpload(env, chatId, message) {
     // If no caption, ask which event the photo is for
     if (!caption) {
       // Store the file_id so we can retrieve it later
-      pendingActions.set(String(chatId), { action: 'photo_waiting', fileId });
+      await setPending(env, chatId, { action: 'photo_waiting', fileId });
       const { events } = await getEventsFromGitHub(env);
       if (events.length === 0) {
         await sendTelegram(env, chatId, '❌ Nenhum evento encontrado. Crie um evento primeiro com /newevent.');
-        pendingActions.delete(String(chatId));
+        await deletePending(env, chatId);
         return;
       }
       const list = events.map(e => `🆔 \`${e.id}\`\n   📌 ${e.title_pt}`).join('\n\n');
@@ -358,7 +454,7 @@ async function handlePhotoUpload(env, chatId, message) {
 
     if (!targetEvent) {
       // Store photo and ask
-      pendingActions.set(String(chatId), { action: 'photo_waiting', fileId });
+      await setPending(env, chatId, { action: 'photo_waiting', fileId });
       const list = events.map(e => `🆔 \`${e.id}\`\n   📌 ${e.title_pt}`).join('\n\n');
       await sendTelegram(env, chatId, `📸 Foto recebida, mas não consegui identificar o evento.\n\nEnvie o ID do evento:\n\n${list}`);
       return;
@@ -374,7 +470,7 @@ async function handlePhotoUpload(env, chatId, message) {
 }
 
 async function handlePhotoEventId(env, chatId, text, fileId) {
-  pendingActions.delete(String(chatId));
+  await deletePending(env, chatId);
   const { events } = await getEventsFromGitHub(env);
   const input = text.trim().toLowerCase();
 
@@ -417,7 +513,7 @@ async function uploadPhotoToGitHub(env, chatId, fileId, event) {
     return;
   }
   const imageBuffer = await imageRes.arrayBuffer();
-  const base64Image = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
+  const base64Image = arrayBufferToBase64(imageBuffer);
 
   // Determine file extension from Telegram's file_path
   const tgPath = fileData.result.file_path;
@@ -488,13 +584,13 @@ async function uploadPhotoToGitHub(env, chatId, fileId, event) {
 // ── Confirmation Handlers ──
 
 async function handleConfirm(env, chatId) {
-  const pending = pendingActions.get(String(chatId));
+  const pending = await getPending(env, chatId);
   if (!pending) {
     await sendTelegram(env, chatId, '❌ Nenhuma ação pendente. Envie uma mensagem primeiro.');
     return;
   }
 
-  pendingActions.delete(String(chatId));
+  await deletePending(env, chatId);
 
   try {
     if (pending.action === 'create') {
@@ -505,16 +601,24 @@ async function handleConfirm(env, chatId) {
 
     } else if (pending.action === 'edit') {
       const { events, sha } = await getEventsFromGitHub(env);
-      const idx = events.findIndex(e => e.id === pending.event.id);
+      // Support both formats: event_id+changes (AI) or event.id (old format)
+      const editId = pending.event_id || (pending.event && pending.event.id);
+      const idx = events.findIndex(e => e.id === editId);
       if (idx === -1) {
-        await sendTelegram(env, chatId, `❌ Evento "${pending.event.id}" não encontrado para editar.`);
+        await sendTelegram(env, chatId, `❌ Evento "${editId}" não encontrado para editar.`);
         return;
       }
-      // Merge: keep existing fields, override with new ones
+      // Patch only the changed fields
+      const changes = pending.changes || pending.event || {};
       const existing = events[idx];
-      events[idx] = { ...existing, ...pending.event };
-      await saveEventsToGitHub(env, events, sha, `Update event: ${pending.event.title_pt}`);
-      await sendTelegram(env, chatId, `✅ *Evento atualizado!*\n\n📌 *${pending.event.title_pt}*\n\nAs mudanças aparecerão no site em alguns minutos.`);
+      for (const [key, value] of Object.entries(changes)) {
+        if (key !== 'event_id' && key !== 'action' && value) {
+          existing[key] = value;
+        }
+      }
+      events[idx] = existing;
+      await saveEventsToGitHub(env, events, sha, `Update event: ${existing.title_pt}`);
+      await sendTelegram(env, chatId, `✅ *${existing.title_pt}* atualizado!\n\nAs mudanças aparecerão no site em alguns minutos.`);
 
     } else if (pending.action === 'delete') {
       const { events, sha } = await getEventsFromGitHub(env);
@@ -533,8 +637,9 @@ async function handleConfirm(env, chatId) {
 }
 
 async function handleCancel(env, chatId) {
-  const had = pendingActions.delete(String(chatId));
-  if (had) {
+  const existing = await getPending(env, chatId);
+  if (existing) {
+    await deletePending(env, chatId);
     await sendTelegram(env, chatId, '❌ Ação cancelada.');
   } else {
     await sendTelegram(env, chatId, '❌ Nenhuma ação pendente para cancelar.');

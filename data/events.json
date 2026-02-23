@@ -1,14 +1,14 @@
 [
   {
     "id": "dons-digitais-2026",
-    "title_en": "Digital Gifts â Vibe Coding Workshop",
-    "title_pt": "Dons Digitais â Workshop de Vibe Coding",
+    "title_en": "Digital Gifts — Vibe Coding Workshop",
+    "title_pt": "Dons Digitais — Workshop de Vibe Coding",
     "description_en": "Vibe Coding for those who want to thrive. Learn VS Code basics, Claude Code in practice, Vibe Coding without knowing code, and real projects for your life and work. Based on the Parable of the Talents (Matthew 25:14-30). Free and open to all.",
-    "description_pt": "Vibe Coding para quem quer prosperar. Aprenda primeiros passos com VS Code, Claude Code na prÃ¡tica, Vibe Coding sem conhecer cÃ³digo, e projetos reais para sua vida e trabalho. Baseado na ParÃ¡bola dos Talentos (Mateus 25:14-30). Gratuito e aberto a todos.",
+    "description_pt": "Vibe Coding para quem quer prosperar. Aprenda primeiros passos com VS Code, Claude Code na prática, Vibe Coding sem conhecer código, e projetos reais para sua vida e trabalho. Baseado na Parábola dos Talentos (Mateus 25:14-30). Gratuito e aberto a todos.",
     "date": "TBD",
     "time": "TBD",
-    "location_en": "Family Church â 18 Cushing Street, Stamford, CT",
-    "location_pt": "Family Church â 18 Cushing Street, Stamford, CT",
+    "location_en": "Family Church — 18 Cushing Street, Stamford, CT",
+    "location_pt": "Family Church — 18 Cushing Street, Stamford, CT",
     "image": "images/events/dons-digitais-2026/cover.jpg",
     "photos": [],
     "status": "upcoming",
@@ -21,8 +21,8 @@
     ],
     "topics_pt": [
       "Primeiros Passos com VS Code",
-      "Claude Code na PrÃ¡tica",
-      "Vibe Coding sem Conhecer CÃ³digo",
+      "Claude Code na Prática",
+      "Vibe Coding sem Conhecer Código",
       "Projetos Reais"
     ]
   },
@@ -31,11 +31,11 @@
     "title_en": "Cristina Mel in Praise and Word",
     "title_pt": "Cristina Mel em Louvor e Palavra",
     "description_en": "Join us for a special night of praise and worship with evangelist singer Cristina Mel. Our community is excited to share this evening of music and devotion.",
-    "description_pt": "Venha se conectar com a mÃºsica e a palavra de Deus com a cantora evangelica Cristina Mel. Nossa comunidade estÃ¡ animada para compartilhar essa noite especial de louvor e adoraÃ§Ã£o.",
+    "description_pt": "Venha se conectar com a música e a palavra de Deus com a cantora evangélica Cristina Mel. Nossa comunidade está animada para compartilhar essa noite especial de louvor e adoração.",
     "date": "2026-02-23",
     "time": "07:30 PM",
-    "location_en": "Family Church â 18 Cushing Street, Stamford, CT",
-    "location_pt": "Family Church â 18 Cushing Street, Stamford, CT",
+    "location_en": "Family Church — 18 Cushing Street, Stamford, CT",
+    "location_pt": "Family Church — 18 Cushing Street, Stamford, CT",
     "image": "images/events/cristina-mel-em-louvor-e-palavra-2026/cover.jpg",
     "photos": [],
     "status": "upcoming"

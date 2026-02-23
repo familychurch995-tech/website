@@ -6,6 +6,11 @@ compatibility_date = "2024-01-01"
 [ai]
 binding = "AI"
 
+# KV namespace for persistent state (pending actions between messages)
+[[kv_namespaces]]
+binding = "PENDING_ACTIONS"
+id = "3bb9613fe34347ee8acfd4fe88550b33"
+
 # Set these as secrets via: npx wrangler secret put TELEGRAM_BOT_TOKEN
 # Environment variables (set via Cloudflare dashboard or wrangler secret):
 # - TELEGRAM_BOT_TOKEN
