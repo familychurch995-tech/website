@@ -246,6 +246,49 @@ Rules:
 - For create: write 2-3 inviting sentences for the description`;
 }
 
+// Fuzzy match: search user's text and AI's event_id/title against all events
+function findEventFuzzy(events, parsed, userText) {
+  // 1. Exact ID match from AI
+  if (parsed.event_id) {
+    const exact = events.find(e => e.id === parsed.event_id);
+    if (exact) return exact;
+  }
+
+  // 2. Partial ID match from AI
+  if (parsed.event_id) {
+    const partial = events.find(e => e.id.includes(parsed.event_id) || parsed.event_id.includes(e.id));
+    if (partial) return partial;
+  }
+
+  // 3. Title match from AI response
+  if (parsed.title_pt || parsed.title_en) {
+    const match = events.find(e =>
+      (parsed.title_pt && e.title_pt.toLowerCase().includes(parsed.title_pt.toLowerCase())) ||
+      (parsed.title_en && e.title_en.toLowerCase().includes(parsed.title_en.toLowerCase()))
+    );
+    if (match) return match;
+  }
+
+  // 4. Search the user's original text for any event title or ID
+  const textLower = userText.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  for (const e of events) {
+    const titleNorm = e.title_pt.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    // Check if any significant word (3+ chars) from the event title appears in the user text
+    const words = titleNorm.split(/\s+/).filter(w => w.length >= 3);
+    const matchCount = words.filter(w => textLower.includes(w)).length;
+    if (matchCount >= 2 || (words.length <= 2 && matchCount >= 1)) return e;
+  }
+
+  // 5. Check if user text contains event ID fragments
+  for (const e of events) {
+    const idParts = e.id.split('-').filter(p => p.length >= 3);
+    const matchCount = idParts.filter(p => textLower.includes(p)).length;
+    if (matchCount >= 2) return e;
+  }
+
+  return null;
+}
+
 async function handleNaturalLanguage(env, chatId, text) {
   try {
     // Fetch existing events so AI knows what can be edited/deleted
@@ -286,8 +329,7 @@ async function handleNaturalLanguage(env, chatId, text) {
 
     // ── DELETE ──
     if (parsed.action === 'delete') {
-      const eventId = parsed.event_id || '';
-      const target = events.find(e => e.id === eventId);
+      const target = findEventFuzzy(events, parsed, text);
       if (target) {
         await setPending(env, chatId, { action: 'delete', event_id: target.id });
         await sendTelegram(env, chatId, `🗑️ Deletar *${target.title_pt}*?\n\n✅ /sim para confirmar\n❌ /nao para cancelar`);
@@ -299,23 +341,14 @@ async function handleNaturalLanguage(env, chatId, text) {
 
     // ── EDIT ──
     if (parsed.action === 'edit') {
-      const eventId = parsed.event_id || '';
-      const target = events.find(e => e.id === eventId);
+      const existing = findEventFuzzy(events, parsed, text);
 
-      if (!target) {
-        // Try fuzzy match by title
-        const fuzzy = events.find(e =>
-          (parsed.title_pt && e.title_pt.toLowerCase().includes(parsed.title_pt.toLowerCase())) ||
-          (parsed.title_en && e.title_en.toLowerCase().includes(parsed.title_en.toLowerCase()))
-        );
-        if (!fuzzy) {
-          await sendTelegram(env, chatId, '❌ Não encontrei esse evento. Use /listevents para ver os eventos.');
-          return;
-        }
-        parsed.event_id = fuzzy.id;
+      if (!existing) {
+        await sendTelegram(env, chatId, '❌ Não encontrei esse evento. Use /listevents para ver os eventos.');
+        return;
       }
 
-      const existing = events.find(e => e.id === parsed.event_id);
+      parsed.event_id = existing.id;
 
       // Build changes object — only fields the AI returned (excluding action and event_id)
       const changes = {};
