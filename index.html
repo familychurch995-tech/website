@@ -17,17 +17,31 @@
   <!-- ═══ HEADER (loaded dynamically) ═══ -->
   <div id="header-placeholder"></div>
 
-  <!-- ═══ HERO ═══ -->
-  <section class="hero" id="home">
-    <div class="container hero-content">
-      <span class="hero-badge" data-en="Evangelical Christian Church &bull; Stamford, CT" data-pt="Igreja Cristã Evangélica &bull; Stamford, CT">Igreja Cristã Evangélica &bull; Stamford, CT</span>
-      <h1 data-en="A Place to Belong,<br>Believe &amp; Become" data-pt="Um Lugar para Pertencer,<br>Crer &amp; Crescer">Um Lugar para Pertencer,<br>Crer &amp; Crescer</h1>
-      <p data-en="Worship, the Word of the Lord, and community — every Sunday at 10 AM. Services in Portuguese with live English translation. God serves everyone." data-pt="Louvor, a Palavra do Senhor e comunidade — todos os domingos às 10h. Cultos em português com tradução simultânea em inglês. Deus serve a todos.">Louvor, a Palavra do Senhor e comunidade — todos os domingos às 10h. Cultos em português com tradução simultânea em inglês. Deus serve a todos.</p>
-      <div class="hero-buttons">
-        <a href="#services" class="btn btn-primary" data-en="Join Us Sunday at 10 AM" data-pt="Venha no Domingo às 10h">Venha no Domingo às 10h</a>
-        <a href="#about" class="btn btn-outline" data-en="Meet Our Pastors" data-pt="Conheça Nossos Pastores">Conheça Nossos Pastores</a>
+  <!-- ═══ HERO SLIDER ═══ -->
+  <section class="hero-slider" id="home">
+    <!-- Slide 0: Welcome (always present) -->
+    <div class="hero-slide hero-slide--default active" data-slide="0">
+      <div class="container hero-content">
+        <span class="hero-badge" data-en="Evangelical Christian Church &bull; Stamford, CT" data-pt="Igreja Cristã Evangélica &bull; Stamford, CT">Igreja Cristã Evangélica &bull; Stamford, CT</span>
+        <h1 data-en="A Place to Belong,<br>Believe &amp; Become" data-pt="Um Lugar para Pertencer,<br>Crer &amp; Crescer">Um Lugar para Pertencer,<br>Crer &amp; Crescer</h1>
+        <p data-en="Worship, the Word of the Lord, and community — every Sunday at 10 AM. Services in Portuguese with live English translation. God serves everyone." data-pt="Louvor, a Palavra do Senhor e comunidade — todos os domingos às 10h. Cultos em português com tradução simultânea em inglês. Deus serve a todos.">Louvor, a Palavra do Senhor e comunidade — todos os domingos às 10h. Cultos em português com tradução simultânea em inglês. Deus serve a todos.</p>
+        <div class="hero-buttons">
+          <a href="#services" class="btn btn-primary" data-en="Join Us Sunday at 10 AM" data-pt="Venha no Domingo às 10h">Venha no Domingo às 10h</a>
+          <a href="#about" class="btn btn-outline" data-en="Meet Our Pastors" data-pt="Conheça Nossos Pastores">Conheça Nossos Pastores</a>
+        </div>
       </div>
     </div>
+
+    <!-- Event slides injected here by JS -->
+    <div id="event-slides"></div>
+
+    <!-- Slider Controls -->
+    <div class="slider-arrows" id="slider-arrows" style="display:none;">
+      <button class="slider-arrow" onclick="prevSlide()" aria-label="Previous">&#10094;</button>
+      <button class="slider-arrow" onclick="nextSlide()" aria-label="Next">&#10095;</button>
+    </div>
+    <div class="slider-dots" id="slider-dots"></div>
+    <div class="slider-progress" id="slider-progress"></div>
   </section>
 
   <!-- ═══ ABOUT ═══ -->
@@ -217,59 +231,176 @@
   <!-- ═══ JAVASCRIPT ═══ -->
   <script src="js/global.js"></script>
   <script>
-    // ── Load and render events from JSON on homepage ──
-    async function loadHomeEvents() {
+    // ── Hero Slider ──
+    let currentSlide = 0;
+    let totalSlides = 1;
+    let slideTimer = null;
+    const SLIDE_INTERVAL = 6000;
+
+    function goToSlide(index) {
+      const slides = document.querySelectorAll('.hero-slide');
+      const dots = document.querySelectorAll('.slider-dot');
+      const progress = document.getElementById('slider-progress');
+
+      currentSlide = ((index % totalSlides) + totalSlides) % totalSlides;
+
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === currentSlide);
+      });
+      dots.forEach((d, i) => {
+        d.classList.toggle('active', i === currentSlide);
+      });
+
+      // Reset progress bar
+      if (progress) {
+        progress.style.transition = 'none';
+        progress.style.width = '0%';
+        requestAnimationFrame(() => {
+          progress.style.transition = `width ${SLIDE_INTERVAL}ms linear`;
+          progress.style.width = '100%';
+        });
+      }
+
+      // Re-apply language to new slide content
+      if (typeof setLang === 'function') setLang(currentLang);
+
+      resetTimer();
+    }
+
+    function nextSlide() { goToSlide(currentSlide + 1); }
+    function prevSlide() { goToSlide(currentSlide - 1); }
+
+    function resetTimer() {
+      clearInterval(slideTimer);
+      if (totalSlides > 1) {
+        slideTimer = setInterval(() => goToSlide(currentSlide + 1), SLIDE_INTERVAL);
+      }
+    }
+
+    // ── Build event slides + event cards from JSON ──
+    async function loadHomeContent() {
       try {
         const res = await fetch('data/events.json');
         if (!res.ok) return;
         const events = await res.json();
         const lang = currentLang || 'pt';
 
-        // Filter upcoming events and take the first 3
-        const upcoming = events
-          .filter(e => e.status === 'upcoming')
-          .slice(0, 3);
+        const upcoming = events.filter(e => e.status === 'upcoming');
 
-        const container = document.getElementById('events-list');
-        if (!container || upcoming.length === 0) return;
+        // ── Build hero event slides ──
+        const slidesContainer = document.getElementById('event-slides');
+        const dotsContainer = document.getElementById('slider-dots');
+        const arrowsEl = document.getElementById('slider-arrows');
+        let slideIndex = 1; // 0 is the welcome slide
 
-        const months_en = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-        const months_pt = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+        upcoming.forEach(event => {
+          const title = lang === 'en' ? event.title_en : event.title_pt;
+          const desc = lang === 'en' ? event.description_en : event.description_pt;
+          const hasImage = event.image && !event.image.includes('cover.jpg');
 
-        container.innerHTML = upcoming.map(event => {
-          let monthEn = 'TBD', monthPt = 'TBD', day = '--';
+          // Format date
+          let dateStr = '';
           if (event.date && event.date !== 'TBD') {
             const d = new Date(event.date + 'T00:00:00');
-            monthEn = months_en[d.getMonth()];
-            monthPt = months_pt[d.getMonth()];
-            day = String(d.getDate()).padStart(2, '0');
+            const opts = { month: 'long', day: 'numeric', year: 'numeric' };
+            dateStr = d.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US', opts);
+          } else {
+            dateStr = lang === 'en' ? 'Date coming soon' : 'Data em breve';
           }
 
-          return `
-            <a href="/event.html?id=${event.id}" class="event-card fade-in" style="text-decoration:none;">
-              <div class="event-date">
-                <span class="month" data-en="${monthEn}" data-pt="${monthPt}">${lang === 'en' ? monthEn : monthPt}</span>
-                <span class="day">${day}</span>
-              </div>
-              <div class="event-divider"></div>
-              <div class="event-info">
-                <h3 data-en="${event.title_en}" data-pt="${event.title_pt}">${lang === 'en' ? event.title_en : event.title_pt}</h3>
-                <p data-en="${event.description_en.substring(0, 120)}..." data-pt="${event.description_pt.substring(0, 120)}...">${(lang === 'en' ? event.description_en : event.description_pt).substring(0, 120)}...</p>
-              </div>
-            </a>
-          `;
-        }).join('');
+          const bgStyle = hasImage
+            ? `background-image: url('${event.image}')`
+            : '';
+          const slideClass = hasImage ? 'hero-slide--event' : 'hero-slide--default';
 
-        // Re-init scroll animations for new elements
+          const slide = document.createElement('div');
+          slide.className = `hero-slide ${slideClass}`;
+          slide.dataset.slide = slideIndex;
+          if (hasImage) slide.style.cssText = bgStyle;
+
+          slide.innerHTML = `
+            ${hasImage ? '<div class="hero-overlay"></div>' : ''}
+            <div class="container hero-content">
+              <span class="hero-event-badge" data-en="Upcoming Event" data-pt="Próximo Evento">${lang === 'en' ? 'Upcoming Event' : 'Próximo Evento'}</span>
+              <h1 data-en="${event.title_en}" data-pt="${event.title_pt}">${title}</h1>
+              <p style="color: rgba(255,255,255,0.85); max-width: 600px; margin: 0 auto 12px; font-size: 1rem;">📅 ${dateStr}${event.time && event.time !== 'TBD' ? ' &bull; 🕐 ' + event.time : ''}</p>
+              <p data-en="${event.description_en.substring(0, 160)}" data-pt="${event.description_pt.substring(0, 160)}" style="color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto 32px;">${desc.substring(0, 160)}...</p>
+              <div class="hero-buttons">
+                <a href="/event.html?id=${event.id}" class="btn btn-primary" data-en="Learn More" data-pt="Saiba Mais">${lang === 'en' ? 'Learn More' : 'Saiba Mais'}</a>
+                <a href="/events/" class="btn btn-outline" data-en="All Events" data-pt="Todos os Eventos">${lang === 'en' ? 'All Events' : 'Todos os Eventos'}</a>
+              </div>
+            </div>
+          `;
+
+          slidesContainer.appendChild(slide);
+          slideIndex++;
+        });
+
+        // Update total slides & build dots
+        totalSlides = slideIndex;
+
+        if (totalSlides > 1 && dotsContainer) {
+          for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(i);
+            dot.setAttribute('aria-label', `Slide ${i + 1}`);
+            dotsContainer.appendChild(dot);
+          }
+          if (arrowsEl) arrowsEl.style.display = 'flex';
+
+          // Start auto-rotation
+          resetTimer();
+          goToSlide(0);
+        }
+
+        // ── Build event cards in the events section ──
+        const eventsListEl = document.getElementById('events-list');
+        if (eventsListEl && upcoming.length > 0) {
+          const months_en = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+          const months_pt = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+
+          eventsListEl.innerHTML = upcoming.slice(0, 3).map(event => {
+            let monthEn = 'TBD', monthPt = 'TBD', day = '--';
+            if (event.date && event.date !== 'TBD') {
+              const d = new Date(event.date + 'T00:00:00');
+              monthEn = months_en[d.getMonth()];
+              monthPt = months_pt[d.getMonth()];
+              day = String(d.getDate()).padStart(2, '0');
+            }
+
+            return `
+              <a href="/event.html?id=${event.id}" class="event-card fade-in" style="text-decoration:none;">
+                <div class="event-date">
+                  <span class="month" data-en="${monthEn}" data-pt="${monthPt}">${lang === 'en' ? monthEn : monthPt}</span>
+                  <span class="day">${day}</span>
+                </div>
+                <div class="event-divider"></div>
+                <div class="event-info">
+                  <h3 data-en="${event.title_en}" data-pt="${event.title_pt}">${lang === 'en' ? event.title_en : event.title_pt}</h3>
+                  <p data-en="${event.description_en.substring(0, 120)}..." data-pt="${event.description_pt.substring(0, 120)}...">${(lang === 'en' ? event.description_en : event.description_pt).substring(0, 120)}...</p>
+                </div>
+              </a>
+            `;
+          }).join('');
+        }
+
+        // Re-init scroll animations for dynamically added elements
         initScrollAnimations();
+
       } catch (e) {
         console.error('Failed to load events:', e);
       }
     }
 
-    // Load events after DOM + components are ready
+    // Pause slider on hover
     document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(loadHomeEvents, 150);
+      const slider = document.querySelector('.hero-slider');
+      if (slider) {
+        slider.addEventListener('mouseenter', () => clearInterval(slideTimer));
+        slider.addEventListener('mouseleave', resetTimer);
+      }
+      setTimeout(loadHomeContent, 150);
     });
   </script>
 
