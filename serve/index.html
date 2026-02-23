@@ -20,14 +20,23 @@
       background: var(--white);
       border: 1px solid var(--gray-light);
       border-radius: var(--radius);
-      padding: 40px 28px;
+      padding: 0;
       text-align: center;
       transition: var(--transition);
+      overflow: hidden;
     }
     .ministry-card:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow-lg);
       border-color: transparent;
+    }
+    .ministry-photo {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    .ministry-body {
+      padding: 24px 28px 32px;
     }
     .ministry-icon {
       font-size: 2.5rem;
@@ -75,7 +84,7 @@
   <div id="header-placeholder"></div>
 
   <!-- ═══ PAGE HEADER ═══ -->
-  <section class="page-header">
+  <section class="page-header" style="background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7)), url('../images/stock/worship-band-logo.jpg') center/cover no-repeat;">
     <div class="container">
       <h1 data-en="Serve With Us" data-pt="Sirva Conosco">Sirva Conosco</h1>
       <p data-en="Use your gifts to make a difference. There's a place for you on our team." data-pt="Use seus dons para fazer a diferença. Há um lugar para você na nossa equipe.">Use seus dons para fazer a diferença. Há um lugar para você na nossa equipe.</p>
@@ -94,44 +103,56 @@
       <div class="ministry-grid">
         <!-- Worship Team -->
         <div class="ministry-card fade-in">
-          <div class="ministry-icon">🎵</div>
-          <h3 data-en="Worship Team" data-pt="Equipe de Louvor">Equipe de Louvor</h3>
-          <p data-en="Singers, musicians, and sound technicians who lead the church in worship every Sunday." data-pt="Cantores, músicos e técnicos de som que lideram a igreja em louvor todo domingo.">Cantores, músicos e técnicos de som que lideram a igreja em louvor todo domingo.</p>
+          <img class="ministry-photo" src="../images/stock/worship-singers.jpg" alt="Worship Team" />
+          <div class="ministry-body">
+            <h3 data-en="Worship Team" data-pt="Equipe de Louvor">Equipe de Louvor</h3>
+            <p data-en="Singers, musicians, and sound technicians who lead the church in worship every Sunday." data-pt="Cantores, músicos e técnicos de som que lideram a igreja em louvor todo domingo.">Cantores, músicos e técnicos de som que lideram a igreja em louvor todo domingo.</p>
+          </div>
         </div>
 
         <!-- Kids Ministry -->
         <div class="ministry-card fade-in">
-          <div class="ministry-icon">👧</div>
-          <h3 data-en="Kids Ministry" data-pt="Ministério Infantil">Ministério Infantil</h3>
-          <p data-en="Teachers and helpers who nurture children with biblical study and fun activities in a safe space." data-pt="Professores e auxiliares que cuidam das crianças com estudo bíblico e atividades divertidas em um espaço seguro.">Professores e auxiliares que cuidam das crianças com estudo bíblico e atividades divertidas em um espaço seguro.</p>
+          <img class="ministry-photo" src="../images/stock/kid-singing.jpg" alt="Kids Ministry" />
+          <div class="ministry-body">
+            <h3 data-en="Kids Ministry" data-pt="Ministério Infantil">Ministério Infantil</h3>
+            <p data-en="Teachers and helpers who nurture children with biblical study and fun activities in a safe space." data-pt="Professores e auxiliares que cuidam das crianças com estudo bíblico e atividades divertidas em um espaço seguro.">Professores e auxiliares que cuidam das crianças com estudo bíblico e atividades divertidas em um espaço seguro.</p>
+          </div>
         </div>
 
         <!-- Welcome Team -->
         <div class="ministry-card fade-in">
-          <div class="ministry-icon">🤝</div>
-          <h3 data-en="Welcome Team" data-pt="Equipe de Recepção">Equipe de Recepção</h3>
-          <p data-en="The first faces visitors see. Greeters, ushers, and hosts who make everyone feel at home." data-pt="Os primeiros rostos que os visitantes veem. Recepcionistas e anfitriões que fazem todos se sentirem em casa.">Os primeiros rostos que os visitantes veem. Recepcionistas e anfitriões que fazem todos se sentirem em casa.</p>
+          <img class="ministry-photo" src="../images/stock/welcome-greeting.jpg" alt="Welcome Team" />
+          <div class="ministry-body">
+            <h3 data-en="Welcome Team" data-pt="Equipe de Recepção">Equipe de Recepção</h3>
+            <p data-en="The first faces visitors see. Greeters, ushers, and hosts who make everyone feel at home." data-pt="Os primeiros rostos que os visitantes veem. Recepcionistas e anfitriões que fazem todos se sentirem em casa.">Os primeiros rostos que os visitantes veem. Recepcionistas e anfitriões que fazem todos se sentirem em casa.</p>
+          </div>
         </div>
 
         <!-- Media / Tech -->
         <div class="ministry-card fade-in">
-          <div class="ministry-icon">💻</div>
-          <h3 data-en="Media & Technology" data-pt="Mídia & Tecnologia">Mídia & Tecnologia</h3>
-          <p data-en="Photography, videography, live streaming, social media, and website management." data-pt="Fotografia, vídeo, transmissão ao vivo, redes sociais e gerenciamento do site.">Fotografia, vídeo, transmissão ao vivo, redes sociais e gerenciamento do site.</p>
+          <img class="ministry-photo" src="../images/stock/worship-wide.jpg" alt="Media & Technology" />
+          <div class="ministry-body">
+            <h3 data-en="Media & Technology" data-pt="Mídia & Tecnologia">Mídia & Tecnologia</h3>
+            <p data-en="Photography, videography, live streaming, social media, and website management." data-pt="Fotografia, vídeo, transmissão ao vivo, redes sociais e gerenciamento do site.">Fotografia, vídeo, transmissão ao vivo, redes sociais e gerenciamento do site.</p>
+          </div>
         </div>
 
         <!-- Translation -->
         <div class="ministry-card fade-in">
-          <div class="ministry-icon">🌍</div>
-          <h3 data-en="Translation Team" data-pt="Equipe de Tradução">Equipe de Tradução</h3>
-          <p data-en="Bilingual volunteers who provide live English translation during our Portuguese services." data-pt="Voluntários bilíngues que fazem a tradução simultânea em inglês durante nossos cultos em português.">Voluntários bilíngues que fazem a tradução simultânea em inglês durante nossos cultos em português.</p>
+          <img class="ministry-photo" src="../images/stock/pastor-preaching.jpg" alt="Translation Team" />
+          <div class="ministry-body">
+            <h3 data-en="Translation Team" data-pt="Equipe de Tradução">Equipe de Tradução</h3>
+            <p data-en="Bilingual volunteers who provide live English translation during our Portuguese services." data-pt="Voluntários bilíngues que fazem a tradução simultânea em inglês durante nossos cultos em português.">Voluntários bilíngues que fazem a tradução simultânea em inglês durante nossos cultos em português.</p>
+          </div>
         </div>
 
         <!-- Events -->
         <div class="ministry-card fade-in">
-          <div class="ministry-icon">🎉</div>
-          <h3 data-en="Events & Hospitality" data-pt="Eventos & Hospitalidade">Eventos & Hospitalidade</h3>
-          <p data-en="Planning and executing church events, fellowships, and community outreach activities." data-pt="Planejamento e execução de eventos da igreja, comunhões e atividades de alcance comunitário.">Planejamento e execução de eventos da igreja, comunhões e atividades de alcance comunitário.</p>
+          <img class="ministry-photo" src="../images/stock/worship-candles.jpg" alt="Events & Hospitality" />
+          <div class="ministry-body">
+            <h3 data-en="Events & Hospitality" data-pt="Eventos & Hospitalidade">Eventos & Hospitalidade</h3>
+            <p data-en="Planning and executing church events, fellowships, and community outreach activities." data-pt="Planejamento e execução de eventos da igreja, comunhões e atividades de alcance comunitário.">Planejamento e execução de eventos da igreja, comunhões e atividades de alcance comunitário.</p>
+          </div>
         </div>
       </div>
 

@@ -1,12 +1,13 @@
 """
 Family Church — Image Processing Tool
 
-Processes logo and event images for web use.
+Processes logo, event, and stock images for web use.
 
 Usage:
     python tools/process_images.py --logo      # Extract logo with transparent bg
     python tools/process_images.py --events    # Optimize event images
-    python tools/process_images.py --all       # Both
+    python tools/process_images.py --stock     # Process church stock photos
+    python tools/process_images.py --all       # Everything
 
 Requires: pip install Pillow
 """
@@ -75,7 +76,7 @@ def process_logo():
     print(f"  Saved: {out_logo} ({size_kb:.1f} KB)")
 
     # Step 5: Create white variant (for footer on dark bg)
-    # Invert only the non-transparent pixels: black → white
+    # Invert only the non-transparent pixels: black ->white
     white_img = padded.copy()
     wpx = white_img.load()
     ww, wh = white_img.size
@@ -191,6 +192,80 @@ def optimize_event_images():
     return True
 
 
+# ── Stock Photo Processing ───────────────────────────────────────
+
+STOCK_SOURCE = ROOT / "Church Stock photos"
+STOCK_OUTPUT = IMAGES_DIR / "stock"
+STOCK_MAX_WIDTH = 1600
+STOCK_QUALITY = 82
+
+# Mapping: source filename ->output name
+STOCK_MAP = {
+    "DSC07416.JPG": "pastors-worship.jpg",
+    "DSC07427.JPG": "pastor-preaching.jpg",
+    "DSC07437.JPG": "congregation-worship.jpg",
+    "DSC07412.JPG": "worship-wide.jpg",
+    "DSC07407.JPG": "worship-band-logo.jpg",
+    "DSC07408.JPG": "worship-hand-raised.jpg",
+    "DSC06279.JPG": "worship-singers.jpg",
+    "DSC06278.JPG": "kid-singing.jpg",
+    "DSC06582.JPG": "prayer.jpg",
+    "DSC06584.JPG": "worship-candles.jpg",
+    "DSC06123.JPG": "welcome-greeting.jpg",
+    "DSC06127.JPG": "fellowship-table.jpg",
+    "DSC06147.JPG": "kids-marshmallows.jpg",
+    "914144AB-B070-4906-9933-BAB1EA10CEE9.jpeg": "youth-party.jpg",
+}
+
+
+def process_stock_photos():
+    """Process church stock photos: fix rotation, resize, optimize."""
+    if not STOCK_SOURCE.exists():
+        print(f"  Stock photos directory not found: {STOCK_SOURCE}")
+        return False
+
+    STOCK_OUTPUT.mkdir(parents=True, exist_ok=True)
+    processed = 0
+
+    for src_name, out_name in STOCK_MAP.items():
+        src_path = STOCK_SOURCE / src_name
+        if not src_path.exists():
+            print(f"  SKIP (not found): {src_name}")
+            continue
+
+        print(f"\n  Processing: {src_name} ->{out_name}")
+        img = Image.open(src_path)
+
+        # Fix EXIF rotation (handles sideways photos)
+        img = ImageOps.exif_transpose(img)
+
+        w, h = img.size
+        print(f"    Original: {w}x{h}")
+
+        # Resize if wider than max
+        if w > STOCK_MAX_WIDTH:
+            ratio = STOCK_MAX_WIDTH / w
+            new_h = int(h * ratio)
+            img = img.resize((STOCK_MAX_WIDTH, new_h), Image.LANCZOS)
+            print(f"    Resized:  {STOCK_MAX_WIDTH}x{new_h}")
+
+        # Convert to RGB
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+
+        # Save optimized JPEG
+        out_path = STOCK_OUTPUT / out_name
+        img.save(out_path, "JPEG", quality=STOCK_QUALITY, optimize=True)
+        size_kb = out_path.stat().st_size / 1024
+        original_kb = src_path.stat().st_size / 1024
+        savings = (1 - size_kb / original_kb) * 100
+        print(f"    Saved:    {out_path.relative_to(ROOT)} ({size_kb:.0f} KB, saved {savings:.0f}%)")
+        processed += 1
+
+    print(f"\n  Processed {processed} stock photo(s).")
+    return True
+
+
 # ── Main ─────────────────────────────────────────────────────────
 
 
@@ -198,10 +273,11 @@ def main():
     parser = argparse.ArgumentParser(description="Family Church image processing tool")
     parser.add_argument("--logo", action="store_true", help="Process logo (extract, crop, transparent bg)")
     parser.add_argument("--events", action="store_true", help="Optimize event images for web")
+    parser.add_argument("--stock", action="store_true", help="Process church stock photos for web")
     parser.add_argument("--all", action="store_true", help="Process everything")
     args = parser.parse_args()
 
-    if not (args.logo or args.events or args.all):
+    if not (args.logo or args.events or args.stock or args.all):
         parser.print_help()
         return
 
@@ -214,6 +290,10 @@ def main():
     if args.events or args.all:
         print("\n=== Optimizing Event Images ===")
         optimize_event_images()
+
+    if args.stock or args.all:
+        print("\n=== Processing Stock Photos ===")
+        process_stock_photos()
 
     print("\nDone!")
 

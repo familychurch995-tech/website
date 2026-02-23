@@ -9,6 +9,7 @@
  *   /editevent   — Edit an existing event
  *   /deleteevent — Delete an event
  *   /listevents  — List all events
+ *   /addphoto    — Add a gallery photo to an event
  *   /help        — Show available commands
  *   /sim         — Confirm a pending AI-parsed action
  *   /nao         — Cancel a pending action
@@ -90,6 +91,8 @@ export default {
         await handleDeleteEvent(env, chatId, text);
       } else if (text.startsWith('/listevents')) {
         await handleListEvents(env, chatId);
+      } else if (text.startsWith('/addphoto')) {
+        await handleAddPhotoCommand(env, chatId, text);
       } else if (text.startsWith('/help') || text.startsWith('/start')) {
         await handleHelp(env, chatId);
       } else if (text === '/sim' || text === '/yes') {
@@ -97,10 +100,15 @@ export default {
       } else if (text === '/nao' || text === '/no' || text === '/cancelar') {
         await handleCancel(env, chatId);
       } else if (!text.startsWith('/')) {
-        // Check if there's a pending photo waiting for an event ID
+        // Check if there's a pending action waiting for user input
         const pending = await getPending(env, chatId);
         if (pending && pending.action === 'photo_waiting') {
           await handlePhotoEventId(env, chatId, text, pending.fileId);
+        } else if (pending && pending.action === 'gallery_waiting') {
+          await handleGalleryEventId(env, chatId, text, pending.fileId);
+        } else if (pending && pending.action === 'addphoto_waiting') {
+          // /addphoto was used, now waiting for event ID text, photo will come next
+          await handleAddPhotoEventSelected(env, chatId, text);
         } else {
           // Natural language — send to AI
           await handleNaturalLanguage(env, chatId, text);
@@ -424,6 +432,22 @@ async function handleNaturalLanguage(env, chatId, text) {
 
 // ── Photo Upload Handler ──
 
+// Gallery keyword detection
+const GALLERY_KEYWORDS = ['galeria', 'fotos', 'gallery', 'foto do evento', 'photos'];
+
+function isGalleryCaption(caption) {
+  const lower = caption.toLowerCase();
+  return GALLERY_KEYWORDS.some(kw => lower.includes(kw));
+}
+
+function stripGalleryKeywords(caption) {
+  let cleaned = caption;
+  for (const kw of GALLERY_KEYWORDS) {
+    cleaned = cleaned.replace(new RegExp(kw, 'gi'), '');
+  }
+  return cleaned.trim();
+}
+
 async function handlePhotoUpload(env, chatId, message) {
   try {
     const caption = (message.caption || '').trim();
@@ -432,9 +456,26 @@ async function handlePhotoUpload(env, chatId, message) {
     const photo = message.photo[message.photo.length - 1];
     const fileId = photo.file_id;
 
-    // If no caption, ask which event the photo is for
+    // Check if there's a pending /addphoto waiting for a photo
+    const pending = await getPending(env, chatId);
+    if (pending && pending.action === 'addphoto_ready') {
+      // Already selected event via /addphoto, upload as gallery
+      await deletePending(env, chatId);
+      const { events } = await getEventsFromGitHub(env);
+      const targetEvent = events.find(e => e.id === pending.eventId);
+      if (!targetEvent) {
+        await sendTelegram(env, chatId, `❌ Evento "${pending.eventId}" nao encontrado.`);
+        return;
+      }
+      await uploadGalleryPhotoToGitHub(env, chatId, fileId, targetEvent);
+      return;
+    }
+
+    // Detect gallery mode from caption keywords
+    const isGallery = caption && isGalleryCaption(caption);
+
+    // If no caption, ask which event the photo is for (default: cover)
     if (!caption) {
-      // Store the file_id so we can retrieve it later
       await setPending(env, chatId, { action: 'photo_waiting', fileId });
       const { events } = await getEventsFromGitHub(env);
       if (events.length === 0) {
@@ -443,58 +484,40 @@ async function handlePhotoUpload(env, chatId, message) {
         return;
       }
       const list = events.map(e => `🆔 \`${e.id}\`\n   📌 ${e.title_pt}`).join('\n\n');
-      await sendTelegram(env, chatId, `📸 Foto recebida!\n\nPara qual evento é essa foto? Envie o ID:\n\n${list}\n\nOu digite o ID do evento:`);
+      await sendTelegram(env, chatId, `📸 Foto recebida!\n\nPara qual evento e essa foto? (capa do evento)\nPara galeria, envie a foto com legenda "galeria [nome do evento]"\n\n${list}\n\nOu digite o ID do evento:`);
       return;
     }
 
-    // Caption provided — try to match it to an event
+    // Caption provided — find the target event
+    const searchText = isGallery ? stripGalleryKeywords(caption) : caption;
     const { events } = await getEventsFromGitHub(env);
-    let targetEvent = null;
+    let targetEvent = findEventFromCaption(events, searchText, env);
 
-    // First try: exact ID match in caption
-    targetEvent = events.find(e => caption.toLowerCase().includes(e.id));
-
-    // Second try: title match
-    if (!targetEvent) {
-      const captionLower = caption.toLowerCase();
-      targetEvent = events.find(e =>
-        captionLower.includes(e.title_pt.toLowerCase()) ||
-        captionLower.includes(e.title_en.toLowerCase())
-      );
+    // If still no match, try AI
+    if (!targetEvent && events.length > 0) {
+      targetEvent = await matchEventWithAI(env, events, searchText);
     }
 
-    // Third try: use AI to parse the caption
-    if (!targetEvent && events.length > 0) {
-      try {
-        const eventList = events.map(e => `ID: ${e.id}, Title: ${e.title_pt}`).join('\n');
-        const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
-          messages: [
-            {
-              role: 'system',
-              content: `You match a user's caption to an event. Return ONLY the event ID (nothing else). Available events:\n${eventList}\n\nIf no match, return "none".`
-            },
-            { role: 'user', content: caption }
-          ],
-          max_tokens: 100,
-          temperature: 0.1
-        });
-        const matchedId = (aiResponse.response || '').trim().toLowerCase();
-        targetEvent = events.find(e => e.id === matchedId);
-      } catch {
-        // AI failed, fall back to asking
-      }
+    // If still no match, try fuzzy search on the full caption
+    if (!targetEvent) {
+      targetEvent = findEventFuzzy(events, {}, searchText);
     }
 
     if (!targetEvent) {
       // Store photo and ask
-      await setPending(env, chatId, { action: 'photo_waiting', fileId });
+      const pendingAction = isGallery ? 'gallery_waiting' : 'photo_waiting';
+      await setPending(env, chatId, { action: pendingAction, fileId });
       const list = events.map(e => `🆔 \`${e.id}\`\n   📌 ${e.title_pt}`).join('\n\n');
-      await sendTelegram(env, chatId, `📸 Foto recebida, mas não consegui identificar o evento.\n\nEnvie o ID do evento:\n\n${list}`);
+      await sendTelegram(env, chatId, `📸 Foto recebida, mas nao consegui identificar o evento.\n\nEnvie o ID do evento:\n\n${list}`);
       return;
     }
 
-    // We have a target event — upload the photo
-    await uploadPhotoToGitHub(env, chatId, fileId, targetEvent);
+    // Upload the photo
+    if (isGallery) {
+      await uploadGalleryPhotoToGitHub(env, chatId, fileId, targetEvent);
+    } else {
+      await uploadPhotoToGitHub(env, chatId, fileId, targetEvent);
+    }
 
   } catch (err) {
     console.error('Photo upload error:', err);
@@ -502,27 +525,88 @@ async function handlePhotoUpload(env, chatId, message) {
   }
 }
 
+// Helper: find event from caption text (no AI)
+function findEventFromCaption(events, caption, env) {
+  const captionLower = caption.toLowerCase().trim();
+  if (!captionLower) return null;
+
+  // Exact ID match
+  let target = events.find(e => captionLower.includes(e.id));
+  if (target) return target;
+
+  // Title match
+  target = events.find(e =>
+    captionLower.includes(e.title_pt.toLowerCase()) ||
+    captionLower.includes(e.title_en.toLowerCase())
+  );
+  if (target) return target;
+
+  return null;
+}
+
+// Helper: use AI to match caption to event
+async function matchEventWithAI(env, events, caption) {
+  try {
+    const eventList = events.map(e => `ID: ${e.id}, Title: ${e.title_pt}`).join('\n');
+    const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+      messages: [
+        {
+          role: 'system',
+          content: `You match a user's caption to an event. Return ONLY the event ID (nothing else). Available events:\n${eventList}\n\nIf no match, return "none".`
+        },
+        { role: 'user', content: caption }
+      ],
+      max_tokens: 100,
+      temperature: 0.1
+    });
+    const matchedId = (aiResponse.response || '').trim().toLowerCase();
+    return events.find(e => e.id === matchedId) || null;
+  } catch {
+    return null;
+  }
+}
+
 async function handlePhotoEventId(env, chatId, text, fileId) {
   await deletePending(env, chatId);
   const { events } = await getEventsFromGitHub(env);
-  const input = text.trim().toLowerCase();
-
-  // Try to find event by ID or partial title match
-  let targetEvent = events.find(e => e.id === input);
-  if (!targetEvent) {
-    targetEvent = events.find(e =>
-      e.id.includes(input) ||
-      e.title_pt.toLowerCase().includes(input) ||
-      e.title_en.toLowerCase().includes(input)
-    );
-  }
+  const targetEvent = findEventFromText(events, text);
 
   if (!targetEvent) {
-    await sendTelegram(env, chatId, `❌ Evento "${text}" não encontrado.\n\nUse /listevents para ver os IDs e envie a foto novamente.`);
+    await sendTelegram(env, chatId, `❌ Evento "${text}" nao encontrado.\n\nUse /listevents para ver os IDs e envie a foto novamente.`);
     return;
   }
 
   await uploadPhotoToGitHub(env, chatId, fileId, targetEvent);
+}
+
+async function handleGalleryEventId(env, chatId, text, fileId) {
+  await deletePending(env, chatId);
+  const { events } = await getEventsFromGitHub(env);
+  const targetEvent = findEventFromText(events, text);
+
+  if (!targetEvent) {
+    await sendTelegram(env, chatId, `❌ Evento "${text}" nao encontrado.\n\nUse /listevents para ver os IDs e envie a foto novamente.`);
+    return;
+  }
+
+  await uploadGalleryPhotoToGitHub(env, chatId, fileId, targetEvent);
+}
+
+// Helper: find event from free-text user input
+function findEventFromText(events, text) {
+  const input = text.trim().toLowerCase();
+  let target = events.find(e => e.id === input);
+  if (target) return target;
+
+  target = events.find(e =>
+    e.id.includes(input) ||
+    e.title_pt.toLowerCase().includes(input) ||
+    e.title_en.toLowerCase().includes(input)
+  );
+  if (target) return target;
+
+  // Use fuzzy search as last resort
+  return findEventFuzzy(events, {}, text);
 }
 
 async function uploadPhotoToGitHub(env, chatId, fileId, event) {
@@ -611,7 +695,125 @@ async function uploadPhotoToGitHub(env, chatId, fileId, event) {
   }
 
   const sizeKB = Math.round(imageBuffer.byteLength / 1024);
-  await sendTelegram(env, chatId, `✅ *Foto atualizada!*\n\n📌 *${event.title_pt}*\n📁 ${imagePath}\n📦 ${sizeKB} KB\n\nA imagem aparecerá no site em alguns minutos.`);
+  await sendTelegram(env, chatId, `✅ *Foto de capa atualizada!*\n\n📌 *${event.title_pt}*\n📁 ${imagePath}\n📦 ${sizeKB} KB\n\nA imagem aparecera no site em alguns minutos.`);
+}
+
+// ── Gallery Photo Upload ──
+
+async function uploadGalleryPhotoToGitHub(env, chatId, fileId, event) {
+  await sendTelegram(env, chatId, `⏳ Adicionando foto a galeria de *${event.title_pt}*...`);
+
+  // 1. Get file path from Telegram
+  const fileRes = await fetch(
+    `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`
+  );
+  const fileData = await fileRes.json();
+  if (!fileData.ok || !fileData.result.file_path) {
+    await sendTelegram(env, chatId, '❌ Nao consegui obter o arquivo do Telegram.');
+    return;
+  }
+
+  // 2. Download the photo from Telegram
+  const downloadUrl = `https://api.telegram.org/file/bot${env.TELEGRAM_BOT_TOKEN}/${fileData.result.file_path}`;
+  const imageRes = await fetch(downloadUrl);
+  if (!imageRes.ok) {
+    await sendTelegram(env, chatId, '❌ Nao consegui baixar a foto do Telegram.');
+    return;
+  }
+  const imageBuffer = await imageRes.arrayBuffer();
+  const base64Image = arrayBufferToBase64(imageBuffer);
+
+  // 3. Determine photo number from existing gallery
+  const currentPhotos = event.photos || [];
+  const photoNum = currentPhotos.length + 1;
+  const imagePath = `images/events/${event.id}/photo-${photoNum}.jpg`;
+
+  // 4. Upload to GitHub
+  const uploadBody = {
+    message: `Add gallery photo ${photoNum} for: ${event.title_pt}`,
+    content: base64Image,
+    branch: BRANCH
+  };
+
+  const uploadRes = await fetch(
+    `https://api.github.com/repos/${env.GITHUB_REPO}/contents/${imagePath}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${env.GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'FamilyChurch-TelegramBot',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(uploadBody)
+    }
+  );
+
+  if (!uploadRes.ok) {
+    const errText = await uploadRes.text();
+    await sendTelegram(env, chatId, `❌ Erro ao fazer upload: ${uploadRes.status}\n${errText.substring(0, 200)}`);
+    return;
+  }
+
+  // 5. Update event's photos array in events.json
+  const { events, sha } = await getEventsFromGitHub(env);
+  const idx = events.findIndex(e => e.id === event.id);
+  if (idx !== -1) {
+    if (!events[idx].photos) events[idx].photos = [];
+    events[idx].photos.push(imagePath);
+    await saveEventsToGitHub(env, events, sha, `Add gallery photo ${photoNum} for: ${event.title_pt}`);
+  }
+
+  const sizeKB = Math.round(imageBuffer.byteLength / 1024);
+  const totalPhotos = (event.photos || []).length + 1;
+  await sendTelegram(env, chatId, `✅ *Foto ${photoNum} adicionada a galeria!*\n\n📌 *${event.title_pt}*\n📁 ${imagePath}\n📦 ${sizeKB} KB\n🖼️ ${totalPhotos} foto(s) na galeria\n\nAs fotos aparecerao no site em alguns minutos.`);
+}
+
+// ── /addphoto Command Handler ──
+
+async function handleAddPhotoCommand(env, chatId, text) {
+  const lines = text.split('\n').slice(1);
+  const fields = parseFields(lines);
+  const id = fields['id'];
+
+  if (id) {
+    // ID provided inline: /addphoto\nID: event-id
+    const { events } = await getEventsFromGitHub(env);
+    const target = events.find(e => e.id === id) || findEventFuzzy(events, { event_id: id }, id);
+    if (!target) {
+      await sendTelegram(env, chatId, `❌ Evento "${id}" nao encontrado.\n\nUse /listevents para ver os IDs.`);
+      return;
+    }
+    await setPending(env, chatId, { action: 'addphoto_ready', eventId: target.id });
+    await sendTelegram(env, chatId, `📸 Pronto! Agora envie a foto para adicionar a galeria de *${target.title_pt}*.\n\nVoce pode enviar varias fotos, uma de cada vez.`);
+  } else {
+    // No ID — show event list
+    const { events } = await getEventsFromGitHub(env);
+    if (events.length === 0) {
+      await sendTelegram(env, chatId, '❌ Nenhum evento encontrado. Crie um evento primeiro.');
+      return;
+    }
+    const list = events.map(e => {
+      const photoCount = (e.photos || []).length;
+      return `🆔 \`${e.id}\`\n   📌 ${e.title_pt} (${photoCount} foto${photoCount !== 1 ? 's' : ''})`;
+    }).join('\n\n');
+    await setPending(env, chatId, { action: 'addphoto_waiting' });
+    await sendTelegram(env, chatId, `📸 *Adicionar foto a galeria*\n\nDigite o ID do evento:\n\n${list}`);
+  }
+}
+
+async function handleAddPhotoEventSelected(env, chatId, text) {
+  await deletePending(env, chatId);
+  const { events } = await getEventsFromGitHub(env);
+  const target = findEventFromText(events, text);
+
+  if (!target) {
+    await sendTelegram(env, chatId, `❌ Evento "${text}" nao encontrado.\n\nUse /listevents para ver os IDs.`);
+    return;
+  }
+
+  await setPending(env, chatId, { action: 'addphoto_ready', eventId: target.id });
+  await sendTelegram(env, chatId, `📸 Pronto! Agora envie a foto para adicionar a galeria de *${target.title_pt}*.\n\nVoce pode enviar varias fotos, uma de cada vez.`);
 }
 
 // ── Confirmation Handlers ──
@@ -687,40 +889,28 @@ async function handleHelp(env, chatId) {
 
 *Linguagem natural:*
 Apenas digite o que quer fazer! Ex:
-"Cria um evento noite de oração dia 15 de março às 7pm"
-O bot interpreta e pede confirmação.
+"Cria um evento noite de oração dia 15 de março as 7pm"
+O bot interpreta e pede confirmacao.
 
-*📸 Fotos:*
+*📸 Foto de capa:*
 Envie uma foto com legenda mencionando o evento.
-Ex: envie uma foto com legenda "cristina mel"
-Sem legenda? O bot pergunta qual evento.
+Ex: foto com legenda "cristina mel"
 
-*Comandos estruturados:*
+*🖼️ Galeria de fotos:*
+Envie foto com legenda "galeria [nome do evento]"
+Ex: "galeria cristina mel" ou "fotos dons digitais"
+Ou use /addphoto para selecionar o evento primeiro.
+
+*Comandos:*
 
 /newevent — Criar novo evento
-\`\`\`
-/newevent
-Title PT: Dons Digitais
-Title EN: Digital Gifts
-Date: 2026-03-15
-Time: 7:00 PM
-Description PT: Descrição...
-Description EN: Description...
-\`\`\`
-
 /editevent — Editar evento
-\`\`\`
-/editevent
-ID: dons-digitais-2026
-Date: 2026-04-01
-\`\`\`
-
 /deleteevent ID — Deletar evento
 /listevents — Listar todos
+/addphoto — Adicionar foto a galeria
 /help — Esta mensagem
-
-/sim — Confirmar ação pendente
-/nao — Cancelar ação pendente
+/sim — Confirmar acao pendente
+/nao — Cancelar acao pendente
   `;
   await sendTelegram(env, chatId, helpText);
 }

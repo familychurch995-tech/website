@@ -1,11 +1,16 @@
 // ── Event Detail Page Logic ──
 
+let galleryPhotos = [];
+let currentPhotoIndex = 0;
+
 function openLightbox(src) {
   const lb = document.getElementById('lightbox');
   const img = document.getElementById('lightbox-img');
   if (lb && img) {
     img.src = src;
+    currentPhotoIndex = galleryPhotos.indexOf(src);
     lb.classList.add('active');
+    updateLightboxNav();
   }
 }
 
@@ -14,9 +19,39 @@ function closeLightbox() {
   if (lb) lb.classList.remove('active');
 }
 
-// Close lightbox on Escape
+function lightboxPrev() {
+  if (galleryPhotos.length <= 1) return;
+  currentPhotoIndex = (currentPhotoIndex - 1 + galleryPhotos.length) % galleryPhotos.length;
+  document.getElementById('lightbox-img').src = galleryPhotos[currentPhotoIndex];
+  updateLightboxNav();
+}
+
+function lightboxNext() {
+  if (galleryPhotos.length <= 1) return;
+  currentPhotoIndex = (currentPhotoIndex + 1) % galleryPhotos.length;
+  document.getElementById('lightbox-img').src = galleryPhotos[currentPhotoIndex];
+  updateLightboxNav();
+}
+
+function updateLightboxNav() {
+  const counter = document.getElementById('lightbox-counter');
+  if (counter && galleryPhotos.length > 1) {
+    counter.textContent = `${currentPhotoIndex + 1} / ${galleryPhotos.length}`;
+    counter.style.display = 'block';
+  }
+  const prevBtn = document.getElementById('lightbox-prev');
+  const nextBtn = document.getElementById('lightbox-next');
+  if (prevBtn) prevBtn.style.display = galleryPhotos.length > 1 ? 'block' : 'none';
+  if (nextBtn) nextBtn.style.display = galleryPhotos.length > 1 ? 'block' : 'none';
+}
+
+// Keyboard navigation
 document.addEventListener('keydown', (e) => {
+  const lb = document.getElementById('lightbox');
+  if (!lb || !lb.classList.contains('active')) return;
   if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') lightboxPrev();
+  if (e.key === 'ArrowRight') lightboxNext();
 });
 
 async function loadEventDetail() {
@@ -72,12 +107,13 @@ async function loadEventDetail() {
 
     // Build photos gallery
     let photosHtml = '';
-    if (event.photos && event.photos.length > 0) {
+    galleryPhotos = event.photos && event.photos.length > 0 ? [...event.photos] : [];
+    if (galleryPhotos.length > 0) {
       photosHtml = `
         <div style="margin-top: 48px;">
           <h3 style="font-family: 'Inter', sans-serif; font-weight: 600; color: var(--navy); margin-bottom: 20px;" data-en="Photos" data-pt="Fotos">${lang === 'en' ? 'Photos' : 'Fotos'}</h3>
           <div class="photo-gallery">
-            ${event.photos.map(p => `<img src="${p}" alt="${title}" onclick="openLightbox('${p}')" loading="lazy" />`).join('')}
+            ${galleryPhotos.map(p => `<img src="${p}" alt="${title}" onclick="openLightbox('${p}')" loading="lazy" />`).join('')}
           </div>
         </div>
       `;

@@ -23,7 +23,10 @@
   <!-- ═══ LIGHTBOX ═══ -->
   <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <button class="lightbox-close" aria-label="Close">&times;</button>
-    <img id="lightbox-img" src="" alt="" />
+    <button class="lightbox-nav lightbox-prev" id="lightbox-prev" onclick="event.stopPropagation(); lightboxPrev();" aria-label="Previous">&#10094;</button>
+    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation();" />
+    <button class="lightbox-nav lightbox-next" id="lightbox-next" onclick="event.stopPropagation(); lightboxNext();" aria-label="Next">&#10095;</button>
+    <span class="lightbox-counter" id="lightbox-counter"></span>
   </div>
 
   <div id="footer-placeholder"></div>
