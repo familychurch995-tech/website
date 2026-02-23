@@ -296,7 +296,7 @@
         upcoming.forEach(event => {
           const title = lang === 'en' ? event.title_en : event.title_pt;
           const desc = lang === 'en' ? event.description_en : event.description_pt;
-          const hasImage = event.image && !event.image.includes('cover.jpg');
+          const hasImage = event.image && event.image.trim() !== '';
 
           // Format date
           let dateStr = '';
