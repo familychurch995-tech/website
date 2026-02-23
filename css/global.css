@@ -250,7 +250,7 @@ ul { list-style: none; }
 }
 
 .footer .nav-logo img {
-  filter: invert(1);
+  height: 60px;
 }
 
 /* Slider Navigation */
