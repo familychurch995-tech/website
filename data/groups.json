@@ -1,0 +1,18 @@
+[
+  {
+    "year": "2026",
+    "topic_en": "To be announced",
+    "topic_pt": "A ser anunciado",
+    "day_en": "Thursdays",
+    "day_pt": "Quintas-feiras",
+    "current": true
+  },
+  {
+    "year": "2025",
+    "topic_en": "Book of Revelations",
+    "topic_pt": "Livro do Apocalipse",
+    "day_en": "Thursdays",
+    "day_pt": "Quintas-feiras",
+    "current": false
+  }
+]

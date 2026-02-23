@@ -1,796 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Family Church | Stamford, CT</title>
-  <meta name="description" content="Family Church — Evangelical Christian church in Stamford, CT. Founded by Pastor Marcos Augusto & Sheila Augusto. Services in Portuguese with live English translation. Sundays at 10 AM." />
+  <meta name="description" content="Family Church — Igreja Cristã Evangélica em Stamford, CT. Fundada pelo Pastor Marcos Augusto & Sheila Augusto. Cultos em português com tradução simultânea em inglês. Domingos às 10h." />
+  <meta name="base-path" content="" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
-  <style>
-    /* ── Reset & Variables ─────────────────────────── */
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --navy: #0f1d3d;
-      --navy-light: #1a2d5a;
-      --navy-soft: #2a3f6e;
-      --white: #ffffff;
-      --off-white: #f5f7fb;
-      --gray-light: #e8ecf4;
-      --gray: #8892a8;
-      --text: #1e293b;
-      --text-light: #64748b;
-      --accent: #3b6cf5;
-      --radius: 12px;
-      --shadow: 0 4px 24px rgba(15, 29, 61, 0.08);
-      --shadow-lg: 0 12px 48px rgba(15, 29, 61, 0.12);
-      --transition: 0.3s ease;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      color: var(--text);
-      background: var(--white);
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    h1, h2, h3, h4 { font-family: 'Playfair Display', serif; line-height: 1.2; }
-
-    a { text-decoration: none; color: inherit; }
-    img { max-width: 100%; display: block; }
-    ul { list-style: none; }
-
-    .container {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* ── Navigation ────────────────────────────────── */
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--gray-light);
-      transition: var(--transition);
-    }
-
-    .navbar.scrolled {
-      box-shadow: var(--shadow);
-    }
-
-    .nav-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 72px;
-    }
-
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
-      font-size: 1.35rem;
-      color: var(--navy);
-    }
-
-    .nav-logo svg {
-      width: 36px;
-      height: 36px;
-      flex-shrink: 0;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-    }
-
-    .nav-links a {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-light);
-      transition: var(--transition);
-      position: relative;
-    }
-
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--navy);
-      transition: var(--transition);
-    }
-
-    .nav-links a:hover { color: var(--navy); }
-    .nav-links a:hover::after { width: 100%; }
-
-    /* Language Toggle */
-    .lang-toggle {
-      display: flex;
-      align-items: center;
-      background: var(--off-white);
-      border-radius: 50px;
-      padding: 4px;
-      gap: 2px;
-      border: 1px solid var(--gray-light);
-    }
-
-    .lang-btn {
-      border: none;
-      background: transparent;
-      padding: 6px 14px;
-      border-radius: 50px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-light);
-      cursor: pointer;
-      transition: var(--transition);
-      font-family: 'Inter', sans-serif;
-    }
-
-    .lang-btn.active {
-      background: var(--navy);
-      color: var(--white);
-      box-shadow: 0 2px 8px rgba(15, 29, 61, 0.25);
-    }
-
-    /* Hamburger */
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-    }
-    .hamburger span {
-      width: 24px;
-      height: 2px;
-      background: var(--navy);
-      border-radius: 2px;
-      transition: var(--transition);
-    }
-    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
-
-    /* ── Hero ──────────────────────────────────────── */
-    .hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      background: linear-gradient(145deg, var(--navy) 0%, var(--navy-light) 50%, var(--navy-soft) 100%);
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -20%;
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(circle, rgba(59, 108, 245, 0.15) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      bottom: -30%;
-      left: -10%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-      border-radius: 50%;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      width: 100%;
-      padding: 120px 0 80px;
-    }
-
-    .hero-badge {
-      display: inline-block;
-      padding: 8px 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 50px;
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 0.85rem;
-      font-weight: 500;
-      margin-bottom: 28px;
-      backdrop-filter: blur(4px);
-    }
-
-    .hero h1 {
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      color: var(--white);
-      margin-bottom: 20px;
-      font-weight: 700;
-    }
-
-    .hero p {
-      font-size: clamp(1rem, 2vw, 1.25rem);
-      color: rgba(255, 255, 255, 0.75);
-      max-width: 600px;
-      margin: 0 auto 40px;
-      font-weight: 300;
-    }
-
-    .hero-buttons {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 32px;
-      border-radius: 50px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      transition: var(--transition);
-      cursor: pointer;
-      border: none;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .btn-primary {
-      background: var(--white);
-      color: var(--navy);
-    }
-    .btn-primary:hover {
-      background: var(--off-white);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--white);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-    }
-    .btn-outline:hover {
-      border-color: var(--white);
-      transform: translateY(-2px);
-    }
-
-    .btn-navy {
-      background: var(--navy);
-      color: var(--white);
-    }
-    .btn-navy:hover {
-      background: var(--navy-light);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    /* ── Sections ──────────────────────────────────── */
-    .section {
-      padding: 100px 0;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 60px;
-    }
-
-    .section-label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--accent);
-      margin-bottom: 12px;
-    }
-
-    .section-header h2 {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      color: var(--navy);
-      margin-bottom: 16px;
-    }
-
-    .section-header p {
-      font-size: 1.05rem;
-      color: var(--text-light);
-      max-width: 560px;
-      margin: 0 auto;
-    }
-
-    /* ── About ─────────────────────────────────────── */
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
-    }
-
-    .about-image {
-      aspect-ratio: 4/3;
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
-      border-radius: var(--radius);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .about-image svg {
-      width: 120px;
-      height: 120px;
-      opacity: 0.3;
-    }
-
-    .about-text h2 {
-      font-size: 2.2rem;
-      color: var(--navy);
-      margin-bottom: 20px;
-    }
-
-    .about-text p {
-      color: var(--text-light);
-      margin-bottom: 16px;
-      font-size: 1.02rem;
-    }
-
-    .about-stats {
-      display: flex;
-      gap: 40px;
-      margin-top: 32px;
-      padding-top: 32px;
-      border-top: 1px solid var(--gray-light);
-    }
-
-    .stat h3 {
-      font-size: 2rem;
-      color: var(--navy);
-      font-family: 'Inter', sans-serif;
-      font-weight: 700;
-    }
-
-    .stat p {
-      font-size: 0.85rem;
-      color: var(--gray);
-      margin: 0;
-    }
-
-    /* ── Services Schedule ──────────────────────────── */
-    .services-section {
-      background: var(--off-white);
-    }
-
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-    }
-
-    .service-card {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 40px 32px;
-      text-align: center;
-      transition: var(--transition);
-      border: 1px solid var(--gray-light);
-    }
-
-    .service-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-      border-color: transparent;
-    }
-
-    .service-icon {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 20px;
-      background: var(--off-white);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .service-icon svg {
-      width: 28px;
-      height: 28px;
-      color: var(--navy);
-    }
-
-    .service-card h3 {
-      font-size: 1.2rem;
-      color: var(--navy);
-      margin-bottom: 8px;
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-    }
-
-    .service-card .time {
-      font-size: 1.05rem;
-      color: var(--accent);
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .service-card p {
-      color: var(--text-light);
-      font-size: 0.9rem;
-    }
-
-    /* ── Verse / Quote ─────────────────────────────── */
-    .verse-section {
-      background: linear-gradient(145deg, var(--navy) 0%, var(--navy-light) 100%);
-      text-align: center;
-      padding: 80px 0;
-    }
-
-    .verse-section blockquote {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.3rem, 3vw, 2rem);
-      color: var(--white);
-      max-width: 800px;
-      margin: 0 auto 20px;
-      font-weight: 400;
-      font-style: italic;
-      line-height: 1.5;
-    }
-
-    .verse-section cite {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 1rem;
-      font-style: normal;
-    }
-
-    /* ── Events ────────────────────────────────────── */
-    .events-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .event-card {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      background: var(--white);
-      border: 1px solid var(--gray-light);
-      border-radius: var(--radius);
-      padding: 24px 32px;
-      transition: var(--transition);
-    }
-
-    .event-card:hover {
-      box-shadow: var(--shadow);
-      border-color: transparent;
-    }
-
-    .event-date {
-      text-align: center;
-      min-width: 60px;
-      flex-shrink: 0;
-    }
-
-    .event-date .month {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--accent);
-      letter-spacing: 1px;
-    }
-
-    .event-date .day {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--navy);
-      line-height: 1;
-    }
-
-    .event-divider {
-      width: 1px;
-      height: 48px;
-      background: var(--gray-light);
-    }
-
-    .event-info h3 {
-      font-size: 1.1rem;
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      color: var(--navy);
-      margin-bottom: 4px;
-    }
-
-    .event-info p {
-      color: var(--text-light);
-      font-size: 0.9rem;
-    }
-
-    /* ── Contact ───────────────────────────────────── */
-    .contact-section {
-      background: var(--off-white);
-    }
-
-    .contact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-    }
-
-    .contact-info { display: flex; flex-direction: column; gap: 28px; }
-
-    .contact-item {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    .contact-item-icon {
-      width: 48px;
-      height: 48px;
-      background: var(--white);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      border: 1px solid var(--gray-light);
-    }
-
-    .contact-item-icon svg {
-      width: 20px;
-      height: 20px;
-      color: var(--navy);
-    }
-
-    .contact-item h4 {
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--navy);
-      margin-bottom: 4px;
-    }
-
-    .contact-item p {
-      color: var(--text-light);
-      font-size: 0.9rem;
-    }
-
-    .map-placeholder {
-      background: var(--white);
-      border: 1px solid var(--gray-light);
-      border-radius: var(--radius);
-      overflow: hidden;
-      aspect-ratio: 4/3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .map-placeholder iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-
-    /* ── Footer ────────────────────────────────────── */
-    .footer {
-      background: var(--navy);
-      color: rgba(255, 255, 255, 0.7);
-      padding: 60px 0 30px;
-    }
-
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 48px;
-      margin-bottom: 48px;
-    }
-
-    .footer-brand .nav-logo {
-      color: var(--white);
-      margin-bottom: 16px;
-    }
-
-    .footer-brand p {
-      font-size: 0.9rem;
-      line-height: 1.7;
-      max-width: 300px;
-    }
-
-    .footer h4 {
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      color: var(--white);
-      margin-bottom: 20px;
-      font-size: 0.95rem;
-    }
-
-    .footer ul { display: flex; flex-direction: column; gap: 12px; }
-
-    .footer ul a {
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.6);
-      transition: var(--transition);
-    }
-
-    .footer ul a:hover { color: var(--white); }
-
-    .footer-bottom {
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 28px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-    }
-
-    .social-links {
-      display: flex;
-      gap: 16px;
-    }
-
-    .social-links a {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--transition);
-    }
-
-    .social-links a:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .social-links svg {
-      width: 18px;
-      height: 18px;
-      fill: rgba(255, 255, 255, 0.7);
-    }
-
-    /* ── Responsive ────────────────────────────────── */
-    @media (max-width: 1024px) {
-      .services-grid { grid-template-columns: repeat(2, 1fr); }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    @media (max-width: 768px) {
-      .nav-links {
-        position: fixed;
-        top: 72px;
-        left: 0;
-        right: 0;
-        background: var(--white);
-        flex-direction: column;
-        padding: 32px 24px;
-        gap: 24px;
-        border-bottom: 1px solid var(--gray-light);
-        transform: translateY(-120%);
-        transition: var(--transition);
-        box-shadow: var(--shadow);
-      }
-
-      .nav-links.open {
-        transform: translateY(0);
-      }
-
-      .hamburger { display: flex; }
-
-      .about-grid,
-      .contact-grid {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-
-      .services-grid { grid-template-columns: 1fr; }
-
-      .hero { min-height: 90vh; }
-
-      .event-card {
-        flex-direction: column;
-        text-align: center;
-        gap: 16px;
-      }
-
-      .event-divider {
-        width: 48px;
-        height: 1px;
-      }
-
-      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
-
-      .footer-bottom {
-        flex-direction: column;
-        gap: 16px;
-        text-align: center;
-      }
-
-      .about-stats { gap: 24px; }
-    }
-
-    /* ── Animations ────────────────────────────────── */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
+  <link rel="stylesheet" href="css/global.css" />
 </head>
 
 <body>
 
-  <!-- ═══ NAVBAR ═══ -->
-  <nav class="navbar">
-    <div class="container nav-inner">
-      <a href="#" class="nav-logo">
-        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="18" cy="18" r="17" stroke="#0f1d3d" stroke-width="2"/>
-          <path d="M18 7v22M12 14h12" stroke="#0f1d3d" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-        Family Church
-      </a>
-
-      <div class="nav-links" id="navLinks">
-        <a href="#about" data-en="About" data-pt="Sobre">About</a>
-        <a href="#services" data-en="Services" data-pt="Cultos">Services</a>
-        <a href="#events" data-en="Events" data-pt="Eventos">Events</a>
-        <a href="#contact" data-en="Contact" data-pt="Contato">Contact</a>
-        <div class="lang-toggle">
-          <button class="lang-btn active" id="btnEn" onclick="setLang('en')">EN</button>
-          <button class="lang-btn" id="btnPt" onclick="setLang('pt')">PT</button>
-        </div>
-      </div>
-
-      <button class="hamburger" id="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
+  <!-- ═══ HEADER (loaded dynamically) ═══ -->
+  <div id="header-placeholder"></div>
 
   <!-- ═══ HERO ═══ -->
   <section class="hero" id="home">
     <div class="container hero-content">
-      <span class="hero-badge" data-en="Evangelical Christian Church &bull; Stamford, CT" data-pt="Igreja Cristã Evangélica &bull; Stamford, CT">Evangelical Christian Church &bull; Stamford, CT</span>
-      <h1 data-en="A Place to Belong,<br>Believe &amp; Become" data-pt="Um Lugar para Pertencer,<br>Crer &amp; Crescer">A Place to Belong,<br>Believe &amp; Become</h1>
-      <p data-en="Worship, the Word of the Lord, and community — every Sunday at 10 AM. Services in Portuguese with live English translation. God serves everyone." data-pt="Louvor, a Palavra do Senhor e comunidade — todos os domingos às 10h. Cultos em português com tradução simultânea em inglês. Deus serve a todos.">Worship, the Word of the Lord, and community — every Sunday at 10 AM. Services in Portuguese with live English translation. God serves everyone.</p>
+      <span class="hero-badge" data-en="Evangelical Christian Church &bull; Stamford, CT" data-pt="Igreja Cristã Evangélica &bull; Stamford, CT">Igreja Cristã Evangélica &bull; Stamford, CT</span>
+      <h1 data-en="A Place to Belong,<br>Believe &amp; Become" data-pt="Um Lugar para Pertencer,<br>Crer &amp; Crescer">Um Lugar para Pertencer,<br>Crer &amp; Crescer</h1>
+      <p data-en="Worship, the Word of the Lord, and community — every Sunday at 10 AM. Services in Portuguese with live English translation. God serves everyone." data-pt="Louvor, a Palavra do Senhor e comunidade — todos os domingos às 10h. Cultos em português com tradução simultânea em inglês. Deus serve a todos.">Louvor, a Palavra do Senhor e comunidade — todos os domingos às 10h. Cultos em português com tradução simultânea em inglês. Deus serve a todos.</p>
       <div class="hero-buttons">
-        <a href="#services" class="btn btn-primary" data-en="Join Us Sunday at 10 AM" data-pt="Venha no Domingo às 10h">Join Us Sunday at 10 AM</a>
-        <a href="#about" class="btn btn-outline" data-en="Meet Our Pastors" data-pt="Conheça Nossos Pastores">Meet Our Pastors</a>
+        <a href="#services" class="btn btn-primary" data-en="Join Us Sunday at 10 AM" data-pt="Venha no Domingo às 10h">Venha no Domingo às 10h</a>
+        <a href="#about" class="btn btn-outline" data-en="Meet Our Pastors" data-pt="Conheça Nossos Pastores">Conheça Nossos Pastores</a>
       </div>
     </div>
   </section>
@@ -805,22 +40,22 @@
           </svg>
         </div>
         <div class="about-text fade-in">
-          <p class="section-label" data-en="About Us" data-pt="Sobre Nós">About Us</p>
-          <h2 data-en="Building Faith,<br>Strengthening Families" data-pt="Edificando a Fé,<br>Fortalecendo Famílias">Building Faith,<br>Strengthening Families</h2>
-          <p data-en="Family Church is an evangelical Christian community founded by <strong>Pastor Marcos Augusto</strong> and his wife <strong>Sheila Augusto</strong> in the heart of Stamford, Connecticut. We are passionate about preaching the Word of God and creating an environment where everyone can experience His love." data-pt="A Family Church é uma comunidade cristã evangélica fundada pelo <strong>Pastor Marcos Augusto</strong> e sua esposa <strong>Sheila Augusto</strong> no coração de Stamford, Connecticut. Somos apaixonados por pregar a Palavra de Deus e criar um ambiente onde todos possam experimentar o Seu amor.">Family Church is an evangelical Christian community founded by <strong>Pastor Marcos Augusto</strong> and his wife <strong>Sheila Augusto</strong> in the heart of Stamford, Connecticut. We are passionate about preaching the Word of God and creating an environment where everyone can experience His love.</p>
-          <p data-en="Our services are held in Portuguese with <strong>live English translation</strong>, because we believe God can serve anyone regardless of language. Whether you speak English or Portuguese, there is a place for you here. Come as you are — you are family." data-pt="Nossos cultos são realizados em português com <strong>tradução simultânea em inglês</strong>, porque acreditamos que Deus pode servir a todos independentemente do idioma. Seja você falante de inglês ou português, há um lugar para você aqui. Venha como você é — você é família.">Our services are held in Portuguese with <strong>live English translation</strong>, because we believe God can serve anyone regardless of language. Whether you speak English or Portuguese, there is a place for you here. Come as you are — you are family.</p>
+          <p class="section-label" data-en="About Us" data-pt="Sobre Nós">Sobre Nós</p>
+          <h2 data-en="Building Faith,<br>Strengthening Families" data-pt="Edificando a Fé,<br>Fortalecendo Famílias">Edificando a Fé,<br>Fortalecendo Famílias</h2>
+          <p data-en="Family Church is an evangelical Christian community founded by <strong>Pastor Marcos Augusto</strong> and his wife <strong>Sheila Augusto</strong> in the heart of Stamford, Connecticut. We are passionate about preaching the Word of God and creating an environment where everyone can experience His love." data-pt="A Family Church é uma comunidade cristã evangélica fundada pelo <strong>Pastor Marcos Augusto</strong> e sua esposa <strong>Sheila Augusto</strong> no coração de Stamford, Connecticut. Somos apaixonados por pregar a Palavra de Deus e criar um ambiente onde todos possam experimentar o Seu amor.">A Family Church é uma comunidade cristã evangélica fundada pelo <strong>Pastor Marcos Augusto</strong> e sua esposa <strong>Sheila Augusto</strong> no coração de Stamford, Connecticut. Somos apaixonados por pregar a Palavra de Deus e criar um ambiente onde todos possam experimentar o Seu amor.</p>
+          <p data-en="Our services are held in Portuguese with <strong>live English translation</strong>, because we believe God can serve anyone regardless of language. Whether you speak English or Portuguese, there is a place for you here. Come as you are — you are family." data-pt="Nossos cultos são realizados em português com <strong>tradução simultânea em inglês</strong>, porque acreditamos que Deus pode servir a todos independentemente do idioma. Seja você falante de inglês ou português, há um lugar para você aqui. Venha como você é — você é família.">Nossos cultos são realizados em português com <strong>tradução simultânea em inglês</strong>, porque acreditamos que Deus pode servir a todos independentemente do idioma. Seja você falante de inglês ou português, há um lugar para você aqui. Venha como você é — você é família.</p>
           <div class="about-stats">
             <div class="stat">
-              <h3 data-en="PT + EN" data-pt="PT + EN">PT + EN</h3>
-              <p data-en="Live Translation" data-pt="Tradução Simultânea">Live Translation</p>
+              <h3>PT + EN</h3>
+              <p data-en="Live Translation" data-pt="Tradução Simultânea">Tradução Simultânea</p>
             </div>
             <div class="stat">
-              <h3 data-en="Sun" data-pt="Dom">Sun</h3>
-              <p data-en="10:00 AM" data-pt="10:00">10:00 AM</p>
+              <h3 data-en="Sun" data-pt="Dom">Dom</h3>
+              <p data-en="10:00 AM" data-pt="10:00">10:00</p>
             </div>
             <div class="stat">
               <h3>1</h3>
-              <p data-en="Big Family" data-pt="Grande Família">Big Family</p>
+              <p data-en="Big Family" data-pt="Grande Família">Grande Família</p>
             </div>
           </div>
         </div>
@@ -832,46 +67,43 @@
   <section class="section services-section" id="services">
     <div class="container">
       <div class="section-header fade-in">
-        <p class="section-label" data-en="Every Sunday at 10 AM" data-pt="Todo Domingo às 10h">Every Sunday at 10 AM</p>
-        <h2 data-en="What to Expect" data-pt="O Que Esperar">What to Expect</h2>
-        <p data-en="At 18 Cushing Street, Stamford — worship, the Word, and a place for the whole family." data-pt="Na 18 Cushing Street, Stamford — louvor, a Palavra, e um lugar para toda a família.">At 18 Cushing Street, Stamford — worship, the Word, and a place for the whole family.</p>
+        <p class="section-label" data-en="Every Sunday at 10 AM" data-pt="Todo Domingo às 10h">Todo Domingo às 10h</p>
+        <h2 data-en="What to Expect" data-pt="O Que Esperar">O Que Esperar</h2>
+        <p data-en="At 18 Cushing Street, Stamford — worship, the Word, and a place for the whole family." data-pt="Na 18 Cushing Street, Stamford — louvor, a Palavra, e um lugar para toda a família.">Na 18 Cushing Street, Stamford — louvor, a Palavra, e um lugar para toda a família.</p>
       </div>
 
       <div class="services-grid">
-        <!-- Sunday Service -->
         <div class="service-card fade-in">
           <div class="service-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
             </svg>
           </div>
-          <h3 data-en="Worship & The Word" data-pt="Louvor & A Palavra">Worship & The Word</h3>
-          <p class="time" data-en="Sundays at 10:00 AM" data-pt="Domingos às 10:00">Sundays at 10:00 AM</p>
-          <p data-en="Experience powerful worship and the preaching of God's Word with Pastor Marcos Augusto. Services in Portuguese with live English translation." data-pt="Viva um louvor poderoso e a pregação da Palavra de Deus com o Pastor Marcos Augusto. Cultos em português com tradução simultânea em inglês.">Experience powerful worship and the preaching of God's Word with Pastor Marcos Augusto. Services in Portuguese with live English translation.</p>
+          <h3 data-en="Worship & The Word" data-pt="Louvor & A Palavra">Louvor & A Palavra</h3>
+          <p class="time" data-en="Sundays at 10:00 AM" data-pt="Domingos às 10:00">Domingos às 10:00</p>
+          <p data-en="Experience powerful worship and the preaching of God's Word with Pastor Marcos Augusto. Services in Portuguese with live English translation." data-pt="Viva um louvor poderoso e a pregação da Palavra de Deus com o Pastor Marcos Augusto. Cultos em português com tradução simultânea em inglês.">Viva um louvor poderoso e a pregação da Palavra de Deus com o Pastor Marcos Augusto. Cultos em português com tradução simultânea em inglês.</p>
         </div>
 
-        <!-- Live Translation -->
         <div class="service-card fade-in">
           <div class="service-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
             </svg>
           </div>
-          <h3 data-en="Live English Translation" data-pt="Tradução Simultânea em Inglês">Live English Translation</h3>
-          <p class="time" data-en="Every Sunday" data-pt="Todo Domingo">Every Sunday</p>
-          <p data-en="Don't speak Portuguese? No problem. We provide live English translation so everyone can receive God's message." data-pt="Não fala português? Sem problema. Oferecemos tradução simultânea em inglês para que todos possam receber a mensagem de Deus.">Don't speak Portuguese? No problem. We provide live English translation so everyone can receive God's message.</p>
+          <h3 data-en="Live English Translation" data-pt="Tradução Simultânea em Inglês">Tradução Simultânea em Inglês</h3>
+          <p class="time" data-en="Every Sunday" data-pt="Todo Domingo">Todo Domingo</p>
+          <p data-en="Don't speak Portuguese? No problem. We provide live English translation so everyone can receive God's message." data-pt="Não fala português? Sem problema. Oferecemos tradução simultânea em inglês para que todos possam receber a mensagem de Deus.">Não fala português? Sem problema. Oferecemos tradução simultânea em inglês para que todos possam receber a mensagem de Deus.</p>
         </div>
 
-        <!-- Kids -->
         <div class="service-card fade-in">
           <div class="service-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
           </div>
-          <h3 data-en="Kids Space" data-pt="Espaço Kids">Kids Space</h3>
-          <p class="time" data-en="Sundays at 10:00 AM" data-pt="Domingos às 10:00">Sundays at 10:00 AM</p>
-          <p data-en="A dedicated space with playground and biblical study for children. Your kids learn God's Word while having fun in a safe environment." data-pt="Um espaço dedicado com playground e estudo bíblico para as crianças. Seus filhos aprendem a Palavra de Deus enquanto se divertem em um ambiente seguro.">A dedicated space with playground and biblical study for children. Your kids learn God's Word while having fun in a safe environment.</p>
+          <h3 data-en="Kids Space" data-pt="Espaço Kids">Espaço Kids</h3>
+          <p class="time" data-en="Sundays at 10:00 AM" data-pt="Domingos às 10:00">Domingos às 10:00</p>
+          <p data-en="A dedicated space with playground and biblical study for children. Your kids learn God's Word while having fun in a safe environment." data-pt="Um espaço dedicado com playground e estudo bíblico para as crianças. Seus filhos aprendem a Palavra de Deus enquanto se divertem em um ambiente seguro.">Um espaço dedicado com playground e estudo bíblico para as crianças. Seus filhos aprendem a Palavra de Deus enquanto se divertem em um ambiente seguro.</p>
         </div>
       </div>
     </div>
@@ -880,56 +112,26 @@
   <!-- ═══ VERSE ═══ -->
   <section class="verse-section">
     <div class="container fade-in">
-      <blockquote data-en="&ldquo;For where two or three gather in my name, there am I with them.&rdquo;" data-pt="&ldquo;Pois onde se reunirem dois ou três em meu nome, ali eu estou no meio deles.&rdquo;">&ldquo;For where two or three gather in my name, there am I with them.&rdquo;</blockquote>
-      <cite data-en="Matthew 18:20" data-pt="Mateus 18:20">Matthew 18:20</cite>
+      <blockquote data-en="&ldquo;For where two or three gather in my name, there am I with them.&rdquo;" data-pt="&ldquo;Pois onde se reunirem dois ou três em meu nome, ali eu estou no meio deles.&rdquo;">&ldquo;Pois onde se reunirem dois ou três em meu nome, ali eu estou no meio deles.&rdquo;</blockquote>
+      <cite data-en="Matthew 18:20" data-pt="Mateus 18:20">Mateus 18:20</cite>
     </div>
   </section>
 
-  <!-- ═══ EVENTS ═══ -->
+  <!-- ═══ EVENTS (rendered from JSON) ═══ -->
   <section class="section" id="events">
     <div class="container">
       <div class="section-header fade-in">
-        <p class="section-label" data-en="What's Happening" data-pt="Próximos Eventos">What's Happening</p>
-        <h2 data-en="Upcoming Events" data-pt="Eventos">Upcoming Events</h2>
-        <p data-en="Stay connected with what's happening at Family Church." data-pt="Fique por dentro do que está acontecendo na Family Church.">Stay connected with what's happening at Family Church.</p>
+        <p class="section-label" data-en="What's Happening" data-pt="Próximos Eventos">Próximos Eventos</p>
+        <h2 data-en="Upcoming Events" data-pt="Eventos">Eventos</h2>
+        <p data-en="Stay connected with what's happening at Family Church." data-pt="Fique por dentro do que está acontecendo na Family Church.">Fique por dentro do que está acontecendo na Family Church.</p>
       </div>
 
-      <div class="events-list">
-        <div class="event-card fade-in">
-          <div class="event-date">
-            <span class="month" data-en="MAR" data-pt="MAR">MAR</span>
-            <span class="day">02</span>
-          </div>
-          <div class="event-divider"></div>
-          <div class="event-info">
-            <h3 data-en="Community Prayer Night" data-pt="Noite de Oração Comunitária">Community Prayer Night</h3>
-            <p data-en="Join us for a powerful evening of prayer and worship. All are welcome." data-pt="Junte-se a nós para uma noite poderosa de oração e adoração. Todos são bem-vindos.">Join us for a powerful evening of prayer and worship. All are welcome.</p>
-          </div>
-        </div>
+      <div class="events-list" id="events-list">
+        <!-- Events loaded dynamically from data/events.json -->
+      </div>
 
-        <div class="event-card fade-in">
-          <div class="event-date">
-            <span class="month" data-en="MAR" data-pt="MAR">MAR</span>
-            <span class="day">15</span>
-          </div>
-          <div class="event-divider"></div>
-          <div class="event-info">
-            <h3 data-en="Family Fellowship Dinner" data-pt="Jantar de Comunhão em Família">Family Fellowship Dinner</h3>
-            <p data-en="A wonderful time of food, fun, and fellowship for the whole family." data-pt="Um momento maravilhoso de comida, diversão e comunhão para toda a família.">A wonderful time of food, fun, and fellowship for the whole family.</p>
-          </div>
-        </div>
-
-        <div class="event-card fade-in">
-          <div class="event-date">
-            <span class="month" data-en="APR" data-pt="ABR">APR</span>
-            <span class="day">06</span>
-          </div>
-          <div class="event-divider"></div>
-          <div class="event-info">
-            <h3 data-en="Easter Celebration" data-pt="Celebração de Páscoa">Easter Celebration</h3>
-            <p data-en="Celebrate the resurrection of Jesus with us in a special Easter service." data-pt="Celebre a ressurreição de Jesus conosco em um culto especial de Páscoa.">Celebrate the resurrection of Jesus with us in a special Easter service.</p>
-          </div>
-        </div>
+      <div style="text-align: center; margin-top: 40px;">
+        <a href="/events/" class="btn btn-navy" data-en="View All Events" data-pt="Ver Todos os Eventos">Ver Todos os Eventos</a>
       </div>
     </div>
   </section>
@@ -938,14 +140,13 @@
   <section class="section contact-section" id="contact">
     <div class="container">
       <div class="section-header fade-in">
-        <p class="section-label" data-en="Get In Touch" data-pt="Fale Conosco">Get In Touch</p>
-        <h2 data-en="Visit Us" data-pt="Visite-nos">Visit Us</h2>
-        <p data-en="We'd love to hear from you. Reach out anytime!" data-pt="Adoraríamos ouvir de você. Entre em contato a qualquer momento!">We'd love to hear from you. Reach out anytime!</p>
+        <p class="section-label" data-en="Get In Touch" data-pt="Fale Conosco">Fale Conosco</p>
+        <h2 data-en="Visit Us" data-pt="Visite-nos">Visite-nos</h2>
+        <p data-en="We'd love to hear from you. Reach out anytime!" data-pt="Adoraríamos ouvir de você. Entre em contato a qualquer momento!">Adoraríamos ouvir de você. Entre em contato a qualquer momento!</p>
       </div>
 
       <div class="contact-grid">
         <div class="contact-info fade-in">
-          <!-- Address -->
           <div class="contact-item">
             <div class="contact-item-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -953,13 +154,12 @@
               </svg>
             </div>
             <div>
-              <h4 data-en="Address" data-pt="Endereço">Address</h4>
+              <h4 data-en="Address" data-pt="Endereço">Endereço</h4>
               <p>18 Cushing Street</p>
               <p>Stamford, CT</p>
             </div>
           </div>
 
-          <!-- Email -->
           <div class="contact-item">
             <div class="contact-item-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -972,7 +172,6 @@
             </div>
           </div>
 
-          <!-- Phone -->
           <div class="contact-item">
             <div class="contact-item-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -980,12 +179,11 @@
               </svg>
             </div>
             <div>
-              <h4 data-en="Phone" data-pt="Telefone">Phone</h4>
+              <h4 data-en="Phone" data-pt="Telefone">Telefone</h4>
               <p>(203) 000-0000</p>
             </div>
           </div>
 
-          <!-- Service Times Quick -->
           <div class="contact-item">
             <div class="contact-item-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -993,9 +191,9 @@
               </svg>
             </div>
             <div>
-              <h4 data-en="Service Times" data-pt="Horários dos Cultos">Service Times</h4>
-              <p data-en="Sundays at 10:00 AM" data-pt="Domingos às 10:00">Sundays at 10:00 AM</p>
-              <p data-en="Portuguese with live English translation" data-pt="Português com tradução simultânea em inglês">Portuguese with live English translation</p>
+              <h4 data-en="Service Times" data-pt="Horários dos Cultos">Horários dos Cultos</h4>
+              <p data-en="Sundays at 10:00 AM" data-pt="Domingos às 10:00">Domingos às 10:00</p>
+              <p data-en="Portuguese with live English translation" data-pt="Português com tradução simultânea em inglês">Português com tradução simultânea em inglês</p>
             </div>
           </div>
         </div>
@@ -1013,109 +211,66 @@
     </div>
   </section>
 
-  <!-- ═══ FOOTER ═══ -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <div class="nav-logo">
-            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="18" cy="18" r="17" stroke="white" stroke-width="2"/>
-              <path d="M18 7v22M12 14h12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
-            Family Church
-          </div>
-          <p data-en="Evangelical Christian church founded by Pastor Marcos Augusto &amp; Sheila Augusto. 18 Cushing Street, Stamford, CT. Come as you are — you are family." data-pt="Igreja cristã evangélica fundada pelo Pastor Marcos Augusto &amp; Sheila Augusto. 18 Cushing Street, Stamford, CT. Venha como você é — você é família.">Evangelical Christian church founded by Pastor Marcos Augusto &amp; Sheila Augusto. 18 Cushing Street, Stamford, CT. Come as you are — you are family.</p>
-        </div>
-
-        <div>
-          <h4 data-en="Quick Links" data-pt="Links Rápidos">Quick Links</h4>
-          <ul>
-            <li><a href="#about" data-en="About" data-pt="Sobre">About</a></li>
-            <li><a href="#services" data-en="Services" data-pt="Cultos">Services</a></li>
-            <li><a href="#events" data-en="Events" data-pt="Eventos">Events</a></li>
-            <li><a href="#contact" data-en="Contact" data-pt="Contato">Contact</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 data-en="Service Times" data-pt="Horários dos Cultos">Service Times</h4>
-          <ul>
-            <li><a href="#services" data-en="Sunday: 10:00 AM" data-pt="Domingo: 10:00">Sunday: 10:00 AM</a></li>
-            <li><a href="#contact" data-en="18 Cushing Street" data-pt="18 Cushing Street">18 Cushing Street</a></li>
-            <li><a href="#contact" data-en="Stamford, CT" data-pt="Stamford, CT">Stamford, CT</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p>&copy; 2026 Family Church Stamford. <span data-en="All rights reserved." data-pt="Todos os direitos reservados.">All rights reserved.</span></p>
-        <div class="social-links">
-          <!-- Facebook -->
-          <a href="#" aria-label="Facebook">
-            <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></a>
-          <!-- Instagram -->
-          <a href="#" aria-label="Instagram">
-            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/></svg>
-          </a>
-          <!-- YouTube -->
-          <a href="#" aria-label="YouTube">
-            <svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"/><polygon points="9.75,15.02 15.5,11.75 9.75,8.48" fill="#0f1d3d"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <!-- ═══ FOOTER (loaded dynamically) ═══ -->
+  <div id="footer-placeholder"></div>
 
   <!-- ═══ JAVASCRIPT ═══ -->
+  <script src="js/global.js"></script>
   <script>
-    // ── Language Toggle ──
-    let currentLang = 'en';
+    // ── Load and render events from JSON on homepage ──
+    async function loadHomeEvents() {
+      try {
+        const res = await fetch('data/events.json');
+        if (!res.ok) return;
+        const events = await res.json();
+        const lang = currentLang || 'pt';
 
-    function setLang(lang) {
-      currentLang = lang;
-      document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+        // Filter upcoming events and take the first 3
+        const upcoming = events
+          .filter(e => e.status === 'upcoming')
+          .slice(0, 3);
 
-      document.getElementById('btnEn').classList.toggle('active', lang === 'en');
-      document.getElementById('btnPt').classList.toggle('active', lang === 'pt');
+        const container = document.getElementById('events-list');
+        if (!container || upcoming.length === 0) return;
 
-      document.querySelectorAll('[data-en]').forEach(el => {
-        const text = el.getAttribute('data-' + lang);
-        if (text) el.innerHTML = text;
-      });
+        const months_en = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+        const months_pt = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+
+        container.innerHTML = upcoming.map(event => {
+          let monthEn = 'TBD', monthPt = 'TBD', day = '--';
+          if (event.date && event.date !== 'TBD') {
+            const d = new Date(event.date + 'T00:00:00');
+            monthEn = months_en[d.getMonth()];
+            monthPt = months_pt[d.getMonth()];
+            day = String(d.getDate()).padStart(2, '0');
+          }
+
+          return `
+            <a href="/event.html?id=${event.id}" class="event-card fade-in" style="text-decoration:none;">
+              <div class="event-date">
+                <span class="month" data-en="${monthEn}" data-pt="${monthPt}">${lang === 'en' ? monthEn : monthPt}</span>
+                <span class="day">${day}</span>
+              </div>
+              <div class="event-divider"></div>
+              <div class="event-info">
+                <h3 data-en="${event.title_en}" data-pt="${event.title_pt}">${lang === 'en' ? event.title_en : event.title_pt}</h3>
+                <p data-en="${event.description_en.substring(0, 120)}..." data-pt="${event.description_pt.substring(0, 120)}...">${(lang === 'en' ? event.description_en : event.description_pt).substring(0, 120)}...</p>
+              </div>
+            </a>
+          `;
+        }).join('');
+
+        // Re-init scroll animations for new elements
+        initScrollAnimations();
+      } catch (e) {
+        console.error('Failed to load events:', e);
+      }
     }
 
-    // ── Mobile Menu ──
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('navLinks');
-
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('open');
-      navLinks.classList.toggle('open');
+    // Load events after DOM + components are ready
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(loadHomeEvents, 150);
     });
-
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        hamburger.classList.remove('open');
-        navLinks.classList.remove('open');
-      });
-    });
-
-    // ── Navbar Scroll ──
-    window.addEventListener('scroll', () => {
-      document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY > 20);
-    });
-
-    // ── Scroll Animations ──
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
   </script>
 
 </body>

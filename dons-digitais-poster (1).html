@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dons Digitais — Poster</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Cinzel:wght@700;900&family=Exo+2:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #FFD700;
+    --gold-dim: #B8860B;
+    --green: #00FF41;
+    --green-dim: #00aa2a;
+    --dark: #050a05;
+    --darker: #020602;
+    --white: #e8ffe8;
+    --glow-green: 0 0 10px #00FF41, 0 0 30px #00FF4188;
+    --glow-gold: 0 0 10px #FFD700, 0 0 40px #FFD70066;
+  }
+
+  body {
+    background: var(--darker);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Exo 2', sans-serif;
+    overflow: hidden;
+  }
+
+  /* POSTER CONTAINER */
+  .poster {
+    width: 700px;
+    min-height: 980px;
+    background: var(--dark);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--green-dim);
+    box-shadow: 0 0 60px #00FF4122, 0 0 120px #00FF4108;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* MATRIX RAIN CANVAS */
+  canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+
+  /* SCAN LINE OVERLAY */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.15) 3px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* NOISE TEXTURE */
+  .noise {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* TOP TERMINAL BAR */
+  .terminal-bar {
+    width: 100%;
+    background: #0a150a;
+    border-bottom: 1px solid var(--green-dim);
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+    position: relative;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: #ff5f56; }
+  .dot.y { background: #ffbd2e; }
+  .dot.g { background: #27c93f; }
+  .terminal-text {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--green-dim);
+    font-size: 11px;
+    margin-left: 10px;
+    letter-spacing: 1px;
+  }
+  .terminal-text span { color: var(--green); }
+
+  /* CROSS CIRCUIT */
+  .cross-wrap {
+    position: relative;
+    z-index: 10;
+    margin-top: 40px;
+    width: 120px;
+    height: 120px;
+  }
+  .cross-wrap svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 12px #FFD700) drop-shadow(0 0 30px #FFD70066);
+    animation: pulse-cross 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-cross {
+    0%, 100% { filter: drop-shadow(0 0 8px #FFD700) drop-shadow(0 0 20px #FFD70066); }
+    50% { filter: drop-shadow(0 0 20px #FFD700) drop-shadow(0 0 50px #FFD700aa); }
+  }
+
+  /* MAIN TITLE */
+  .title-block {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    margin-top: 24px;
+    padding: 0 40px;
+  }
+  .title-main {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 72px;
+    letter-spacing: 4px;
+    line-height: 1;
+    color: var(--gold);
+    text-shadow: var(--glow-gold);
+    animation: flicker 6s infinite;
+  }
+  @keyframes flicker {
+    0%,95%,100% { opacity: 1; }
+    96% { opacity: 0.85; }
+    97% { opacity: 1; }
+    98% { opacity: 0.7; }
+    99% { opacity: 1; }
+  }
+  .title-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-top: 6px;
+    text-shadow: var(--glow-green);
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 80%;
+    height: 1px;
+    margin: 28px auto;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), var(--green), var(--gold-dim), transparent);
+    z-index: 10;
+    position: relative;
+  }
+
+  /* TAGLINE */
+  .tagline-block {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 0 50px;
+  }
+  .tagline-pt {
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: 1px;
+    line-height: 1.4;
+  }
+  .tagline-en {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--green-dim);
+    margin-top: 8px;
+    letter-spacing: 2px;
+  }
+
+  /* CODE WINDOW */
+  .code-window {
+    position: relative;
+    z-index: 10;
+    margin: 32px 40px;
+    width: calc(100% - 80px);
+    background: #020c02;
+    border: 1px solid #1a3a1a;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 30px #00FF4111;
+  }
+  .code-win-bar {
+    background: #0d1f0d;
+    padding: 8px 14px;
+    border-bottom: 1px solid #1a3a1a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .code-win-bar .dots { display: flex; gap: 5px; }
+  .code-win-bar .filename {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: #3a6a3a;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .code-body {
+    padding: 18px 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .ln { color: #1a3a1a; margin-right: 16px; user-select: none; }
+  .kw { color: #569cd6; }
+  .fn { color: #DCDCAA; }
+  .str { color: #ce9178; }
+  .cm { color: #4a7a4a; font-style: italic; }
+  .num { color: var(--gold); }
+  .var { color: #9CDCFE; }
+  .op { color: var(--green); }
+
+  /* TALENT COINS */
+  .coins-section {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin: 10px 0 28px;
+  }
+  .coin {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid var(--gold-dim);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 35% 35%, #1a1200, #0a0800);
+    box-shadow: 0 0 15px #FFD70033, inset 0 0 10px #FFD70011;
+    animation: coin-glow 3s ease-in-out infinite;
+    transition: transform 0.3s;
+    cursor: default;
+    position: relative;
+  }
+  .coin:nth-child(2) { animation-delay: 0.8s; }
+  .coin:nth-child(3) { animation-delay: 1.6s; }
+  @keyframes coin-glow {
+    0%,100% { box-shadow: 0 0 10px #FFD70033, inset 0 0 8px #FFD70011; }
+    50% { box-shadow: 0 0 25px #FFD70066, inset 0 0 15px #FFD70033; }
+  }
+  .coin-icon { font-size: 22px; }
+  .coin-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    color: var(--gold-dim);
+    letter-spacing: 1px;
+    margin-top: 3px;
+    text-align: center;
+  }
+
+  /* VERSE */
+  .verse-block {
+    position: relative;
+    z-index: 10;
+    margin: 0 50px 30px;
+    padding: 18px 24px;
+    border-left: 3px solid var(--gold);
+    background: linear-gradient(90deg, #1a1200aa, transparent);
+  }
+  .verse-text {
+    font-family: 'Exo 2', sans-serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #ccbb88;
+    line-height: 1.6;
+  }
+  .verse-ref {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--gold-dim);
+    margin-top: 8px;
+    letter-spacing: 2px;
+  }
+
+  /* DIVIDER 2 */
+  .divider2 {
+    width: 80%;
+    height: 1px;
+    margin: 0 auto 28px;
+    background: linear-gradient(90deg, transparent, #1a3a1a, var(--green-dim), #1a3a1a, transparent);
+    z-index: 10;
+    position: relative;
+  }
+
+  /* WHAT YOU LEARN */
+  .learn-section {
+    position: relative;
+    z-index: 10;
+    width: calc(100% - 80px);
+    margin: 0 40px 28px;
+  }
+  .learn-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    text-shadow: var(--glow-green);
+  }
+  .learn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .learn-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #050f05;
+    border: 1px solid #0d200d;
+  }
+  .learn-bullet {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--green);
+    font-size: 12px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+  .learn-text {
+    font-size: 12px;
+    color: #aaccaa;
+    line-height: 1.4;
+  }
+
+  /* FREE BADGE */
+  .free-badge {
+    position: relative;
+    z-index: 10;
+    margin: 0 0 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .free-pill {
+    padding: 8px 40px;
+    background: linear-gradient(135deg, #001a00, #002800);
+    border: 1px solid var(--green);
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 6px;
+    text-shadow: var(--glow-green);
+    animation: pulse-green 2s ease-in-out infinite;
+  }
+  @keyframes pulse-green {
+    0%,100% { box-shadow: 0 0 10px #00FF4122; }
+    50% { box-shadow: 0 0 25px #00FF4155, 0 0 50px #00FF4122; }
+  }
+  .free-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--green-dim);
+    letter-spacing: 3px;
+  }
+
+  /* BOTTOM BAR */
+  .bottom-bar {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    background: #020802;
+    border-top: 1px solid #0d200d;
+    padding: 14px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .church-name {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--gold-dim);
+    letter-spacing: 2px;
+  }
+  .tools-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .tool-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--green-dim);
+    border: 1px solid #0d200d;
+    padding: 3px 8px;
+    letter-spacing: 1px;
+  }
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: var(--glow-green);
+    animation: blink 1.2s step-end infinite;
+  }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
+
+  /* CORNER DECORATIONS */
+  .corner {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    z-index: 15;
+  }
+  .corner.tl { top: 50px; left: 0; border-top: 2px solid var(--gold-dim); border-left: 2px solid var(--gold-dim); }
+  .corner.tr { top: 50px; right: 0; border-top: 2px solid var(--gold-dim); border-right: 2px solid var(--gold-dim); }
+  .corner.bl { bottom: 48px; left: 0; border-bottom: 2px solid var(--gold-dim); border-left: 2px solid var(--gold-dim); }
+  .corner.br { bottom: 48px; right: 0; border-bottom: 2px solid var(--gold-dim); border-right: 2px solid var(--gold-dim); }
+</style>
+</head>
+<body>
+
+<div class="poster">
+  <canvas id="matrix"></canvas>
+  <div class="scanlines"></div>
+  <div class="noise"></div>
+
+  <!-- Corners -->
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <!-- Terminal Bar -->
+  <div class="terminal-bar">
+    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+    <span class="terminal-text">~/dons-digitais/ $ <span>node multiply.js</span></span>
+    <div class="status-dot" style="margin-left:auto;"></div>
+  </div>
+
+  <!-- Cross Circuit -->
+  <div class="cross-wrap">
+    <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Circuit lines -->
+      <line x1="60" y1="0" x2="60" y2="120" stroke="#FFD700" stroke-width="8" stroke-linecap="round"/>
+      <line x1="0" y1="42" x2="120" y2="42" stroke="#FFD700" stroke-width="8" stroke-linecap="round"/>
+      <!-- Circuit nodes -->
+      <circle cx="60" cy="0" r="4" fill="#FFD700"/>
+      <circle cx="60" cy="120" r="4" fill="#FFD700"/>
+      <circle cx="0" cy="42" r="4" fill="#FFD700"/>
+      <circle cx="120" cy="42" r="4" fill="#FFD700"/>
+      <!-- Small circuit dots -->
+      <circle cx="60" cy="20" r="3" fill="#00FF41"/>
+      <circle cx="60" cy="100" r="3" fill="#00FF41"/>
+      <circle cx="20" cy="42" r="3" fill="#00FF41"/>
+      <circle cx="100" cy="42" r="3" fill="#00FF41"/>
+      <!-- Center glow circle -->
+      <circle cx="60" cy="42" r="10" fill="#050a05" stroke="#FFD700" stroke-width="2"/>
+      <circle cx="60" cy="42" r="5" fill="#FFD700"/>
+      <!-- Corner brackets -->
+      <path d="M10 10 L10 25 M10 10 L25 10" stroke="#00FF41" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M110 10 L110 25 M110 10 L95 10" stroke="#00FF41" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M10 110 L10 95 M10 110 L25 110" stroke="#00FF41" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M110 110 L110 95 M110 110 L95 110" stroke="#00FF41" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <!-- Title -->
+  <div class="title-block">
+    <div class="title-main">DONS<br>DIGITAIS</div>
+    <div class="title-sub">&gt; Digital Gifts &lt;</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Tagline -->
+  <div class="tagline-block">
+    <div class="tagline-pt">Vibe Coding para quem quer prosperar</div>
+    <div class="tagline-en">// Vibe Coding for those who want to thrive</div>
+  </div>
+
+  <!-- Code Window -->
+  <div class="code-window">
+    <div class="code-win-bar">
+      <div class="dots">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      </div>
+      <span class="filename">talentos.js — VS Code + Claude Code</span>
+    </div>
+    <div class="code-body">
+      <div><span class="ln">1</span><span class="cm">// Mateus 25:14-30 — Parábola dos Talentos</span></div>
+      <div><span class="ln">2</span><span class="kw">const</span> <span class="var">talento</span> <span class="op">=</span> <span class="fn">await</span> <span class="fn">Deus</span><span class="op">.</span><span class="fn">dar</span><span class="op">(</span><span class="var">você</span><span class="op">);</span></div>
+      <div><span class="ln">3</span><span class="kw">const</span> <span class="var">ferramenta</span> <span class="op">=</span> <span class="kw">new</span> <span class="fn">ClaudeCode</span><span class="op">(</span><span class="str">"VSCode"</span><span class="op">);</span></div>
+      <div><span class="ln">4</span></div>
+      <div><span class="ln">5</span><span class="kw">function</span> <span class="fn">multiplicar</span><span class="op">(</span><span class="var">talento</span><span class="op">)</span> <span class="op">{</span></div>
+      <div><span class="ln">6</span>&nbsp;&nbsp;<span class="kw">return</span> <span class="var">talento</span> <span class="op">*</span> <span class="num">Infinity</span><span class="op">;</span></div>
+      <div><span class="ln">7</span><span class="op">}</span></div>
+      <div><span class="ln">8</span></div>
+      <div><span class="ln">9</span><span class="fn">multiplicar</span><span class="op">(</span><span class="var">talento</span><span class="op">);</span> <span class="cm">// 🚀 começa aqui</span></div>
+    </div>
+  </div>
+
+  <!-- Talent Coins -->
+  <div class="coins-section">
+    <div class="coin">
+      <span class="coin-icon">💡</span>
+      <span class="coin-label">IDEIA</span>
+    </div>
+    <div class="coin">
+      <span class="coin-icon">⚡</span>
+      <span class="coin-label">CÓDIGO</span>
+    </div>
+    <div class="coin">
+      <span class="coin-icon">🌱</span>
+      <span class="coin-label">IMPACTO</span>
+    </div>
+  </div>
+
+  <!-- Verse -->
+  <div class="verse-block">
+    <div class="verse-text">"Aquele que tinha recebido os cinco talentos foi, negociou com eles e ganhou outros cinco..."</div>
+    <div class="verse-ref">// Mateus 25:16 — NVI</div>
+  </div>
+
+  <div class="divider2"></div>
+
+  <!-- Learn Section -->
+  <div class="learn-section">
+    <div class="learn-title">&gt; O que você vai aprender_</div>
+    <div class="learn-grid">
+      <div class="learn-item">
+        <span class="learn-bullet">▶</span>
+        <span class="learn-text">Primeiros passos com VS Code</span>
+      </div>
+      <div class="learn-item">
+        <span class="learn-bullet">▶</span>
+        <span class="learn-text">Claude Code na prática</span>
+      </div>
+      <div class="learn-item">
+        <span class="learn-bullet">▶</span>
+        <span class="learn-text">Vibe Coding sem conhecer código</span>
+      </div>
+      <div class="learn-item">
+        <span class="learn-bullet">▶</span>
+        <span class="learn-text">Projetos reais para sua vida e trabalho</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Free Badge -->
+  <div class="free-badge">
+    <div class="free-pill">GRATUITO</div>
+    <div class="free-sub">// FREE FOR ALL — ABERTO A TODOS</div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="church-name">✝ SUA IGREJA</span>
+    <div class="tools-row">
+      <span class="tool-badge">VSCode</span>
+      <span class="tool-badge">Claude Code</span>
+      <span class="tool-badge">AI</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// Matrix rain
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+const poster = document.querySelector('.poster');
+
+function resize() {
+  canvas.width = poster.offsetWidth;
+  canvas.height = poster.offsetHeight;
+}
+resize();
+
+const chars = '0123456789ABCDEF∑∞†✝∇⊕⊗≈∫ΛΨΩΣΠ';
+const fontSize = 13;
+let cols = Math.floor(canvas.width / fontSize);
+let drops = Array(cols).fill(1);
+
+function draw() {
+  ctx.fillStyle = 'rgba(5,10,5,0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00FF41';
+  ctx.font = fontSize + 'px Share Tech Mono, monospace';
+  for (let i = 0; i < drops.length; i++) {
+    const text = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(draw, 55);
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eventos | Family Church</title>
+  <meta name="description" content="Eventos da Family Church em Stamford, CT. Confira nossos próximos eventos e veja fotos dos eventos passados." />
+  <meta name="base-path" content="../" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/global.css" />
+</head>
+
+<body>
+
+  <div id="header-placeholder"></div>
+
+  <!-- ═══ PAGE HEADER ═══ -->
+  <section class="page-header">
+    <div class="container">
+      <h1 data-en="Events" data-pt="Eventos">Eventos</h1>
+      <p data-en="Stay connected with what's happening at Family Church." data-pt="Fique por dentro do que está acontecendo na Family Church.">Fique por dentro do que está acontecendo na Family Church.</p>
+    </div>
+  </section>
+
+  <!-- ═══ EVENTS CONTENT ═══ -->
+  <section class="section">
+    <div class="container">
+
+      <!-- Upcoming Events -->
+      <div class="section-header fade-in" style="margin-bottom: 40px;">
+        <p class="section-label" data-en="Coming Up" data-pt="Em Breve">Em Breve</p>
+        <h2 data-en="Upcoming Events" data-pt="Próximos Eventos">Próximos Eventos</h2>
+      </div>
+      <div id="upcoming-events" class="events-list" style="margin-bottom: 80px;">
+        <!-- Loaded from JSON -->
+      </div>
+
+      <!-- Past Events -->
+      <div class="section-header fade-in" style="margin-bottom: 40px;">
+        <p class="section-label" data-en="Looking Back" data-pt="Relembre">Relembre</p>
+        <h2 data-en="Past Events" data-pt="Eventos Passados">Eventos Passados</h2>
+      </div>
+      <div id="past-events" class="events-list">
+        <!-- Loaded from JSON -->
+        <p id="no-past-events" class="fade-in" style="text-align:center; color: var(--text-light); display:none;" data-en="No past events yet. Check back soon!" data-pt="Nenhum evento passado ainda. Volte em breve!">Nenhum evento passado ainda. Volte em breve!</p>
+      </div>
+
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="../js/global.js"></script>
+  <script src="../js/events.js"></script>
+
+</body>
+</html>

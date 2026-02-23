@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Servir | Family Church</title>
+  <meta name="description" content="Venha servir na Family Church. Descubra como você pode fazer parte da nossa equipe e usar seus dons para a glória de Deus." />
+  <meta name="base-path" content="../" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/global.css" />
+  <style>
+    .ministry-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .ministry-card {
+      background: var(--white);
+      border: 1px solid var(--gray-light);
+      border-radius: var(--radius);
+      padding: 40px 28px;
+      text-align: center;
+      transition: var(--transition);
+    }
+    .ministry-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: transparent;
+    }
+    .ministry-icon {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+    }
+    .ministry-card h3 {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 1.15rem;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+    .ministry-card p {
+      color: var(--text-light);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .serve-cta {
+      text-align: center;
+      padding: 60px 0;
+      background: var(--off-white);
+      margin-top: 60px;
+      border-radius: var(--radius);
+    }
+    .serve-cta h2 {
+      color: var(--navy);
+      margin-bottom: 16px;
+    }
+    .serve-cta p {
+      color: var(--text-light);
+      max-width: 500px;
+      margin: 0 auto 28px;
+    }
+    @media (max-width: 1024px) {
+      .ministry-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .ministry-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="header-placeholder"></div>
+
+  <!-- ═══ PAGE HEADER ═══ -->
+  <section class="page-header">
+    <div class="container">
+      <h1 data-en="Serve With Us" data-pt="Sirva Conosco">Sirva Conosco</h1>
+      <p data-en="Use your gifts to make a difference. There's a place for you on our team." data-pt="Use seus dons para fazer a diferença. Há um lugar para você na nossa equipe.">Use seus dons para fazer a diferença. Há um lugar para você na nossa equipe.</p>
+    </div>
+  </section>
+
+  <!-- ═══ MINISTRIES ═══ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header fade-in">
+        <p class="section-label" data-en="Get Involved" data-pt="Participe">Participe</p>
+        <h2 data-en="Ministry Areas" data-pt="Áreas de Ministério">Áreas de Ministério</h2>
+        <p data-en="Discover where God is calling you to serve." data-pt="Descubra onde Deus está chamando você para servir.">Descubra onde Deus está chamando você para servir.</p>
+      </div>
+
+      <div class="ministry-grid">
+        <!-- Worship Team -->
+        <div class="ministry-card fade-in">
+          <div class="ministry-icon">🎵</div>
+          <h3 data-en="Worship Team" data-pt="Equipe de Louvor">Equipe de Louvor</h3>
+          <p data-en="Singers, musicians, and sound technicians who lead the church in worship every Sunday." data-pt="Cantores, músicos e técnicos de som que lideram a igreja em louvor todo domingo.">Cantores, músicos e técnicos de som que lideram a igreja em louvor todo domingo.</p>
+        </div>
+
+        <!-- Kids Ministry -->
+        <div class="ministry-card fade-in">
+          <div class="ministry-icon">👧</div>
+          <h3 data-en="Kids Ministry" data-pt="Ministério Infantil">Ministério Infantil</h3>
+          <p data-en="Teachers and helpers who nurture children with biblical study and fun activities in a safe space." data-pt="Professores e auxiliares que cuidam das crianças com estudo bíblico e atividades divertidas em um espaço seguro.">Professores e auxiliares que cuidam das crianças com estudo bíblico e atividades divertidas em um espaço seguro.</p>
+        </div>
+
+        <!-- Welcome Team -->
+        <div class="ministry-card fade-in">
+          <div class="ministry-icon">🤝</div>
+          <h3 data-en="Welcome Team" data-pt="Equipe de Recepção">Equipe de Recepção</h3>
+          <p data-en="The first faces visitors see. Greeters, ushers, and hosts who make everyone feel at home." data-pt="Os primeiros rostos que os visitantes veem. Recepcionistas e anfitriões que fazem todos se sentirem em casa.">Os primeiros rostos que os visitantes veem. Recepcionistas e anfitriões que fazem todos se sentirem em casa.</p>
+        </div>
+
+        <!-- Media / Tech -->
+        <div class="ministry-card fade-in">
+          <div class="ministry-icon">💻</div>
+          <h3 data-en="Media & Technology" data-pt="Mídia & Tecnologia">Mídia & Tecnologia</h3>
+          <p data-en="Photography, videography, live streaming, social media, and website management." data-pt="Fotografia, vídeo, transmissão ao vivo, redes sociais e gerenciamento do site.">Fotografia, vídeo, transmissão ao vivo, redes sociais e gerenciamento do site.</p>
+        </div>
+
+        <!-- Translation -->
+        <div class="ministry-card fade-in">
+          <div class="ministry-icon">🌍</div>
+          <h3 data-en="Translation Team" data-pt="Equipe de Tradução">Equipe de Tradução</h3>
+          <p data-en="Bilingual volunteers who provide live English translation during our Portuguese services." data-pt="Voluntários bilíngues que fazem a tradução simultânea em inglês durante nossos cultos em português.">Voluntários bilíngues que fazem a tradução simultânea em inglês durante nossos cultos em português.</p>
+        </div>
+
+        <!-- Events -->
+        <div class="ministry-card fade-in">
+          <div class="ministry-icon">🎉</div>
+          <h3 data-en="Events & Hospitality" data-pt="Eventos & Hospitalidade">Eventos & Hospitalidade</h3>
+          <p data-en="Planning and executing church events, fellowships, and community outreach activities." data-pt="Planejamento e execução de eventos da igreja, comunhões e atividades de alcance comunitário.">Planejamento e execução de eventos da igreja, comunhões e atividades de alcance comunitário.</p>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="serve-cta fade-in">
+        <h2 data-en="Ready to Serve?" data-pt="Pronto para Servir?">Pronto para Servir?</h2>
+        <p data-en="We'd love to help you find the right place. Reach out to us and let's talk about how you can get involved." data-pt="Adoraríamos ajudar você a encontrar o lugar certo. Entre em contato conosco e vamos conversar sobre como você pode participar.">Adoraríamos ajudar você a encontrar o lugar certo. Entre em contato conosco e vamos conversar sobre como você pode participar.</p>
+        <a href="/#contact" class="btn btn-navy" data-en="Contact Us" data-pt="Fale Conosco">Fale Conosco</a>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="../js/global.js"></script>
+
+</body>
+</html>

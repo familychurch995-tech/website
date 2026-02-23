@@ -1,0 +1,30 @@
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="18" r="17" stroke="#0f1d3d" stroke-width="2"/>
+        <path d="M18 7v22M12 14h12" stroke="#0f1d3d" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      Family Church
+    </a>
+
+    <div class="nav-links" id="navLinks">
+      <a href="/#about" data-en="About" data-pt="Sobre">Sobre</a>
+      <a href="/#services" data-en="Services" data-pt="Cultos">Cultos</a>
+      <a href="/events/" data-en="Events" data-pt="Eventos">Eventos</a>
+      <a href="/celulas/" data-en="Small Groups" data-pt="C&eacute;lulas">C&eacute;lulas</a>
+      <a href="/serve/" data-en="Serve" data-pt="Servir">Servir</a>
+      <a href="/#contact" data-en="Contact" data-pt="Contato">Contato</a>
+    </div>
+
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
+        <button class="lang-btn active" id="btnPt" onclick="setLang('pt')">PT</button>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>

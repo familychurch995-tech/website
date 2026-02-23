@@ -1,0 +1,19 @@
+[
+  {
+    "id": "dons-digitais-2026",
+    "title_en": "Digital Gifts \u2014 Vibe Coding Workshop",
+    "title_pt": "Dons Digitais \u2014 Workshop de Vibe Coding",
+    "description_en": "Vibe Coding for those who want to thrive. Learn VS Code basics, Claude Code in practice, Vibe Coding without knowing code, and real projects for your life and work. Based on the Parable of the Talents (Matthew 25:14-30). Free and open to all.",
+    "description_pt": "Vibe Coding para quem quer prosperar. Aprenda primeiros passos com VS Code, Claude Code na pr\u00e1tica, Vibe Coding sem conhecer c\u00f3digo, e projetos reais para sua vida e trabalho. Baseado na Par\u00e1bola dos Talentos (Mateus 25:14-30). Gratuito e aberto a todos.",
+    "date": "TBD",
+    "time": "TBD",
+    "location_en": "Family Church \u2014 18 Cushing Street, Stamford, CT",
+    "location_pt": "Family Church \u2014 18 Cushing Street, Stamford, CT",
+    "image": "images/events/dons-digitais-2026/cover.jpg",
+    "photos": [],
+    "status": "upcoming",
+    "verse": "Mateus 25:16",
+    "topics_en": ["VS Code Basics", "Claude Code in Practice", "Vibe Coding Without Knowing Code", "Real Projects"],
+    "topics_pt": ["Primeiros Passos com VS Code", "Claude Code na Pr\u00e1tica", "Vibe Coding sem Conhecer C\u00f3digo", "Projetos Reais"]
+  }
+]
