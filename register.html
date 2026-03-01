@@ -851,6 +851,126 @@
       cursor: pointer;
     }
 
+    /* ── Admin Login Overlay ── */
+    .admin-login-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(10, 10, 18, 0.95);
+      backdrop-filter: blur(20px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .admin-login-overlay.active {
+      display: flex;
+    }
+
+    .admin-login-card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .admin-login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .admin-login-card h2 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .admin-login-card p {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      margin-bottom: 24px;
+    }
+
+    .admin-login-card input[type="password"] {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s ease;
+      margin-bottom: 16px;
+    }
+
+    .admin-login-card input[type="password"]:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
+    }
+
+    .admin-login-card .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      border: none;
+      border-radius: 12px;
+      color: var(--bg-dark);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .admin-login-card .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+    }
+
+    .admin-login-error {
+      color: #ff4444;
+      font-size: 0.8rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ── Delete Button in Admin Table ── */
+    .delete-btn {
+      background: none;
+      border: 1px solid rgba(255, 68, 68, 0.2);
+      color: rgba(255, 68, 68, 0.6);
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+    }
+
+    .delete-btn:hover {
+      background: rgba(255, 68, 68, 0.1);
+      border-color: #ff4444;
+      color: #ff4444;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       .register-page { padding: 70px 16px 40px; }
@@ -1030,6 +1150,19 @@
 
   </main>
 
+  <!-- Admin Login Overlay -->
+  <div class="admin-login-overlay" id="adminLoginOverlay">
+    <div class="admin-login-card">
+      <h2>&#128274; Admin</h2>
+      <p data-en="Enter your admin password" data-pt="Digite a senha de administrador">Digite a senha de administrador</p>
+      <form id="adminLoginForm" onsubmit="return handleAdminLogin(event)">
+        <input type="password" id="adminPassword" placeholder="Password" autocomplete="current-password" />
+        <button type="submit" class="login-btn" data-en="Login" data-pt="Entrar">Entrar</button>
+      </form>
+      <p class="admin-login-error" id="adminLoginError" data-en="Invalid password" data-pt="Senha incorreta">Senha incorreta</p>
+    </div>
+  </div>
+
   <!-- Flyer Lightbox -->
   <div class="flyer-lightbox" id="flyerLightbox" onclick="closeFlyerLightbox()">
     <button class="flyer-lightbox-close" aria-label="Close">&times;</button>
@@ -1065,8 +1198,10 @@
     }
 
     // ── API Helpers ──
+    let adminToken = sessionStorage.getItem('fc-admin-token') || '';
+
     function getAdminToken() {
-      return new URLSearchParams(window.location.search).get('token') || '';
+      return adminToken;
     }
 
     async function getRegistrations() {
@@ -1194,6 +1329,7 @@
           <th>&#128187; Laptop</th>
           <th data-en="Notifications" data-pt="Notificações">Notificações</th>
           <th data-en="Time" data-pt="Hora">Hora</th>
+          <th></th>
         </tr></thead><tbody>`;
 
       regs.forEach((r, i) => {
@@ -1214,6 +1350,7 @@
           <td>${laptopIcon}</td>
           <td>${notifIcon}</td>
           <td>${time}</td>
+          <td><button class="delete-btn" onclick="deleteRegistration('${r.id}', '${escHtml(r.name).replace(/'/g, "\\'")}')" data-en="Delete" data-pt="Excluir">Excluir</button></td>
         </tr>`;
       });
 
@@ -1269,6 +1406,59 @@
       await renderAdminTable();
     }
 
+    // ── Admin Login ──
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const pwd = document.getElementById('adminPassword').value.trim();
+      if (!pwd) return false;
+
+      // Test the token against the API
+      try {
+        const res = await fetch(`${API_BASE}/registrations`, {
+          headers: { 'Authorization': `Bearer ${pwd}` }
+        });
+        if (res.ok) {
+          adminToken = pwd;
+          sessionStorage.setItem('fc-admin-token', pwd);
+          document.getElementById('adminLoginOverlay').classList.remove('active');
+          document.getElementById('adminPanel').classList.add('show');
+          await renderAdminTable();
+        } else {
+          document.getElementById('adminLoginError').style.display = 'block';
+          document.getElementById('adminPassword').value = '';
+          document.getElementById('adminPassword').focus();
+        }
+      } catch {
+        document.getElementById('adminLoginError').style.display = 'block';
+      }
+      return false;
+    }
+
+    // ── Delete Individual Registration ──
+    async function deleteRegistration(id, name) {
+      const msg = regLang === 'en'
+        ? `Delete registration for "${name}"?`
+        : `Excluir inscrição de "${name}"?`;
+      if (!confirm(msg)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/registration/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${getAdminToken()}` }
+        });
+        if (!res.ok) {
+          alert('Failed to delete');
+          return;
+        }
+        const data = await res.json();
+        document.getElementById('regCount').textContent = data.count;
+      } catch {
+        alert('Network error');
+        return;
+      }
+      await renderAdminTable();
+    }
+
     // ── Floating Particles ──
     function createParticles() {
       const container = document.body;
@@ -1291,12 +1481,35 @@
       createParticles();
 
       if (isAdmin) {
-        document.getElementById('adminPanel').classList.add('show');
-        await renderAdminTable();
+        // Check if already logged in this session
+        if (adminToken) {
+          try {
+            const res = await fetch(`${API_BASE}/registrations`, {
+              headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            if (res.ok) {
+              document.getElementById('adminPanel').classList.add('show');
+              await renderAdminTable();
+            } else {
+              // Token expired or invalid — show login
+              sessionStorage.removeItem('fc-admin-token');
+              adminToken = '';
+              document.getElementById('adminLoginOverlay').classList.add('active');
+            }
+          } catch {
+            document.getElementById('adminLoginOverlay').classList.add('active');
+          }
+        } else {
+          document.getElementById('adminLoginOverlay').classList.add('active');
+        }
       }
 
-      // Auto-focus first field
-      setTimeout(() => document.getElementById('regName').focus(), 500);
+      // Auto-focus first field (unless login is showing)
+      if (!isAdmin || adminToken) {
+        setTimeout(() => document.getElementById('regName').focus(), 500);
+      } else {
+        setTimeout(() => document.getElementById('adminPassword').focus(), 300);
+      }
     });
   </script>
 

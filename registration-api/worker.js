@@ -164,13 +164,30 @@ export default {
         return jsonResponse({ registrations, count: registrations.length }, 200, origin);
       }
 
-      // ── DELETE /registrations (admin) ──
+      // ── DELETE /registrations (admin — clear all) ──
       if (method === 'DELETE' && path === '/registrations') {
         if (!isAuthorized(request, env)) {
           return jsonResponse({ error: 'Unauthorized' }, 401, origin);
         }
         await saveRegistrations(env, []);
         return jsonResponse({ success: true, count: 0 }, 200, origin);
+      }
+
+      // ── DELETE /registration/:id (admin — delete one) ──
+      const deleteMatch = path.match(/^\/registration\/(.+)$/);
+      if (method === 'DELETE' && deleteMatch) {
+        if (!isAuthorized(request, env)) {
+          return jsonResponse({ error: 'Unauthorized' }, 401, origin);
+        }
+        const id = deleteMatch[1];
+        let registrations = await getRegistrations(env);
+        const before = registrations.length;
+        registrations = registrations.filter(r => r.id !== id);
+        if (registrations.length === before) {
+          return jsonResponse({ error: 'Not found' }, 404, origin);
+        }
+        await saveRegistrations(env, registrations);
+        return jsonResponse({ success: true, count: registrations.length }, 200, origin);
       }
 
       return jsonResponse({ error: 'Not found' }, 404, origin);
