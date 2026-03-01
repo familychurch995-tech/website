@@ -3,28 +3,92 @@
     "id": "dons-digitais-2026",
     "title_en": "Digital Gifts — Vibe Coding Workshop",
     "title_pt": "Dons Digitais — Workshop de Vibe Coding",
-    "description_en": "Vibe Coding for those who want to thrive. Learn VS Code basics, Claude Code in practice, Vibe Coding without knowing code, and real projects for your life and work. Based on the Parable of the Talents (Matthew 25:14-30). Free and open to all.",
-    "description_pt": "Vibe Coding para quem quer prosperar. Aprenda primeiros passos com VS Code, Claude Code na prática, Vibe Coding sem conhecer código, e projetos reais para sua vida e trabalho. Baseado na Parábola dos Talentos (Mateus 25:14-30). Gratuito e aberto a todos.",
+    "description_en": "Learn to create anything in the digital world just by talking. A hands-on workshop where you'll discover how AI-powered coding can turn your ideas into real apps, websites, and projects — no coding experience needed. Based on the Parable of the Talents (Matthew 25:14-30), this event is about multiplying your God-given gifts using today's most powerful tools.",
+    "description_pt": "Aprenda a criar qualquer coisa no mundo digital apenas conversando. Um workshop prático onde você vai descobrir como a programação com IA pode transformar suas ideias em aplicativos, sites e projetos reais — sem precisar saber programar. Baseado na Parábola dos Talentos (Mateus 25:14-30), este evento é sobre multiplicar os dons que Deus te deu usando as ferramentas mais poderosas da atualidade.",
     "date": "2026-03-14",
     "time": "10:00 AM",
     "location_en": "Family Church — 18 Cushing Street, Stamford, CT",
     "location_pt": "Family Church — 18 Cushing Street, Stamford, CT",
     "image": "images/events/dons-digitais-2026/cover.jpg",
+    "flyer_pt": "images/events/dons-digitais-2026/flyer-pt.png",
+    "flyer_en": "images/events/dons-digitais-2026/flyer-en.png",
     "photos": [],
     "status": "upcoming",
     "verse": "Mateus 25:16",
+    "verse_text_en": "The one who had received five talents went at once and traded with them, and made five more talents.",
+    "verse_text_pt": "O que tinha recebido cinco talentos saiu imediatamente, negociou com eles, e ganhou outros cinco.",
+    "registration_url": "register.html",
+    "presenters_en": ["Addans Soares", "Pr. Marcos Augusto"],
+    "presenters_pt": ["Addans Soares", "Pr. Marcos Augusto"],
+    "schedule": [
+      {
+        "time": "10:00 AM",
+        "title_en": "Doors Open — Setup & Coffee",
+        "title_pt": "Abertura — Setup & Café",
+        "desc_en": "Arrive, set up your laptop (install VS Code + Claude Code), grab a coffee, and get to know fellow participants.",
+        "desc_pt": "Chegue, configure seu laptop (instale VS Code + Claude Code), pegue um café e conheça os outros participantes.",
+        "icon": "coffee"
+      },
+      {
+        "time": "11:00 AM",
+        "title_en": "Worship",
+        "title_pt": "Louvor",
+        "desc_en": "A moment of praise and worship to open our hearts and minds.",
+        "desc_pt": "Um momento de louvor e adoração para abrir nossos corações e mentes.",
+        "icon": "music"
+      },
+      {
+        "time": "11:15 AM",
+        "title_en": "Lecture — The Parable of Digital Talents",
+        "title_pt": "Palestra — A Parábola dos Talentos Digitais",
+        "desc_en": "Discover what Vibe Coding is, see live demos, and understand how AI can multiply your talents.",
+        "desc_pt": "Descubra o que é Vibe Coding, veja demonstrações ao vivo e entenda como a IA pode multiplicar seus talentos.",
+        "icon": "lecture"
+      },
+      {
+        "time": "12:00 PM",
+        "title_en": "Hands-On Practice",
+        "title_pt": "Prática — Mão na Massa",
+        "desc_en": "Build your first project! Create an app, website, or tool using only your voice and ideas.",
+        "desc_pt": "Construa seu primeiro projeto! Crie um aplicativo, site ou ferramenta usando apenas sua voz e suas ideias.",
+        "icon": "code"
+      },
+      {
+        "time": "12:30 PM",
+        "title_en": "Showcase & Laptop Giveaway",
+        "title_pt": "Apresentação & Sorteio do Laptop",
+        "desc_en": "Share what you built, celebrate together, and the big moment — the laptop giveaway!",
+        "desc_pt": "Mostre o que você construiu, celebre junto, e o grande momento — o sorteio do laptop!",
+        "icon": "gift"
+      }
+    ],
+    "highlights_en": [
+      "100% Free",
+      "No experience needed",
+      "Laptop Giveaway",
+      "Limited Seats",
+      "Bring your laptop or use ours"
+    ],
+    "highlights_pt": [
+      "100% Gratuito",
+      "Não precisa saber programar",
+      "Sorteio de Laptop",
+      "Vagas Limitadas",
+      "Traga seu laptop ou use o nosso"
+    ],
     "topics_en": [
       "VS Code Basics",
       "Claude Code in Practice",
       "Vibe Coding Without Knowing Code",
-      "Real Projects"
+      "Real Projects for Your Life & Work"
     ],
     "topics_pt": [
       "Primeiros Passos com VS Code",
       "Claude Code na Prática",
       "Vibe Coding sem Conhecer Código",
-      "Projetos Reais"
-    ]
+      "Projetos Reais para Sua Vida e Trabalho"
+    ],
+    "contact_phone": "(203) 703-2540"
   },
   {
     "id": "cristina-mel-em-louvor-e-palavra-2026",
@@ -38,6 +102,6 @@
     "location_pt": "Family Church — 18 Cushing Street, Stamford, CT",
     "image": "images/events/cristina-mel-em-louvor-e-palavra-2026/cover.jpg",
     "photos": [],
-    "status": "upcoming"
+    "status": "past"
   }
 ]

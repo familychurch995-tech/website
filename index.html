@@ -143,7 +143,7 @@
       </div>
 
       <div style="text-align: center; margin-top: 40px;">
-        <a href="/events/" class="btn btn-navy" data-en="View All Events" data-pt="Ver Todos os Eventos">Ver Todos os Eventos</a>
+        <a href="events/index.html" class="btn btn-navy" data-en="View All Events" data-pt="Ver Todos os Eventos">Ver Todos os Eventos</a>
       </div>
     </div>
   </section>
@@ -325,8 +325,8 @@
               <p style="color: rgba(255,255,255,0.85); max-width: 600px; margin: 0 auto 12px; font-size: 1rem;">📅 ${dateStr}${event.time && event.time !== 'TBD' ? ' &bull; 🕐 ' + event.time : ''}</p>
               <p data-en="${event.description_en.substring(0, 160)}" data-pt="${event.description_pt.substring(0, 160)}" style="color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto 32px;">${desc.substring(0, 160)}...</p>
               <div class="hero-buttons">
-                <a href="/event.html?id=${event.id}" class="btn btn-primary" data-en="Learn More" data-pt="Saiba Mais">${lang === 'en' ? 'Learn More' : 'Saiba Mais'}</a>
-                <a href="/events/" class="btn btn-outline" data-en="All Events" data-pt="Todos os Eventos">${lang === 'en' ? 'All Events' : 'Todos os Eventos'}</a>
+                <a href="event.html?id=${event.id}" class="btn btn-primary" data-en="Learn More" data-pt="Saiba Mais">${lang === 'en' ? 'Learn More' : 'Saiba Mais'}</a>
+                <a href="events/index.html" class="btn btn-outline" data-en="All Events" data-pt="Todos os Eventos">${lang === 'en' ? 'All Events' : 'Todos os Eventos'}</a>
               </div>
             </div>
           `;
@@ -369,7 +369,7 @@
             }
 
             return `
-              <a href="/event.html?id=${event.id}" class="event-card fade-in" style="text-decoration:none;">
+              <a href="event.html?id=${event.id}" class="event-card fade-in" style="text-decoration:none;">
                 <div class="event-date">
                   <span class="month" data-en="${monthEn}" data-pt="${monthPt}">${lang === 'en' ? monthEn : monthPt}</span>
                   <span class="day">${day}</span>

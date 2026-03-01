@@ -1061,3 +1061,392 @@ ul { list-style: none; }
   font-size: 0.9rem;
   display: none;
 }
+
+/* ── Event Detail — Enhanced Sections ─────────── */
+.event-description {
+  font-size: 1.1rem;
+  color: var(--text);
+  line-height: 1.8;
+}
+
+/* Presenters */
+.event-presenters {
+  margin-bottom: 28px;
+}
+
+.event-presenters h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+.presenters-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.presenter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: var(--off-white);
+  border: 1px solid var(--gray-light);
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+/* Highlights */
+.event-highlights {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.event-highlight-chip {
+  padding: 6px 16px;
+  background: var(--off-white);
+  border: 1px solid var(--gray-light);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.event-highlight-chip.accent {
+  background: rgba(59, 108, 245, 0.08);
+  border-color: rgba(59, 108, 245, 0.2);
+  color: var(--accent);
+}
+
+/* Verse */
+.event-verse {
+  margin: 28px 0;
+  padding: 24px 28px;
+  border-left: 3px solid var(--accent);
+  background: var(--off-white);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.event-verse .verse-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+
+.event-verse .verse-ref {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+/* Schedule Timeline */
+.event-schedule-section {
+  margin-top: 40px;
+}
+
+.event-schedule-section > h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--navy);
+  margin-bottom: 28px;
+}
+
+.schedule-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.schedule-item {
+  display: grid;
+  grid-template-columns: 90px 48px 1fr;
+  gap: 0;
+  min-height: 80px;
+}
+
+.schedule-time {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--accent);
+  padding-top: 12px;
+  text-align: right;
+  padding-right: 16px;
+}
+
+.schedule-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.schedule-dot {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--off-white);
+  border: 2px solid var(--gray-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--navy);
+  flex-shrink: 0;
+  z-index: 1;
+  transition: var(--transition);
+}
+
+.schedule-item:hover .schedule-dot {
+  border-color: var(--accent);
+  background: rgba(59, 108, 245, 0.08);
+  color: var(--accent);
+}
+
+.schedule-connector {
+  width: 2px;
+  flex: 1;
+  background: var(--gray-light);
+  min-height: 20px;
+}
+
+.schedule-content {
+  padding: 8px 0 28px 16px;
+}
+
+.schedule-content h4 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.schedule-content p {
+  font-size: 0.88rem;
+  color: var(--text-light);
+  line-height: 1.5;
+}
+
+/* Topics */
+.event-topics-section {
+  margin-top: 36px;
+}
+
+.event-topics-section > h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+.topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+
+.topics-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+.topic-icon {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.7rem;
+}
+
+/* Registration CTA */
+.event-cta {
+  margin-top: 40px;
+}
+
+.cta-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 32px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  border-radius: var(--radius);
+  flex-wrap: wrap;
+}
+
+.cta-content h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.cta-content p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+.btn-cta-register {
+  background: var(--white);
+  color: var(--navy);
+  padding: 14px 36px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.btn-cta-register:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Flyers */
+.event-flyers-section {
+  margin-top: 40px;
+}
+
+.event-flyers-section > h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+.flyers-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.flyer-preview {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--gray-light);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.flyer-preview:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: transparent;
+}
+
+.flyer-preview img {
+  width: 100%;
+  display: block;
+}
+
+.flyer-tag {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(15, 29, 61, 0.85);
+  backdrop-filter: blur(8px);
+  color: var(--white);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 50px;
+}
+
+/* Contact */
+.event-contact {
+  margin-top: 32px;
+  text-align: center;
+  padding: 24px;
+  background: var(--off-white);
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-light);
+}
+
+.event-contact p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.contact-phone {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--navy);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.contact-phone:hover {
+  color: var(--accent);
+}
+
+/* Event Photos Section */
+.event-photos-section {
+  margin-top: 40px;
+}
+
+.event-photos-section > h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+/* Responsive adjustments for event detail */
+@media (max-width: 768px) {
+  .schedule-item {
+    grid-template-columns: 70px 40px 1fr;
+  }
+
+  .schedule-time {
+    font-size: 0.75rem;
+    padding-right: 8px;
+  }
+
+  .schedule-dot {
+    width: 36px;
+    height: 36px;
+  }
+
+  .schedule-dot svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .schedule-content {
+    padding-left: 10px;
+  }
+
+  .cta-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .flyers-row {
+    grid-template-columns: 1fr;
+  }
+}

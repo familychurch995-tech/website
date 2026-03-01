@@ -17,8 +17,9 @@ function renderEventCard(event, lang) {
   const month = lang === 'en' ? monthEn : monthPt;
   const hasPhotos = event.photos && event.photos.length > 0;
 
+  const base = typeof getBasePath === 'function' ? getBasePath() : '../';
   return `
-    <a href="/event.html?id=${event.id}" class="event-card fade-in" style="text-decoration:none;">
+    <a href="${base}event.html?id=${event.id}" class="event-card fade-in" style="text-decoration:none;">
       <div class="event-date">
         <span class="month" data-en="${monthEn}" data-pt="${monthPt}">${month}</span>
         <span class="day">${day}</span>

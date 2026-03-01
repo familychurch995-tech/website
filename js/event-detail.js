@@ -54,11 +54,20 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') lightboxNext();
 });
 
+// Schedule icon SVGs
+const scheduleIcons = {
+  coffee: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>',
+  music: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  lecture: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  code: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+  gift: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>'
+};
+
 async function loadEventDetail() {
   const params = new URLSearchParams(window.location.search);
   const eventId = params.get('id');
   if (!eventId) {
-    window.location.href = '/events/';
+    window.location.href = 'events/index.html';
     return;
   }
 
@@ -69,7 +78,7 @@ async function loadEventDetail() {
     const event = events.find(e => e.id === eventId);
 
     if (!event) {
-      window.location.href = '/events/';
+      window.location.href = 'events/index.html';
       return;
     }
 
@@ -91,15 +100,72 @@ async function loadEventDetail() {
 
     const timeStr = event.time || 'TBD';
 
+    // Build presenters
+    let presentersHtml = '';
+    const presenters = lang === 'en' ? event.presenters_en : event.presenters_pt;
+    if (presenters && presenters.length > 0) {
+      presentersHtml = `
+        <div class="event-presenters fade-in">
+          <h3 data-en="Presented by" data-pt="Apresentado por">${lang === 'en' ? 'Presented by' : 'Apresentado por'}</h3>
+          <div class="presenters-list">
+            ${presenters.map(p => `<span class="presenter-chip">${p}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Build highlights
+    let highlightsHtml = '';
+    const highlights = lang === 'en' ? event.highlights_en : event.highlights_pt;
+    if (highlights && highlights.length > 0) {
+      highlightsHtml = `
+        <div class="event-highlights fade-in">
+          ${highlights.map((h, i) => `<span class="event-highlight-chip ${i % 2 === 0 ? 'accent' : ''}">${h}</span>`).join('')}
+        </div>
+      `;
+    }
+
+    // Build schedule
+    let scheduleHtml = '';
+    if (event.schedule && event.schedule.length > 0) {
+      const scheduleItems = event.schedule.map((s, i) => {
+        const sTitle = lang === 'en' ? s.title_en : s.title_pt;
+        const sDesc = lang === 'en' ? s.desc_en : s.desc_pt;
+        const icon = scheduleIcons[s.icon] || scheduleIcons.coffee;
+        return `
+          <div class="schedule-item fade-in" style="animation-delay: ${i * 0.1}s">
+            <div class="schedule-time">${s.time}</div>
+            <div class="schedule-line">
+              <div class="schedule-dot">${icon}</div>
+              ${i < event.schedule.length - 1 ? '<div class="schedule-connector"></div>' : ''}
+            </div>
+            <div class="schedule-content">
+              <h4 data-en="${s.title_en}" data-pt="${s.title_pt}">${sTitle}</h4>
+              <p data-en="${s.desc_en}" data-pt="${s.desc_pt}">${sDesc}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      scheduleHtml = `
+        <div class="event-schedule-section fade-in">
+          <h3 data-en="Schedule" data-pt="Programação">${lang === 'en' ? 'Schedule' : 'Programação'}</h3>
+          <div class="schedule-timeline">
+            ${scheduleItems}
+          </div>
+        </div>
+      `;
+    }
+
     // Build topics list
     let topicsHtml = '';
     const topics = lang === 'en' ? event.topics_en : event.topics_pt;
     if (topics && topics.length > 0) {
       topicsHtml = `
-        <div style="margin-top: 32px;">
-          <h3 style="font-family: 'Inter', sans-serif; font-weight: 600; color: var(--navy); margin-bottom: 16px;" data-en="What You'll Learn" data-pt="O Que Você Vai Aprender">${lang === 'en' ? "What You'll Learn" : 'O Que Você Vai Aprender'}</h3>
-          <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px;">
-            ${topics.map(t => `<li style="display: flex; align-items: center; gap: 10px; color: var(--text-light);"><span style="color: var(--accent); font-weight: 700;">▶</span> ${t}</li>`).join('')}
+        <div class="event-topics-section fade-in">
+          <h3 data-en="What You'll Learn" data-pt="O Que Você Vai Aprender">${lang === 'en' ? "What You'll Learn" : 'O Que Você Vai Aprender'}</h3>
+          <ul class="topics-list">
+            ${topics.map(t => `<li><span class="topic-icon">&#9654;</span> ${t}</li>`).join('')}
           </ul>
         </div>
       `;
@@ -110,8 +176,8 @@ async function loadEventDetail() {
     galleryPhotos = event.photos && event.photos.length > 0 ? [...event.photos] : [];
     if (galleryPhotos.length > 0) {
       photosHtml = `
-        <div style="margin-top: 48px;">
-          <h3 style="font-family: 'Inter', sans-serif; font-weight: 600; color: var(--navy); margin-bottom: 20px;" data-en="Photos" data-pt="Fotos">${lang === 'en' ? 'Photos' : 'Fotos'}</h3>
+        <div class="event-photos-section fade-in">
+          <h3 data-en="Photos" data-pt="Fotos">${lang === 'en' ? 'Photos' : 'Fotos'}</h3>
           <div class="photo-gallery">
             ${galleryPhotos.map(p => `<img src="${p}" alt="${title}" onclick="openLightbox('${p}')" loading="lazy" />`).join('')}
           </div>
@@ -122,9 +188,57 @@ async function loadEventDetail() {
     // Build verse
     let verseHtml = '';
     if (event.verse) {
+      const verseText = lang === 'en' ? event.verse_text_en : event.verse_text_pt;
       verseHtml = `
-        <div style="margin-top: 24px; padding: 16px 20px; border-left: 3px solid var(--accent); background: var(--off-white); border-radius: 0 var(--radius) var(--radius) 0;">
-          <p style="color: var(--text-light); font-style: italic; font-size: 0.9rem;">📖 ${event.verse}</p>
+        <div class="event-verse fade-in">
+          ${verseText ? `<p class="verse-text">"${verseText}"</p>` : ''}
+          <p class="verse-ref">${event.verse}</p>
+        </div>
+      `;
+    }
+
+    // Build flyers
+    let flyersHtml = '';
+    if (event.flyer_pt || event.flyer_en) {
+      flyersHtml = `
+        <div class="event-flyers-section fade-in">
+          <h3 data-en="Event Flyer" data-pt="Cartaz do Evento">${lang === 'en' ? 'Event Flyer' : 'Cartaz do Evento'}</h3>
+          <div class="flyers-row">
+            ${event.flyer_pt ? `<div class="flyer-preview" onclick="openLightbox('${event.flyer_pt}')"><img src="${event.flyer_pt}" alt="Cartaz Português" loading="lazy" /><span class="flyer-tag">PT</span></div>` : ''}
+            ${event.flyer_en ? `<div class="flyer-preview" onclick="openLightbox('${event.flyer_en}')"><img src="${event.flyer_en}" alt="English Flyer" loading="lazy" /><span class="flyer-tag">EN</span></div>` : ''}
+          </div>
+        </div>
+      `;
+      // Add flyers to gallery for lightbox navigation
+      if (event.flyer_pt) galleryPhotos.push(event.flyer_pt);
+      if (event.flyer_en) galleryPhotos.push(event.flyer_en);
+    }
+
+    // Build registration CTA
+    let registrationHtml = '';
+    if (event.registration_url && event.status === 'upcoming') {
+      registrationHtml = `
+        <div class="event-cta fade-in">
+          <div class="cta-card">
+            <div class="cta-content">
+              <h3 data-en="Ready to join?" data-pt="Pronto para participar?">${lang === 'en' ? 'Ready to join?' : 'Pronto para participar?'}</h3>
+              <p data-en="Secure your spot — it takes 2 seconds!" data-pt="Garanta sua vaga — leva 2 segundos!">${lang === 'en' ? 'Secure your spot — it takes 2 seconds!' : 'Garanta sua vaga — leva 2 segundos!'}</p>
+            </div>
+            <a href="${event.registration_url}" class="btn btn-cta-register" data-en="Register Now" data-pt="Inscreva-se Agora">${lang === 'en' ? 'Register Now' : 'Inscreva-se Agora'}</a>
+          </div>
+        </div>
+      `;
+    }
+
+    // Build contact
+    let contactHtml = '';
+    if (event.contact_phone) {
+      contactHtml = `
+        <div class="event-contact fade-in">
+          <p data-en="Questions? Call us:" data-pt="Dúvidas? Ligue para nós:">
+            ${lang === 'en' ? 'Questions? Call us:' : 'Dúvidas? Ligue para nós:'}
+          </p>
+          <a href="tel:${event.contact_phone.replace(/[^\d+]/g, '')}" class="contact-phone">${event.contact_phone}</a>
         </div>
       `;
     }
@@ -135,33 +249,48 @@ async function loadEventDetail() {
       <section class="page-header" style="padding-bottom: 80px;${event.image ? ` background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7)), url('${event.image}') center/cover no-repeat;` : ''}">
         <div class="container">
           <p style="color: rgba(255,255,255,0.6); margin-bottom: 12px;">
-            <a href="/events/" style="color: rgba(255,255,255,0.8); text-decoration: underline;" data-en="← Back to Events" data-pt="← Voltar aos Eventos">${lang === 'en' ? '← Back to Events' : '← Voltar aos Eventos'}</a>
+            <a href="events/index.html" style="color: rgba(255,255,255,0.8); text-decoration: underline;" data-en="&larr; Back to Events" data-pt="&larr; Voltar aos Eventos">${lang === 'en' ? '&larr; Back to Events' : '&larr; Voltar aos Eventos'}</a>
           </p>
           <h1 data-en="${event.title_en}" data-pt="${event.title_pt}">${title}</h1>
           <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 20px; color: rgba(255,255,255,0.8); font-size: 0.95rem;">
-            <span>📅 ${dateStr}</span>
-            <span>🕐 ${timeStr}</span>
-            <span>📍 ${location}</span>
+            <span>&#128197; ${dateStr}</span>
+            <span>&#128336; ${timeStr}</span>
+            <span>&#128205; ${location}</span>
           </div>
+          ${event.registration_url && event.status === 'upcoming' ? `
+            <div style="margin-top: 28px;">
+              <a href="${event.registration_url}" class="btn btn-primary" style="font-size: 1rem; padding: 16px 40px;" data-en="Register Now — It's Free!" data-pt="Inscreva-se — É Gratuito!">${lang === 'en' ? "Register Now — It's Free!" : 'Inscreva-se — É Gratuito!'}</a>
+            </div>
+          ` : ''}
         </div>
       </section>
 
       <!-- Event Body -->
       <div class="event-detail-body">
-        <p style="font-size: 1.1rem; color: var(--text); line-height: 1.8;" data-en="${event.description_en}" data-pt="${event.description_pt}">${desc}</p>
+        ${highlightsHtml}
+        ${presentersHtml}
+
+        <p class="event-description fade-in" data-en="${event.description_en}" data-pt="${event.description_pt}">${desc}</p>
 
         ${verseHtml}
+        ${scheduleHtml}
         ${topicsHtml}
+        ${registrationHtml}
+        ${flyersHtml}
         ${photosHtml}
+        ${contactHtml}
 
-        <div style="margin-top: 48px; text-align: center;">
-          <a href="/events/" class="btn btn-navy" data-en="← All Events" data-pt="← Todos os Eventos">${lang === 'en' ? '← All Events' : '← Todos os Eventos'}</a>
+        <div style="margin-top: 48px; text-align: center;" class="fade-in">
+          <a href="events/index.html" class="btn btn-navy" data-en="&larr; All Events" data-pt="&larr; Todos os Eventos">${lang === 'en' ? '&larr; All Events' : '&larr; Todos os Eventos'}</a>
         </div>
       </div>
     `;
 
     // Re-apply language
     if (typeof setLang === 'function') setLang(currentLang);
+
+    // Re-init scroll animations for new elements
+    if (typeof initScrollAnimations === 'function') initScrollAnimations();
 
   } catch (e) {
     console.error('Failed to load event detail:', e);

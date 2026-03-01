@@ -1,0 +1,13 @@
+{
+  "name": "familychurch-registration-api",
+  "version": "1.0.0",
+  "description": "Registration API for Family Church events",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

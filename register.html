@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscrição — Dons Digitais | Family Church</title>
+  <meta name="description" content="Inscreva-se no Workshop Dons Digitais — Vibe Coding. 14 de Março, 2026. Gratuito e aberto a todos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-dark: #0a0a12;
+      --bg-card: rgba(18, 18, 30, 0.85);
+      --gold: #FFD700;
+      --gold-dim: #b8960f;
+      --gold-glow: rgba(255, 215, 0, 0.3);
+      --green: #00FF41;
+      --green-dim: #00cc34;
+      --white: #ffffff;
+      --text: rgba(255, 255, 255, 0.9);
+      --text-dim: rgba(255, 255, 255, 0.5);
+      --border: rgba(255, 215, 0, 0.15);
+      --accent-blue: #3b6cf5;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── Animated Background ── */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bg-grid::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      background-image:
+        linear-gradient(rgba(255, 215, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 215, 0, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); }
+    }
+
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      width: 3px;
+      height: 3px;
+      background: var(--gold);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+      animation: particleFloat linear infinite;
+    }
+
+    @keyframes particleFloat {
+      0% { opacity: 0; transform: translateY(100vh) scale(0); }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-10vh) scale(1); }
+    }
+
+    /* Glow orbs */
+    .glow-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-orb-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--gold);
+      top: -100px;
+      right: -100px;
+      animation: orbPulse 8s ease-in-out infinite;
+    }
+
+    .glow-orb-2 {
+      width: 300px;
+      height: 300px;
+      background: var(--green);
+      bottom: -50px;
+      left: -50px;
+      animation: orbPulse 10s ease-in-out infinite reverse;
+    }
+
+    @keyframes orbPulse {
+      0%, 100% { opacity: 0.1; transform: scale(1); }
+      50% { opacity: 0.2; transform: scale(1.2); }
+    }
+
+    /* ── Language Toggle ── */
+    .lang-bar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      display: flex;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 4px;
+      backdrop-filter: blur(12px);
+    }
+
+    .lang-bar button {
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .lang-bar button.active {
+      background: var(--gold);
+      color: var(--bg-dark);
+    }
+
+    /* ── Back Link ── */
+    .back-link {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.3s;
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 50px;
+    }
+
+    .back-link:hover { color: var(--gold); }
+
+    /* ── Main Content ── */
+    .register-page {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 80px 20px 60px;
+    }
+
+    /* ── Event Header ── */
+    .event-header {
+      text-align: center;
+      margin-bottom: 40px;
+      max-width: 600px;
+    }
+
+    .event-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 50px;
+      color: var(--gold);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .event-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      color: var(--white);
+      margin-bottom: 8px;
+      line-height: 1.1;
+    }
+
+    .event-header h1 span {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .event-subtitle {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--green);
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+
+    .event-meta-row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    .event-meta-row span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── Form Card ── */
+    .form-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 32px;
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .form-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .form-subtitle {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      margin-bottom: 28px;
+    }
+
+    /* ── Form Fields ── */
+    .form-group {
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"] {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .form-group input::placeholder {
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .form-group input:focus {
+      border-color: var(--gold);
+      background: rgba(255, 215, 0, 0.03);
+      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.08);
+    }
+
+    .form-group input:valid:not(:placeholder-shown) {
+      border-color: var(--green-dim);
+    }
+
+    /* Input icons */
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap svg {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--text-dim);
+      pointer-events: none;
+      transition: color 0.3s;
+    }
+
+    .input-wrap input:focus ~ svg {
+      color: var(--gold);
+    }
+
+    .input-wrap input {
+      padding-right: 42px;
+    }
+
+    /* ── Checkbox ── */
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 24px 0 28px;
+      cursor: pointer;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      display: none;
+    }
+
+    .checkbox-custom {
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      margin-top: 1px;
+    }
+
+    .checkbox-custom svg {
+      width: 14px;
+      height: 14px;
+      opacity: 0;
+      transform: scale(0);
+      transition: all 0.2s ease;
+      color: var(--bg-dark);
+    }
+
+    .checkbox-group input:checked + .checkbox-custom {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .checkbox-group input:checked + .checkbox-custom svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .checkbox-label {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    /* ── Submit Button ── */
+    .submit-btn {
+      width: 100%;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      border: none;
+      border-radius: 12px;
+      color: var(--bg-dark);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .submit-btn:hover::before {
+      transform: translateX(100%);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .submit-btn .btn-text { position: relative; z-index: 1; }
+
+    .submit-btn .btn-spinner {
+      display: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    .submit-btn.loading .btn-text { display: none; }
+    .submit-btn.loading .btn-spinner { display: inline-flex; align-items: center; gap: 8px; }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(10, 10, 18, 0.3);
+      border-top-color: var(--bg-dark);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Highlights Strip ── */
+    .highlights {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    .highlight-chip {
+      padding: 6px 14px;
+      background: rgba(255, 215, 0, 0.06);
+      border: 1px solid rgba(255, 215, 0, 0.12);
+      border-radius: 50px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .highlight-chip.green {
+      background: rgba(0, 255, 65, 0.06);
+      border-color: rgba(0, 255, 65, 0.15);
+      color: var(--green);
+    }
+
+    /* ── Flyers Section ── */
+    .flyers-section {
+      margin-top: 48px;
+      max-width: 700px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .flyers-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .flyers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .flyer-card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .flyer-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
+    }
+
+    .flyer-card img {
+      width: 100%;
+      display: block;
+    }
+
+    .flyer-card .flyer-label {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      color: var(--gold);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border-radius: 50px;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+    }
+
+    /* ── Success State ── */
+    .success-card {
+      display: none;
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-card);
+      border: 1px solid rgba(0, 255, 65, 0.2);
+      border-radius: 20px;
+      padding: 48px 32px;
+      backdrop-filter: blur(20px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .success-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+    }
+
+    .success-card.show {
+      display: block;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: rgba(0, 255, 65, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(0, 255, 65, 0.3);
+      animation: successPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes successPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.2); }
+      50% { box-shadow: 0 0 0 12px rgba(0, 255, 65, 0); }
+    }
+
+    .success-icon svg {
+      width: 40px;
+      height: 40px;
+      color: var(--green);
+    }
+
+    .success-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .success-card p {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .success-name {
+      color: var(--gold) !important;
+      font-weight: 600;
+    }
+
+    .success-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .success-actions a,
+    .success-actions button {
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: var(--bg-dark);
+      border: none;
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── Counter ── */
+    .counter-bar {
+      text-align: center;
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: rgba(255, 215, 0, 0.04);
+      border: 1px solid rgba(255, 215, 0, 0.08);
+      border-radius: 12px;
+    }
+
+    .counter-bar span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--gold);
+    }
+
+    .counter-number {
+      font-weight: 700;
+      font-size: 1.1rem !important;
+    }
+
+    /* ── Admin Panel ── */
+    .admin-panel {
+      display: none;
+      width: 100%;
+      max-width: 900px;
+      margin-top: 20px;
+    }
+
+    .admin-panel.show { display: block; }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .admin-header h2 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.2rem;
+      color: var(--gold);
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .admin-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-dim);
+    }
+
+    .admin-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .admin-btn.danger:hover {
+      border-color: #ff4444;
+      color: #ff4444;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .admin-table th {
+      background: rgba(255, 215, 0, 0.06);
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .admin-table td {
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      color: var(--text);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .admin-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .admin-table tr:hover td {
+      background: rgba(255, 215, 0, 0.02);
+    }
+
+    .notif-yes { color: var(--green); }
+    .notif-no { color: var(--text-dim); }
+
+    .admin-empty {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    /* ── Footer ── */
+    .register-footer {
+      margin-top: 48px;
+      text-align: center;
+      padding: 24px;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+    }
+
+    .register-footer a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .register-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Lightbox for flyers ── */
+    .flyer-lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0, 0, 0, 0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 20px;
+    }
+
+    .flyer-lightbox.active {
+      display: flex;
+    }
+
+    .flyer-lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 0 60px rgba(255, 215, 0, 0.2);
+    }
+
+    .flyer-lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .register-page { padding: 70px 16px 40px; }
+      .form-card { padding: 32px 20px; }
+      .event-header h1 { font-size: 2rem; }
+      .flyers-grid { grid-template-columns: 1fr; }
+      .back-link span { display: none; }
+      .event-meta-row { gap: 12px; font-size: 0.8rem; }
+      .admin-table { font-size: 0.75rem; }
+      .admin-table th, .admin-table td { padding: 8px 10px; }
+    }
+
+    /* ── Page Load Animation ── */
+    .register-page > * {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .register-page > *:nth-child(1) { animation-delay: 0.1s; }
+    .register-page > *:nth-child(2) { animation-delay: 0.2s; }
+    .register-page > *:nth-child(3) { animation-delay: 0.3s; }
+    .register-page > *:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Effects -->
+  <div class="bg-grid"></div>
+  <div class="glow-orb glow-orb-1"></div>
+  <div class="glow-orb glow-orb-2"></div>
+
+  <!-- Language Toggle -->
+  <div class="lang-bar">
+    <button id="regBtnPt" class="active" onclick="setRegLang('pt')">PT</button>
+    <button id="regBtnEn" onclick="setRegLang('en')">EN</button>
+  </div>
+
+  <!-- Back Link -->
+  <a href="event.html?id=dons-digitais-2026" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+    <span data-en="Event Details" data-pt="Detalhes do Evento">Detalhes do Evento</span>
+  </a>
+
+  <main class="register-page">
+
+    <!-- Event Header -->
+    <header class="event-header">
+      <div class="event-badge" data-en="Free Workshop" data-pt="Workshop Gratuito">Workshop Gratuito</div>
+      <h1><span data-en="Digital Gifts" data-pt="Dons Digitais">Dons Digitais</span></h1>
+      <p class="event-subtitle" data-en="// Vibe Coding Workshop" data-pt="// Workshop de Vibe Coding">// Workshop de Vibe Coding</p>
+      <div class="event-meta-row">
+        <span>&#128197; <span data-en="March 14, 2026" data-pt="14 de Março, 2026">14 de Março, 2026</span></span>
+        <span>&#128336; 10:00 AM</span>
+        <span>&#128205; Family Church, Stamford CT</span>
+      </div>
+    </header>
+
+    <!-- Registration Form Card -->
+    <div class="form-card" id="formCard">
+      <h2 class="form-title" data-en="Register Now" data-pt="Inscreva-se Agora">Inscreva-se Agora</h2>
+      <p class="form-subtitle" data-en="Fill in below — it takes 2 seconds!" data-pt="Preencha abaixo — leva 2 segundos!">Preencha abaixo — leva 2 segundos!</p>
+
+      <form id="registerForm" autocomplete="on" novalidate>
+        <div class="form-group">
+          <label for="regName" data-en="Name" data-pt="Nome">Nome</label>
+          <div class="input-wrap">
+            <input type="text" id="regName" name="name" placeholder="Seu nome completo" data-placeholder-en="Your full name" data-placeholder-pt="Seu nome completo" required autocomplete="name" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="regEmail" data-en="Email" data-pt="Email">Email</label>
+          <div class="input-wrap">
+            <input type="email" id="regEmail" name="email" placeholder="seu@email.com" data-placeholder-en="your@email.com" data-placeholder-pt="seu@email.com" required autocomplete="email" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="regPhone" data-en="Phone" data-pt="Telefone">Telefone</label>
+          <div class="input-wrap">
+            <input type="tel" id="regPhone" name="phone" placeholder="(203) 000-0000" required autocomplete="tel" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+        </div>
+
+        <label class="checkbox-group" for="regLaptop">
+          <input type="checkbox" id="regLaptop" name="laptop" />
+          <span class="checkbox-custom">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="checkbox-label" data-en="I will bring my own laptop." data-pt="Vou trazer meu próprio laptop.">Vou trazer meu próprio laptop.</span>
+        </label>
+
+        <label class="checkbox-group" for="regNotifications">
+          <input type="checkbox" id="regNotifications" name="notifications" />
+          <span class="checkbox-custom">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="checkbox-label" data-en="I accept to receive notifications about this event on my phone." data-pt="Aceito receber notificações sobre este evento no meu telefone.">Aceito receber notificações sobre este evento no meu telefone.</span>
+        </label>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span class="btn-text" data-en="REGISTER" data-pt="INSCREVER">INSCREVER</span>
+          <span class="btn-spinner"><span class="spinner"></span> <span data-en="Registering..." data-pt="Inscrevendo...">Inscrevendo...</span></span>
+        </button>
+      </form>
+
+      <div class="counter-bar" id="counterBar">
+        <span data-en="Registered:" data-pt="Inscritos:">Inscritos:</span>
+        <span class="counter-number" id="regCount">0</span>
+      </div>
+    </div>
+
+    <!-- Success Card -->
+    <div class="success-card" id="successCard">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 data-en="You're In!" data-pt="Inscrição Confirmada!">Inscrição Confirmada!</h2>
+      <p>
+        <span class="success-name" id="successName"></span><br />
+        <span data-en="See you on March 14th at 10 AM!" data-pt="Te esperamos dia 14 de Março às 10h!">Te esperamos dia 14 de Março às 10h!</span>
+      </p>
+      <div class="success-actions">
+        <button class="btn-gold" onclick="registerAnother()" data-en="Register Another" data-pt="Inscrever Outra Pessoa">Inscrever Outra Pessoa</button>
+        <a href="event.html?id=dons-digitais-2026" class="btn-ghost" data-en="Event Details" data-pt="Detalhes do Evento">Detalhes do Evento</a>
+      </div>
+    </div>
+
+    <!-- Highlights -->
+    <div class="highlights" id="highlights">
+      <span class="highlight-chip green" data-en="100% Free" data-pt="100% Gratuito">100% Gratuito</span>
+      <span class="highlight-chip" data-en="Laptop Giveaway" data-pt="Sorteio de Laptop">Sorteio de Laptop</span>
+      <span class="highlight-chip" data-en="No Experience Needed" data-pt="Não Precisa Saber Programar">Não Precisa Saber Programar</span>
+      <span class="highlight-chip green" data-en="Limited Seats" data-pt="Vagas Limitadas">Vagas Limitadas</span>
+    </div>
+
+    <!-- Flyers -->
+    <div class="flyers-section">
+      <p class="flyers-label" data-en="Event Flyers" data-pt="Cartazes do Evento">Cartazes do Evento</p>
+      <div class="flyers-grid">
+        <div class="flyer-card" onclick="openFlyerLightbox('images/events/dons-digitais-2026/flyer-pt.png')">
+          <img src="images/events/dons-digitais-2026/flyer-pt.png" alt="Cartaz em Português" loading="lazy" />
+          <span class="flyer-label">Português</span>
+        </div>
+        <div class="flyer-card" onclick="openFlyerLightbox('images/events/dons-digitais-2026/flyer-en.png')">
+          <img src="images/events/dons-digitais-2026/flyer-en.png" alt="Flyer in English" loading="lazy" />
+          <span class="flyer-label">English</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Panel (hidden by default) -->
+    <div class="admin-panel" id="adminPanel">
+      <div class="admin-header">
+        <h2>&#128274; <span data-en="Registration Admin" data-pt="Admin de Inscrições">Admin de Inscrições</span></h2>
+        <div class="admin-actions">
+          <button class="admin-btn" onclick="exportCSV()" data-en="Export CSV" data-pt="Exportar CSV">Exportar CSV</button>
+          <button class="admin-btn danger" onclick="clearRegistrations()" data-en="Clear All" data-pt="Limpar Tudo">Limpar Tudo</button>
+        </div>
+      </div>
+      <div id="adminTableWrap"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="register-footer">
+      <p>Family Church — 18 Cushing St, Stamford, CT &bull; <a href="tel:+12037032540">(203) 703-2540</a></p>
+      <p style="margin-top: 4px;" data-en="Based on the Parable of the Talents — Matthew 25:14-30" data-pt="Baseado na Parábola dos Talentos — Mateus 25:14-30">Baseado na Parábola dos Talentos — Mateus 25:14-30</p>
+    </div>
+
+  </main>
+
+  <!-- Flyer Lightbox -->
+  <div class="flyer-lightbox" id="flyerLightbox" onclick="closeFlyerLightbox()">
+    <button class="flyer-lightbox-close" aria-label="Close">&times;</button>
+    <img id="flyerLightboxImg" src="" alt="" onclick="event.stopPropagation();" />
+  </div>
+
+  <script>
+    // ── Config ──
+    // IMPORTANT: After deploying the Worker, replace this URL with your actual Worker URL
+    const API_BASE = 'https://familychurch-registration-api.YOUR_SUBDOMAIN.workers.dev';
+
+    let regLang = localStorage.getItem('fc-lang') || 'pt';
+
+    function setRegLang(lang) {
+      regLang = lang;
+      localStorage.setItem('fc-lang', lang);
+      document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+
+      document.getElementById('regBtnPt').classList.toggle('active', lang === 'pt');
+      document.getElementById('regBtnEn').classList.toggle('active', lang === 'en');
+
+      // Update text content
+      document.querySelectorAll('[data-en]').forEach(el => {
+        const text = el.getAttribute('data-' + lang);
+        if (text) el.innerHTML = text;
+      });
+
+      // Update placeholders
+      document.querySelectorAll('[data-placeholder-en]').forEach(el => {
+        const ph = el.getAttribute('data-placeholder-' + lang);
+        if (ph) el.placeholder = ph;
+      });
+    }
+
+    // ── API Helpers ──
+    function getAdminToken() {
+      return new URLSearchParams(window.location.search).get('token') || '';
+    }
+
+    async function getRegistrations() {
+      try {
+        const res = await fetch(`${API_BASE}/registrations`, {
+          headers: { 'Authorization': `Bearer ${getAdminToken()}` }
+        });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data.registrations || [];
+      } catch { return []; }
+    }
+
+    async function saveRegistration(data) {
+      const res = await fetch(`${API_BASE}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      return await res.json();
+    }
+
+    async function updateCounter() {
+      try {
+        const res = await fetch(`${API_BASE}/count`);
+        const data = await res.json();
+        document.getElementById('regCount').textContent = data.count || 0;
+      } catch {
+        document.getElementById('regCount').textContent = '—';
+      }
+    }
+
+    // ── Form Submission ──
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const laptop = document.getElementById('regLaptop').checked;
+      const notifications = document.getElementById('regNotifications').checked;
+
+      if (!name || !email || !phone) return;
+
+      const btn = document.getElementById('submitBtn');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      try {
+        const result = await saveRegistration({ name, email, phone, laptop, notifications });
+
+        if (result.error) {
+          alert(result.error);
+          if (result.count !== undefined) {
+            document.getElementById('regCount').textContent = result.count;
+          }
+          btn.classList.remove('loading');
+          btn.disabled = false;
+          return;
+        }
+
+        // Show success
+        document.getElementById('formCard').style.display = 'none';
+        document.getElementById('highlights').style.display = 'none';
+        document.getElementById('successName').textContent = name;
+        document.getElementById('successCard').classList.add('show');
+
+        if (result.count !== undefined) {
+          document.getElementById('regCount').textContent = result.count;
+        }
+
+        this.reset();
+        if (isAdmin) await renderAdminTable();
+      } catch (err) {
+        alert(regLang === 'en'
+          ? 'Registration failed. Please check your internet connection and try again.'
+          : 'Falha na inscrição. Verifique sua conexão e tente novamente.');
+      }
+
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    });
+
+    // ── Register Another ──
+    function registerAnother() {
+      document.getElementById('successCard').classList.remove('show');
+      document.getElementById('formCard').style.display = '';
+      document.getElementById('highlights').style.display = '';
+      document.getElementById('regName').focus();
+    }
+
+    // ── Flyer Lightbox ──
+    function openFlyerLightbox(src) {
+      document.getElementById('flyerLightboxImg').src = src;
+      document.getElementById('flyerLightbox').classList.add('active');
+    }
+
+    function closeFlyerLightbox() {
+      document.getElementById('flyerLightbox').classList.remove('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeFlyerLightbox();
+    });
+
+    // ── Admin Panel ──
+    const isAdmin = new URLSearchParams(window.location.search).has('admin');
+
+    async function renderAdminTable() {
+      const regs = await getRegistrations();
+      const wrap = document.getElementById('adminTableWrap');
+
+      if (regs.length === 0) {
+        wrap.innerHTML = '<div class="admin-empty" data-en="No registrations yet." data-pt="Nenhuma inscrição ainda.">Nenhuma inscrição ainda.</div>';
+        setRegLang(regLang);
+        return;
+      }
+
+      let html = `<table class="admin-table">
+        <thead><tr>
+          <th>#</th>
+          <th data-en="Name" data-pt="Nome">Nome</th>
+          <th>Email</th>
+          <th data-en="Phone" data-pt="Telefone">Telefone</th>
+          <th>&#128187; Laptop</th>
+          <th data-en="Notifications" data-pt="Notificações">Notificações</th>
+          <th data-en="Time" data-pt="Hora">Hora</th>
+        </tr></thead><tbody>`;
+
+      regs.forEach((r, i) => {
+        const time = new Date(r.timestamp).toLocaleString(regLang === 'pt' ? 'pt-BR' : 'en-US', {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        const laptopIcon = r.laptop
+          ? '<span class="notif-yes">&#10003;</span>'
+          : '<span class="notif-no">&#10007;</span>';
+        const notifIcon = r.notifications
+          ? '<span class="notif-yes">&#10003;</span>'
+          : '<span class="notif-no">&#10007;</span>';
+        html += `<tr>
+          <td>${i + 1}</td>
+          <td>${escHtml(r.name)}</td>
+          <td>${escHtml(r.email)}</td>
+          <td>${escHtml(r.phone)}</td>
+          <td>${laptopIcon}</td>
+          <td>${notifIcon}</td>
+          <td>${time}</td>
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+      setRegLang(regLang);
+    }
+
+    function escHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    async function exportCSV() {
+      const regs = await getRegistrations();
+      if (regs.length === 0) return;
+
+      const header = 'Name,Email,Phone,Laptop,Notifications,Timestamp\n';
+      const rows = regs.map(r =>
+        `"${r.name}","${r.email}","${r.phone}",${r.laptop ? 'Yes' : 'No'},${r.notifications ? 'Yes' : 'No'},"${r.timestamp}"`
+      ).join('\n');
+
+      const blob = new Blob([header + rows], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `dons-digitais-registrations-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function clearRegistrations() {
+      const msg = regLang === 'en'
+        ? 'Are you sure you want to delete ALL registrations? This cannot be undone.'
+        : 'Tem certeza que deseja apagar TODAS as inscrições? Isso não pode ser desfeito.';
+      if (!confirm(msg)) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/registrations`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${getAdminToken()}` }
+        });
+        if (!res.ok) {
+          alert('Failed to clear registrations');
+          return;
+        }
+      } catch {
+        alert('Network error');
+        return;
+      }
+      await updateCounter();
+      await renderAdminTable();
+    }
+
+    // ── Floating Particles ──
+    function createParticles() {
+      const container = document.body;
+      for (let i = 0; i < 15; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (8 + Math.random() * 12) + 's';
+        p.style.animationDelay = Math.random() * 10 + 's';
+        p.style.width = (2 + Math.random() * 3) + 'px';
+        p.style.height = p.style.width;
+        container.appendChild(p);
+      }
+    }
+
+    // ── Init ──
+    document.addEventListener('DOMContentLoaded', async () => {
+      setRegLang(regLang);
+      await updateCounter();
+      createParticles();
+
+      if (isAdmin) {
+        document.getElementById('adminPanel').classList.add('show');
+        await renderAdminTable();
+      }
+
+      // Auto-focus first field
+      setTimeout(() => document.getElementById('regName').focus(), 500);
+    });
+  </script>
+
+</body>
+</html>

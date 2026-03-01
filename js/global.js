@@ -17,16 +17,23 @@ function setLang(lang) {
   });
 }
 
+// ── Base Path Helper ──
+function getBasePath() {
+  const meta = document.querySelector('meta[name="base-path"]');
+  return meta ? meta.content : '';
+}
+
 // ── Component Loader ──
 async function loadComponent(id, path) {
   const el = document.getElementById(id);
   if (!el) return;
   try {
-    const basePath = document.querySelector('meta[name="base-path"]');
-    const base = basePath ? basePath.content : '';
+    const base = getBasePath();
     const res = await fetch(base + path);
     if (res.ok) {
       el.innerHTML = await res.text();
+      // Rewrite absolute hrefs/srcs to use base-path (fixes file:// navigation)
+      fixAbsolutePaths(el);
       // Re-apply language after loading component
       setLang(currentLang);
       // Re-bind hamburger if header was loaded
@@ -37,6 +44,24 @@ async function loadComponent(id, path) {
   } catch (e) {
     console.error('Failed to load component:', path, e);
   }
+}
+
+// Rewrites absolute paths (starting with /) inside a container to use the base-path
+function fixAbsolutePaths(container) {
+  const base = getBasePath();
+  container.querySelectorAll('a[href^="/"]').forEach(a => {
+    const href = a.getAttribute('href');
+    if (href === '/') {
+      // Home link: use base or "./" for root-level pages
+      a.setAttribute('href', base || './');
+    } else {
+      a.setAttribute('href', base + href.substring(1));
+    }
+  });
+  container.querySelectorAll('img[src^="/"]').forEach(img => {
+    const src = img.getAttribute('src');
+    img.setAttribute('src', base + src.substring(1));
+  });
 }
 
 // ── Mobile Menu ──
