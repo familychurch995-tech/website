@@ -10,13 +10,16 @@
  *   OPTIONS *               — CORS preflight.
  *
  * Environment bindings:
- *   REGISTRATIONS  — KV namespace
- *   ADMIN_TOKEN    — Secret for admin endpoints
+ *   REGISTRATIONS      — KV namespace
+ *   ADMIN_TOKEN        — Secret for admin endpoints
+ *   TELEGRAM_BOT_TOKEN — Bot token for admin notifications
+ *   TELEGRAM_ADMIN_ID  — Chat ID for admin notifications
  */
 
 const ALLOWED_ORIGINS = [
   'https://familychurchct.net',
   'https://www.familychurchct.net',
+  'https://familychurch995-tech.github.io',
   'http://localhost:3000',
   'http://localhost:5500',
   'http://127.0.0.1:5500',
@@ -59,8 +62,41 @@ async function saveRegistrations(env, registrations) {
   await env.REGISTRATIONS.put(KV_KEY, JSON.stringify(registrations));
 }
 
+async function notifyTelegram(env, registration, totalCount) {
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_ADMIN_ID) return;
+  const laptop = registration.laptop ? '✅ Sim' : '❌ Não';
+  const text = [
+    '🎉 *Nova Inscrição \\- Dons Digitais\\!*',
+    '',
+    `👤 *Nome:* ${escTg(registration.name)}`,
+    `📧 *Email:* ${escTg(registration.email)}`,
+    `📱 *Telefone:* ${escTg(registration.phone)}`,
+    `💻 *Traz Laptop:* ${laptop}`,
+    '',
+    `📊 *Total de inscritos:* ${totalCount}`,
+  ].join('\n');
+
+  try {
+    await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: env.TELEGRAM_ADMIN_ID,
+        text,
+        parse_mode: 'MarkdownV2',
+      }),
+    });
+  } catch (e) {
+    console.error('Telegram notification failed:', e);
+  }
+}
+
+function escTg(str) {
+  return str.replace(/([_*\[\]()~`>#+=|{}.!\\-])/g, '\\$1');
+}
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
     const method = request.method;
@@ -85,7 +121,7 @@ export default {
         }
 
         const registration = {
-          id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+          id: Date.now().toString(36) + Math.random().toString(36).substring(2, 7),
           name: name.trim(),
           email: email.trim().toLowerCase(),
           phone: phone.trim(),
@@ -106,6 +142,9 @@ export default {
 
         registrations.push(registration);
         await saveRegistrations(env, registrations);
+
+        // Notify admin via Telegram (fire-and-forget)
+        ctx.waitUntil(notifyTelegram(env, registration, registrations.length));
 
         return jsonResponse({ success: true, count: registrations.length }, 201, origin);
       }

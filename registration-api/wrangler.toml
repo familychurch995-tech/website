@@ -4,10 +4,4 @@ compatibility_date = "2024-01-01"
 
 [[kv_namespaces]]
 binding = "REGISTRATIONS"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
-# Run this to get the id:
-#   npx wrangler kv:namespace create REGISTRATIONS
-
-# Set admin token as secret:
-#   npx wrangler secret put ADMIN_TOKEN
-# (enter a strong random string when prompted)
+id = "38313f662c3d484c94f234fd72929329"
