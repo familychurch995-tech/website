@@ -31,18 +31,10 @@
       },
       {
         "time": "11:00 AM",
-        "title_en": "Worship",
-        "title_pt": "Louvor",
-        "desc_en": "A moment of praise and worship to open our hearts and minds.",
-        "desc_pt": "Um momento de louvor e adoração para abrir nossos corações e mentes.",
-        "icon": "music"
-      },
-      {
-        "time": "11:15 AM",
-        "title_en": "Lecture — The Parable of Digital Talents",
-        "title_pt": "Palestra — A Parábola dos Talentos Digitais",
-        "desc_en": "Discover what Vibe Coding is, see live demos, and understand how AI can multiply your talents.",
-        "desc_pt": "Descubra o que é Vibe Coding, veja demonstrações ao vivo e entenda como a IA pode multiplicar seus talentos.",
+        "title_en": "Lecture & Word of God",
+        "title_pt": "Palestra & Palavra de Deus",
+        "desc_en": "Discover what Vibe Coding is, see live demos, and understand how AI can multiply your talents — grounded in the Word of God.",
+        "desc_pt": "Descubra o que é Vibe Coding, veja demonstrações ao vivo e entenda como a IA pode multiplicar seus talentos — fundamentado na Palavra de Deus.",
         "icon": "lecture"
       },
       {
