@@ -116,11 +116,13 @@ async function loadEventDetail() {
 
     // Build highlights
     let highlightsHtml = '';
-    const highlights = lang === 'en' ? event.highlights_en : event.highlights_pt;
-    if (highlights && highlights.length > 0) {
+    if (event.highlights_en && event.highlights_en.length > 0) {
       highlightsHtml = `
         <div class="event-highlights fade-in">
-          ${highlights.map((h, i) => `<span class="event-highlight-chip ${i % 2 === 0 ? 'accent' : ''}">${h}</span>`).join('')}
+          ${event.highlights_en.map((hEn, i) => {
+            const hPt = event.highlights_pt[i] || hEn;
+            return `<span class="event-highlight-chip ${i % 2 === 0 ? 'accent' : ''}" data-en="${hEn}" data-pt="${hPt}">${lang === 'en' ? hEn : hPt}</span>`;
+          }).join('')}
         </div>
       `;
     }
@@ -159,13 +161,15 @@ async function loadEventDetail() {
 
     // Build topics list
     let topicsHtml = '';
-    const topics = lang === 'en' ? event.topics_en : event.topics_pt;
-    if (topics && topics.length > 0) {
+    if (event.topics_en && event.topics_en.length > 0) {
       topicsHtml = `
         <div class="event-topics-section fade-in">
           <h3 data-en="What You'll Learn" data-pt="O Que Você Vai Aprender">${lang === 'en' ? "What You'll Learn" : 'O Que Você Vai Aprender'}</h3>
           <ul class="topics-list">
-            ${topics.map(t => `<li><span class="topic-icon">&#9654;</span> ${t}</li>`).join('')}
+            ${event.topics_en.map((tEn, i) => {
+              const tPt = event.topics_pt[i] || tEn;
+              return `<li data-en="<span class='topic-icon'>&#9654;</span> ${tEn}" data-pt="<span class='topic-icon'>&#9654;</span> ${tPt}"><span class="topic-icon">&#9654;</span> ${lang === 'en' ? tEn : tPt}</li>`;
+            }).join('')}
           </ul>
         </div>
       `;
