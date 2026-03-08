@@ -18,8 +18,14 @@
     "verse_text_en": "The one who had received five talents went at once and traded with them, and made five more talents.",
     "verse_text_pt": "O que tinha recebido cinco talentos saiu imediatamente, negociou com eles, e ganhou outros cinco.",
     "registration_url": "register.html",
-    "presenters_en": ["Addans Soares", "Pr. Marcos Augusto"],
-    "presenters_pt": ["Addans Soares", "Pr. Marcos Augusto"],
+    "presenters_en": [
+      "Addans Soares",
+      "Pr. Marcos Augusto"
+    ],
+    "presenters_pt": [
+      "Addans Soares",
+      "Pr. Marcos Augusto"
+    ],
     "schedule": [
       {
         "time": "10:00 AM",
@@ -95,5 +101,19 @@
     "image": "images/events/cristina-mel-em-louvor-e-palavra-2026/cover.jpg",
     "photos": [],
     "status": "past"
+  },
+  {
+    "id": "culto-especial-de-aniversario-2026",
+    "title_en": "Special Anniversary Service",
+    "title_pt": "Culto Especial de Aniversário",
+    "description_en": "Join us as we celebrate our church's anniversary with a special service! It will be a time to reflect on God's grace and rejoice in His presence in our lives. We're excited to share this moment with you!",
+    "description_pt": "Venha celebrar conosco o aniversário da nossa igreja com um culto especial! Será uma oportunidade para refletir sobre a graça de Deus e alegar a sua presença em nossas vidas. Estamos ansiosos para compartilhar esse momento com você!",
+    "date": "2026-03-22",
+    "time": "10:00 AM",
+    "location_en": "Family Church — 18 Cushing Street, Stamford, CT",
+    "location_pt": "Family Church — 18 Cushing Street, Stamford, CT",
+    "image": "images/events/culto-especial-de-aniversario-2026/cover.jpg",
+    "photos": [],
+    "status": "upcoming"
   }
 ]
