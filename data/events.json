@@ -115,5 +115,19 @@
     "image": "images/events/culto-especial-de-aniversario-2026/cover.jpg",
     "photos": [],
     "status": "upcoming"
+  },
+  {
+    "id": "culto-especial-de-pascua-com-egg-hunt-2026",
+    "title_en": "Easter Special Service with Egg Hunt",
+    "title_pt": "Culto Especial de Páscua com Egg Hunt",
+    "description_en": "Join us to celebrate Easter with our community! We will have a special service with activities for kids and an exciting Egg Hunt. Let's share the joy of Easter together!",
+    "description_pt": "Venha celebrar a Páscua com a nossa comunidade! Teremos um culto especial com atividades para as crianças e um Egg Hunt emocionante. Vamos compartilhar a alegria da Páscua juntos!",
+    "date": "2026-04-05",
+    "time": "12:00 PM",
+    "location_en": "Family Church — 18 Cushing Street, Stamford, CT",
+    "location_pt": "Family Church — 18 Cushing Street, Stamford, CT",
+    "image": "images/events/culto-especial-de-pascua-com-egg-hunt-2026/cover.jpg",
+    "photos": [],
+    "status": "upcoming"
   }
 ]
