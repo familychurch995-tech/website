@@ -231,6 +231,15 @@ async function loadEventDetail() {
             <a href="logic-jokes.html" class="btn btn-cta-register" data-en="&#9654; Open Interactive App" data-pt="&#9654; Abrir App Interativo">${lang === 'en' ? '&#9654; Open Interactive App' : '&#9654; Abrir App Interativo'}</a>
           </div>
         </div>
+        <div class="event-cta fade-in">
+          <div class="cta-card">
+            <div class="cta-content">
+              <h3 data-en="&#9889; Vibe Coding — Build Your App!" data-pt="&#9889; Vibe Coding — Crie Seu App!">${lang === 'en' ? '&#9889; Vibe Coding — Build Your App!' : '&#9889; Vibe Coding — Crie Seu App!'}</h3>
+              <p data-en="Describe what you want and AI builds it for you — no coding skills needed!" data-pt="Descreva o que você quer e a IA cria pra você — sem precisar saber programar!">${lang === 'en' ? 'Describe what you want and AI builds it for you — no coding skills needed!' : 'Descreva o que você quer e a IA cria pra você — sem precisar saber programar!'}</p>
+            </div>
+            <a href="vibe-coding.html" class="btn btn-cta-register" data-en="&#128640; Start Vibe Coding" data-pt="&#128640; Começar Vibe Coding">${lang === 'en' ? '&#128640; Start Vibe Coding' : '&#128640; Começar Vibe Coding'}</a>
+          </div>
+        </div>
       `;
     }
 
