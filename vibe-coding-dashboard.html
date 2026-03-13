@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vibe Coding Dashboard — Dons Digitais | Family Church</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-dark: #0a0a12;
+      --bg-card: rgba(18, 18, 30, 0.85);
+      --gold: #FFD700;
+      --gold-dim: #b8960f;
+      --gold-glow: rgba(255, 215, 0, 0.3);
+      --green: #00FF41;
+      --green-dim: #00cc34;
+      --white: #ffffff;
+      --text: rgba(255, 255, 255, 0.9);
+      --text-dim: rgba(255, 255, 255, 0.5);
+      --border: rgba(255, 215, 0, 0.15);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* ── Animated Background ── */
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    }
+    .bg-grid::before {
+      content: ''; position: absolute; inset: -50%;
+      background-image: linear-gradient(rgba(255,215,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove { 0% { transform: translate(0,0); } 100% { transform: translate(60px,60px); } }
+
+    .glow-orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.12; pointer-events: none; z-index: 0; }
+    .glow-orb-1 { width: 300px; height: 300px; background: var(--gold); top: -80px; right: -80px; animation: orbPulse 8s ease-in-out infinite; }
+    .glow-orb-2 { width: 200px; height: 200px; background: var(--green); bottom: -40px; left: -40px; animation: orbPulse 10s ease-in-out infinite reverse; }
+    @keyframes orbPulse { 0%,100% { opacity: 0.08; transform: scale(1); } 50% { opacity: 0.18; transform: scale(1.2); } }
+
+    /* ── Header ── */
+    .dashboard-header {
+      position: relative; z-index: 10;
+      padding: 1.5rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 10, 18, 0.9);
+      backdrop-filter: blur(10px);
+    }
+    .dashboard-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--white);
+    }
+    .dashboard-header h1 span { color: var(--gold); }
+    .header-info {
+      display: flex; align-items: center; gap: 1.5rem;
+      font-size: 0.85rem; color: var(--text-dim);
+    }
+    .participant-count {
+      display: flex; align-items: center; gap: 0.4rem;
+      background: rgba(255,215,0,0.1); padding: 6px 14px;
+      border-radius: 20px; border: 1px solid var(--border);
+      color: var(--gold); font-weight: 600;
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+      animation: statusPulse 2s ease-in-out infinite;
+    }
+    @keyframes statusPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .refresh-info { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; }
+
+    /* ── Controls Bar ── */
+    .controls-bar {
+      position: relative; z-index: 10;
+      padding: 0.8rem 2rem;
+      display: flex; align-items: center; gap: 1rem;
+      background: rgba(10, 10, 18, 0.7);
+      border-bottom: 1px solid rgba(255,215,0,0.08);
+    }
+    .controls-bar button {
+      padding: 6px 16px; border-radius: 8px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.8rem;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .controls-bar button:hover { background: rgba(255,215,0,0.1); border-color: var(--gold-dim); }
+    .controls-bar button.active { background: var(--gold); color: var(--bg-dark); font-weight: 600; border-color: var(--gold); }
+    .controls-bar .spacer { flex: 1; }
+    .auto-refresh-label {
+      font-size: 0.75rem; color: var(--text-dim);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .auto-refresh-label input { accent-color: var(--gold); }
+
+    /* ── Grid ── */
+    .apps-container {
+      position: relative; z-index: 10;
+      padding: 1.5rem;
+      display: grid;
+      gap: 1.2rem;
+      grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+      overflow-y: auto;
+      max-height: calc(100vh - 130px);
+    }
+    .apps-container.layout-2 { grid-template-columns: repeat(2, 1fr); }
+    .apps-container.layout-4 { grid-template-columns: repeat(2, 1fr); }
+    .apps-container.layout-1 { grid-template-columns: 1fr; }
+
+    /* ── App Card ── */
+    .app-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .app-card:hover {
+      border-color: var(--gold-dim);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.08);
+    }
+    .app-card-header {
+      padding: 0.8rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255,215,0,0.08);
+      background: rgba(255,255,255,0.02);
+    }
+    .app-card-name {
+      font-weight: 700; font-size: 0.95rem; color: var(--gold);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .app-card-name .avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 800; color: var(--bg-dark);
+    }
+    .app-card-time {
+      font-size: 0.7rem; color: var(--text-dim);
+      font-family: 'Share Tech Mono', monospace;
+    }
+    .app-card-actions {
+      display: flex; gap: 0.4rem;
+    }
+    .app-card-actions button {
+      padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border);
+      background: transparent; color: var(--text-dim); font-size: 0.7rem;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .app-card-actions button:hover { background: rgba(255,215,0,0.1); color: var(--gold); }
+    .app-card-preview {
+      flex: 1; min-height: 350px; position: relative;
+      background: #fff;
+    }
+    .app-card-preview iframe {
+      width: 100%; height: 100%; border: none;
+      position: absolute; inset: 0;
+    }
+
+    /* ── Expanded View Modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+      padding: 2rem;
+    }
+    .modal-overlay.active { display: flex; flex-direction: column; }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 1rem;
+    }
+    .modal-header h2 { color: var(--gold); font-size: 1.2rem; }
+    .modal-close {
+      width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06); color: var(--white); font-size: 1.2rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,0,0,0.2); border-color: #f44; }
+    .modal-body {
+      flex: 1; background: #fff; border-radius: 12px; overflow: hidden;
+    }
+    .modal-body iframe { width: 100%; height: 100%; border: none; }
+
+    /* ── Empty State ── */
+    .empty-state {
+      position: relative; z-index: 10;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 60vh; text-align: center; padding: 2rem;
+    }
+    .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.6; }
+    .empty-state h2 {
+      font-family: 'Playfair Display', serif; font-size: 1.6rem;
+      color: var(--white); margin-bottom: 0.5rem;
+    }
+    .empty-state p { color: var(--text-dim); max-width: 400px; line-height: 1.6; }
+    .empty-state .waiting-dots::after {
+      content: ''; animation: dots 1.5s steps(4, end) infinite;
+    }
+    @keyframes dots {
+      0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; }
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 500;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.7rem 1.2rem;
+      font-size: 0.8rem; color: var(--text);
+      opacity: 0; transform: translateY(10px);
+      transition: all 0.3s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow-orb glow-orb-1"></div>
+  <div class="glow-orb glow-orb-2"></div>
+
+  <header class="dashboard-header">
+    <h1><span>⚡</span> Vibe Coding — <span>Dashboard</span></h1>
+    <div class="header-info">
+      <div class="participant-count">
+        <span class="status-dot"></span>
+        <span id="count">0</span> apps
+      </div>
+      <div class="refresh-info">Last refresh: <span id="last-refresh">--:--:--</span></div>
+    </div>
+  </header>
+
+  <div class="controls-bar">
+    <button class="layout-btn active" data-layout="auto">Auto</button>
+    <button class="layout-btn" data-layout="layout-2">2 columns</button>
+    <button class="layout-btn" data-layout="layout-1">Full width</button>
+    <div class="spacer"></div>
+    <label class="auto-refresh-label">
+      <input type="checkbox" id="auto-refresh" checked /> Auto-refresh (10s)
+    </label>
+    <button id="refresh-now" style="border-color: var(--green); color: var(--green);">↻ Refresh Now</button>
+  </div>
+
+  <div class="apps-container" id="apps-container">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">🚀</div>
+      <h2>Waiting for participants<span class="waiting-dots"></span></h2>
+      <p>When participants start building apps, they will appear here in real time. Open <strong>vibe-coding.html</strong> on their devices to begin!</p>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">App Preview</h2>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <iframe id="modal-iframe" sandbox="allow-scripts allow-modals"></iframe>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API_BASE = 'https://familychurch-vibe-coding-api.familychurch995.workers.dev';
+    let autoRefreshEnabled = true;
+    let refreshTimer = null;
+    let currentLayout = 'auto';
+    let appsCache = [];
+
+    const container = document.getElementById('apps-container');
+    const emptyState = document.getElementById('empty-state');
+    const countEl = document.getElementById('count');
+    const lastRefreshEl = document.getElementById('last-refresh');
+    const modal = document.getElementById('modal');
+    const modalIframe = document.getElementById('modal-iframe');
+    const modalTitle = document.getElementById('modal-title');
+    const toast = document.getElementById('toast');
+
+    // ── Layout Controls ──
+    document.querySelectorAll('.layout-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentLayout = btn.dataset.layout;
+        applyLayout();
+      });
+    });
+
+    function applyLayout() {
+      container.classList.remove('layout-1', 'layout-2', 'layout-4');
+      if (currentLayout !== 'auto') {
+        container.classList.add(currentLayout);
+      }
+    }
+
+    // ── Auto Refresh Toggle ──
+    document.getElementById('auto-refresh').addEventListener('change', (e) => {
+      autoRefreshEnabled = e.target.checked;
+      if (autoRefreshEnabled) startAutoRefresh();
+      else stopAutoRefresh();
+    });
+
+    document.getElementById('refresh-now').addEventListener('click', () => {
+      fetchApps();
+      showToast('Refreshed!');
+    });
+
+    // ── Modal ──
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    function openModal(name, html) {
+      modalTitle.textContent = name + "'s App";
+      modalIframe.srcdoc = html;
+      modal.classList.add('active');
+    }
+    function closeModal() {
+      modal.classList.remove('active');
+      modalIframe.srcdoc = '';
+    }
+
+    // ── Toast ──
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // ── Fetch & Render Apps ──
+    async function fetchApps() {
+      try {
+        const res = await fetch(API_BASE + '/apps');
+        if (!res.ok) throw new Error('API error');
+        const data = await res.json();
+        const apps = data.apps || [];
+
+        countEl.textContent = apps.length;
+        lastRefreshEl.textContent = new Date().toLocaleTimeString();
+
+        if (apps.length === 0) {
+          emptyState.style.display = '';
+          // Remove app cards but keep empty state
+          container.querySelectorAll('.app-card').forEach(c => c.remove());
+          return;
+        }
+
+        emptyState.style.display = 'none';
+
+        // Fetch full app data for each participant
+        const fullApps = await Promise.all(
+          apps.map(async (app) => {
+            try {
+              const r = await fetch(API_BASE + '/app/' + encodeURIComponent(app.name));
+              if (!r.ok) return null;
+              return await r.json();
+            } catch { return null; }
+          })
+        );
+
+        appsCache = fullApps.filter(Boolean);
+        renderApps();
+      } catch (err) {
+        console.error('Fetch error:', err);
+        showToast('Failed to connect to API');
+      }
+    }
+
+    function renderApps() {
+      // Remove existing cards
+      container.querySelectorAll('.app-card').forEach(c => c.remove());
+
+      appsCache.forEach(app => {
+        const card = document.createElement('div');
+        card.className = 'app-card';
+
+        const initials = app.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+        const time = app.updatedAt ? new Date(app.updatedAt).toLocaleTimeString() : '--';
+
+        card.innerHTML = `
+          <div class="app-card-header">
+            <div class="app-card-name">
+              <div class="avatar">${initials}</div>
+              ${escapeHtml(app.name)}
+            </div>
+            <div style="display:flex;align-items:center;gap:0.8rem;">
+              <span class="app-card-time">Updated ${time}</span>
+              <div class="app-card-actions">
+                <button class="expand-btn" title="Full screen">⛶</button>
+                <button class="download-btn" title="Download HTML">⬇</button>
+              </div>
+            </div>
+          </div>
+          <div class="app-card-preview">
+            <iframe sandbox="allow-scripts allow-modals" srcdoc="${escapeAttr(app.html || '')}"></iframe>
+          </div>
+        `;
+
+        card.querySelector('.expand-btn').addEventListener('click', () => {
+          openModal(app.name, app.html || '');
+        });
+
+        card.querySelector('.download-btn').addEventListener('click', () => {
+          const blob = new Blob([app.html || ''], { type: 'text/html' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `${app.name.toLowerCase().replace(/\s+/g, '-')}-app.html`;
+          a.click();
+          URL.revokeObjectURL(a.href);
+          showToast(`Downloaded ${app.name}'s app`);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+    function escapeAttr(str) {
+      return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // ── Auto Refresh ──
+    function startAutoRefresh() {
+      stopAutoRefresh();
+      refreshTimer = setInterval(fetchApps, 10000);
+    }
+    function stopAutoRefresh() {
+      if (refreshTimer) clearInterval(refreshTimer);
+      refreshTimer = null;
+    }
+
+    // ── Init ──
+    fetchApps();
+    startAutoRefresh();
+  </script>
+</body>
+</html>

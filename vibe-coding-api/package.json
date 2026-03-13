@@ -1,0 +1,13 @@
+{
+  "name": "familychurch-vibe-coding-api",
+  "version": "1.0.0",
+  "description": "Vibe Coding API — Claude proxy for Dons Digitais workshop",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

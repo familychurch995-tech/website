@@ -1,0 +1,7 @@
+name = "familychurch-vibe-coding-api"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "VIBE_SESSIONS"
+id = "9a8dcd04fabd4c77bbdb46e2f10b1124"

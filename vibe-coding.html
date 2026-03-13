@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Vibe Coding — Dons Digitais | Family Church</title>
+  <meta name="description" content="Crie apps apenas conversando com a IA. Workshop Dons Digitais — Family Church." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-dark: #0a0a12;
+      --bg-card: rgba(18, 18, 30, 0.85);
+      --gold: #FFD700;
+      --gold-dim: #b8960f;
+      --gold-glow: rgba(255, 215, 0, 0.3);
+      --green: #00FF41;
+      --green-dim: #00cc34;
+      --white: #ffffff;
+      --text: rgba(255, 255, 255, 0.9);
+      --text-dim: rgba(255, 255, 255, 0.5);
+      --border: rgba(255, 215, 0, 0.15);
+      --accent-blue: #3b6cf5;
+    }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      position: relative;
+    }
+
+    /* ── Animated Background ── */
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    }
+    .bg-grid::before {
+      content: ''; position: absolute; inset: -50%;
+      background-image: linear-gradient(rgba(255,215,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove { 0% { transform: translate(0,0); } 100% { transform: translate(60px,60px); } }
+
+    .glow-orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.12; pointer-events: none; z-index: 0; }
+    .glow-orb-1 { width: 300px; height: 300px; background: var(--gold); top: -80px; right: -80px; animation: orbPulse 8s ease-in-out infinite; }
+    .glow-orb-2 { width: 200px; height: 200px; background: var(--green); bottom: -40px; left: -40px; animation: orbPulse 10s ease-in-out infinite reverse; }
+    @keyframes orbPulse { 0%,100% { opacity: 0.08; transform: scale(1); } 50% { opacity: 0.18; transform: scale(1.2); } }
+
+    /* ── Language Toggle ── */
+    .lang-bar {
+      position: fixed; top: 12px; right: 12px; z-index: 200;
+      display: flex; gap: 4px; background: rgba(255,255,255,0.06); border-radius: 8px; padding: 3px;
+    }
+    .lang-btn {
+      padding: 4px 10px; border: none; border-radius: 6px; font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 1px; cursor: pointer; transition: all 0.2s; background: transparent;
+      color: rgba(255,255,255,0.4); font-family: inherit;
+    }
+    .lang-btn.active { background: var(--gold); color: var(--bg-dark); }
+
+    /* ── Welcome Screen ── */
+    #welcome-screen {
+      position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 100vh; padding: 2rem;
+    }
+    .welcome-card {
+      background: var(--bg-card); backdrop-filter: blur(20px); border-radius: 20px;
+      border: 1px solid var(--border); padding: 2.5rem 2rem; max-width: 420px; width: 100%;
+      text-align: center; border-top: 3px solid var(--gold);
+    }
+    .welcome-card h1 {
+      font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--white); margin-bottom: 0.3rem;
+    }
+    .welcome-card .subtitle { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 2rem; }
+    .welcome-card label { display: block; text-align: left; color: var(--gold); font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .welcome-card input {
+      width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04); color: var(--white); font-size: 1rem; font-family: inherit;
+      outline: none; transition: border-color 0.3s;
+    }
+    .welcome-card input:focus { border-color: var(--gold); }
+    .welcome-card input::placeholder { color: var(--text-dim); }
+    .start-btn {
+      width: 100%; margin-top: 1.5rem; padding: 16px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim)); color: var(--bg-dark);
+      font-size: 1rem; font-weight: 800; font-family: inherit; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 0.5px;
+    }
+    .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--gold-glow); }
+    .start-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── App Screen ── */
+    #app-screen {
+      display: none; position: relative; z-index: 10; height: 100vh; flex-direction: column;
+    }
+    #app-screen.active { display: flex; }
+
+    .top-bar {
+      display: flex; align-items: center; justify-content: space-between; padding: 10px 16px;
+      background: rgba(10,10,18,0.95); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); flex-shrink: 0; gap: 8px;
+    }
+    .top-bar-title { color: var(--gold); font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
+    .top-bar-name { color: var(--text-dim); font-size: 0.75rem; font-family: 'Share Tech Mono', monospace; }
+    .tab-btns { display: flex; gap: 4px; }
+    .tab-btn {
+      padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; background: transparent;
+      color: var(--text-dim); font-size: 0.75rem; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--gold); color: var(--bg-dark); border-color: var(--gold); }
+
+    /* ── Main Container ── */
+    .main-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+    /* ── Chat Panel ── */
+    .chat-panel {
+      display: flex; flex-direction: column; width: 100%; flex-shrink: 0;
+    }
+    .messages {
+      flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+      scroll-behavior: smooth;
+    }
+    .messages::-webkit-scrollbar { width: 4px; }
+    .messages::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.2); border-radius: 2px; }
+
+    .msg { max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 0.9rem; line-height: 1.5; animation: msgIn 0.3s ease-out; }
+    @keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .msg-user {
+      align-self: flex-end; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05));
+      border: 1px solid rgba(255,215,0,0.2); border-bottom-right-radius: 4px; color: var(--text);
+    }
+    .msg-ai {
+      align-self: flex-start; background: var(--bg-card); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.06); border-bottom-left-radius: 4px; color: var(--text);
+    }
+    .msg-ai .msg-label { font-size: 0.65rem; color: var(--green); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .msg-ai .app-badge {
+      display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; padding: 4px 10px;
+      background: rgba(0,255,65,0.1); border: 1px solid rgba(0,255,65,0.2); border-radius: 6px;
+      font-size: 0.7rem; color: var(--green); font-weight: 600;
+    }
+    .msg-system {
+      align-self: center; background: transparent; color: var(--text-dim); font-size: 0.8rem;
+      text-align: center; font-style: italic; padding: 8px;
+    }
+
+    .typing-dots { display: flex; gap: 4px; padding: 4px 0; }
+    .typing-dots span {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--gold); opacity: 0.3;
+      animation: dotBounce 1.4s infinite ease-in-out;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce { 0%,80%,100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.2); } }
+
+    .input-area {
+      display: flex; gap: 8px; padding: 12px 16px; background: rgba(10,10,18,0.95);
+      border-top: 1px solid var(--border); flex-shrink: 0; align-items: flex-end;
+    }
+    .input-area textarea {
+      flex: 1; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04); color: var(--white); font-size: 0.95rem;
+      font-family: inherit; outline: none; resize: none; min-height: 46px; max-height: 120px;
+      line-height: 1.4; transition: border-color 0.3s;
+    }
+    .input-area textarea:focus { border-color: var(--gold); }
+    .input-area textarea::placeholder { color: var(--text-dim); }
+    .send-btn {
+      width: 46px; height: 46px; border-radius: 14px; border: none;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim)); color: var(--bg-dark);
+      font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: transform 0.2s, opacity 0.2s;
+    }
+    .send-btn:hover { transform: scale(1.05); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── Preview Panel ── */
+    .preview-panel {
+      display: none; flex-direction: column; width: 100%; background: #111;
+    }
+    .preview-toolbar {
+      display: flex; align-items: center; justify-content: space-between; padding: 8px 12px;
+      background: rgba(10,10,18,0.95); border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .preview-toolbar-left { display: flex; gap: 6px; }
+    .preview-tool-btn {
+      padding: 5px 12px; border: 1px solid var(--border); border-radius: 6px; background: transparent;
+      color: var(--text-dim); font-size: 0.7rem; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all 0.2s;
+    }
+    .preview-tool-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .preview-tool-btn.active { background: rgba(255,215,0,0.1); border-color: var(--gold); color: var(--gold); }
+    .preview-empty {
+      flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-dim);
+      font-size: 0.9rem; text-align: center; padding: 2rem;
+    }
+    .preview-empty .big-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+    #previewFrame {
+      flex: 1; border: none; background: white; border-radius: 0;
+      display: none; width: 100%; height: 100%;
+    }
+    #codeViewer {
+      flex: 1; display: none; overflow: auto; padding: 16px; margin: 0;
+      background: #0d0d1a; color: #a0e8af; font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem; line-height: 1.6; white-space: pre-wrap; word-break: break-all;
+    }
+    .remaining-badge {
+      font-size: 0.65rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* ── iPad+ landscape: side by side ── */
+    @media (min-width: 768px) {
+      .tab-btns { display: none; }
+      .chat-panel { width: 42%; border-right: 1px solid var(--border); }
+      .preview-panel { display: flex !important; width: 58%; }
+    }
+
+    /* ── Phone: stacked with tabs ── */
+    @media (max-width: 767px) {
+      .chat-panel { width: 100%; }
+      .preview-panel { width: 100%; position: absolute; inset: 0; z-index: 5; }
+      .chat-panel.hidden { display: none; }
+      .preview-panel.hidden { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow-orb glow-orb-1"></div>
+  <div class="glow-orb glow-orb-2"></div>
+
+  <div class="lang-bar">
+    <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn active" id="btnPt" onclick="setLang('pt')">PT</button>
+  </div>
+
+  <!-- WELCOME SCREEN -->
+  <div id="welcome-screen">
+    <div class="welcome-card">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✨</div>
+      <h1 data-en="Vibe Coding" data-pt="Vibe Coding">Vibe Coding</h1>
+      <p class="subtitle" data-en="Build apps just by talking — no code needed" data-pt="Crie apps apenas conversando — sem precisar programar">Crie apps apenas conversando — sem precisar programar</p>
+      <label data-en="YOUR NAME" data-pt="SEU NOME">SEU NOME</label>
+      <input type="text" id="nameInput" placeholder="" maxlength="30" autocomplete="off" />
+      <button class="start-btn" id="startBtn" onclick="startSession()" data-en="Start Building ✨" data-pt="Começar a Criar ✨">Começar a Criar ✨</button>
+    </div>
+  </div>
+
+  <!-- APP SCREEN -->
+  <div id="app-screen">
+    <header class="top-bar">
+      <div>
+        <div class="top-bar-title">DONS DIGITAIS — VIBE CODING</div>
+        <div class="top-bar-name" id="displayName"></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="remaining-badge" id="remainingBadge"></span>
+        <div class="tab-btns">
+          <button class="tab-btn active" id="tabChat" onclick="switchTab('chat')" data-en="Chat" data-pt="Chat">Chat</button>
+          <button class="tab-btn" id="tabPreview" onclick="switchTab('preview')" data-en="Preview" data-pt="Preview">Preview</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-container">
+      <!-- Chat Panel -->
+      <div class="chat-panel" id="chatPanel">
+        <div class="messages" id="messages"></div>
+        <div class="input-area">
+          <textarea id="userInput" rows="1" placeholder="" onkeydown="handleKey(event)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview Panel -->
+      <div class="preview-panel" id="previewPanel">
+        <div class="preview-toolbar">
+          <div class="preview-toolbar-left">
+            <button class="preview-tool-btn" id="btnCode" onclick="toggleCode()" data-en="&lt;/&gt; Code" data-pt="&lt;/&gt; Código">&lt;/&gt; Código</button>
+            <button class="preview-tool-btn" id="btnDownload" onclick="downloadApp()" data-en="&#11015; Download" data-pt="&#11015; Baixar">&#11015; Baixar</button>
+          </div>
+        </div>
+        <div class="preview-empty" id="previewEmpty">
+          <div>
+            <span class="big-icon">🚀</span>
+            <span data-en="Your app will appear here!<br>Type what you want to build in the chat." data-pt="Seu app vai aparecer aqui!<br>Digite o que você quer criar no chat.">Seu app vai aparecer aqui!<br>Digite o que você quer criar no chat.</span>
+          </div>
+        </div>
+        <iframe id="previewFrame" sandbox="allow-scripts allow-modals"></iframe>
+        <pre id="codeViewer"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Config ──
+    const API_BASE = 'https://familychurch-vibe-coding-api.familychurch995.workers.dev';
+
+    // ── State ──
+    let participantName = '';
+    let conversationMessages = [];
+    let currentHtml = '';
+    let lang = localStorage.getItem('fc-lang') || 'pt';
+    let sending = false;
+    let showingCode = false;
+
+    // ── Language ──
+    function setLang(l) {
+      lang = l;
+      localStorage.setItem('fc-lang', l);
+      document.documentElement.lang = l === 'pt' ? 'pt-BR' : 'en';
+      document.getElementById('btnEn').classList.toggle('active', l === 'en');
+      document.getElementById('btnPt').classList.toggle('active', l === 'pt');
+      document.querySelectorAll('[data-en]').forEach(function(el) {
+        var text = el.getAttribute('data-' + l);
+        if (text) el.innerHTML = text;
+      });
+      // Update placeholder
+      var inp = document.getElementById('userInput');
+      if (inp) inp.placeholder = l === 'en' ? 'Describe the app you want to build...' : 'Descreva o app que você quer criar...';
+      var ni = document.getElementById('nameInput');
+      if (ni) ni.placeholder = l === 'en' ? 'E.g.: Maria' : 'Ex.: Maria';
+    }
+
+    // ── Session ──
+    function startSession() {
+      var name = document.getElementById('nameInput').value.trim();
+      if (!name) return;
+      participantName = name;
+      document.getElementById('displayName').textContent = name;
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('app-screen').classList.add('active');
+
+      // Try restore session
+      var saved = localStorage.getItem('vibe-session-' + name.toLowerCase());
+      if (saved) {
+        try {
+          var data = JSON.parse(saved);
+          conversationMessages = data.messages || [];
+          currentHtml = data.html || '';
+          // Re-render messages
+          conversationMessages.forEach(function(m) {
+            if (m.role === 'user') addMsgBubble('user', m.content);
+            else addAiBubble(m.content, false);
+          });
+          if (currentHtml) updatePreview(currentHtml);
+        } catch(e) {}
+      }
+
+      // Welcome message
+      if (conversationMessages.length === 0) {
+        var welcomeMsg = lang === 'en'
+          ? "Hi " + name + "! 👋 I'm your AI coding assistant. Tell me what app you want to build — describe it in your own words and I'll create it for you!"
+          : "Oi " + name + "! 👋 Eu sou seu assistente de programação com IA. Me diz que app você quer criar — descreve com suas palavras e eu vou criar pra você!";
+        addMsgBubble('system', welcomeMsg);
+      }
+
+      document.getElementById('userInput').focus();
+      setLang(lang); // re-apply
+    }
+
+    // ── Messages ──
+    function addMsgBubble(type, text) {
+      var div = document.createElement('div');
+      div.className = 'msg msg-' + type;
+      div.textContent = text;
+      document.getElementById('messages').appendChild(div);
+      scrollChat();
+    }
+
+    function addAiBubble(content, animate) {
+      var div = document.createElement('div');
+      div.className = 'msg msg-ai';
+      // Strip code block from display text
+      var displayText = content.replace(/```html[\s\S]*?```/g, '').trim();
+      var hasCode = /```html/.test(content);
+      var html = '<div class="msg-label">Claude AI</div>';
+      html += '<div>' + escapeHtml(displayText) + '</div>';
+      if (hasCode) {
+        html += '<div class="app-badge">✅ ' + (lang === 'en' ? 'App generated — check preview!' : 'App gerado — veja o preview!') + '</div>';
+      }
+      div.innerHTML = html;
+      document.getElementById('messages').appendChild(div);
+      scrollChat();
+    }
+
+    function addTypingIndicator() {
+      var div = document.createElement('div');
+      div.className = 'msg msg-ai';
+      div.id = 'typing-indicator';
+      div.innerHTML = '<div class="msg-label">' + (lang === 'en' ? 'Claude is coding...' : 'Claude está programando...') + '</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+      document.getElementById('messages').appendChild(div);
+      scrollChat();
+    }
+
+    function removeTypingIndicator() {
+      var el = document.getElementById('typing-indicator');
+      if (el) el.remove();
+    }
+
+    function scrollChat() {
+      var m = document.getElementById('messages');
+      setTimeout(function() { m.scrollTop = m.scrollHeight; }, 50);
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+    }
+
+    // ── Send Message ──
+    async function sendMessage() {
+      if (sending) return;
+      var input = document.getElementById('userInput');
+      var text = input.value.trim();
+      if (!text) return;
+
+      input.value = '';
+      autoResize(input);
+      addMsgBubble('user', text);
+      conversationMessages.push({ role: 'user', content: text });
+
+      sending = true;
+      document.getElementById('sendBtn').disabled = true;
+      addTypingIndicator();
+
+      try {
+        var res = await fetch(API_BASE + '/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: conversationMessages,
+            participantName: participantName,
+          }),
+        });
+
+        var data = await res.json();
+
+        removeTypingIndicator();
+
+        if (!res.ok) {
+          addMsgBubble('system', data.error || (lang === 'en' ? 'Error. Try again!' : 'Erro. Tente novamente!'));
+          conversationMessages.pop(); // remove failed user msg
+        } else {
+          addAiBubble(data.content, true);
+          conversationMessages.push({ role: 'assistant', content: data.content });
+
+          if (data.html) {
+            currentHtml = data.html;
+            updatePreview(data.html);
+            // On mobile, flash preview tab
+            if (window.innerWidth < 768) {
+              document.getElementById('tabPreview').classList.add('active');
+              document.getElementById('tabChat').classList.remove('active');
+              setTimeout(function() { switchTab('preview'); }, 300);
+            }
+          }
+
+          if (data.usage) {
+            document.getElementById('remainingBadge').textContent = data.usage.remaining + (lang === 'en' ? ' left' : ' restantes');
+          }
+
+          saveSession();
+        }
+      } catch(err) {
+        removeTypingIndicator();
+        addMsgBubble('system', lang === 'en' ? 'Connection error. Check your internet!' : 'Erro de conexão. Verifique sua internet!');
+        conversationMessages.pop();
+      }
+
+      sending = false;
+      document.getElementById('sendBtn').disabled = false;
+      input.focus();
+    }
+
+    // ── Preview ──
+    function updatePreview(html) {
+      var frame = document.getElementById('previewFrame');
+      var empty = document.getElementById('previewEmpty');
+      frame.style.display = 'block';
+      empty.style.display = 'none';
+      frame.srcdoc = html;
+      if (showingCode) {
+        document.getElementById('codeViewer').textContent = html;
+      }
+    }
+
+    function toggleCode() {
+      showingCode = !showingCode;
+      var viewer = document.getElementById('codeViewer');
+      var frame = document.getElementById('previewFrame');
+      var btn = document.getElementById('btnCode');
+      if (showingCode && currentHtml) {
+        viewer.textContent = currentHtml;
+        viewer.style.display = 'block';
+        frame.style.display = 'none';
+        btn.classList.add('active');
+      } else {
+        viewer.style.display = 'none';
+        if (currentHtml) frame.style.display = 'block';
+        btn.classList.remove('active');
+        showingCode = false;
+      }
+    }
+
+    function downloadApp() {
+      if (!currentHtml) return;
+      var blob = new Blob([currentHtml], { type: 'text/html' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'meu-app-' + participantName.toLowerCase().replace(/\s+/g, '-') + '.html';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ── Tabs (mobile) ──
+    function switchTab(tab) {
+      var chatPanel = document.getElementById('chatPanel');
+      var previewPanel = document.getElementById('previewPanel');
+      var tabChat = document.getElementById('tabChat');
+      var tabPreview = document.getElementById('tabPreview');
+      if (tab === 'chat') {
+        chatPanel.classList.remove('hidden');
+        previewPanel.classList.add('hidden');
+        previewPanel.style.display = 'none';
+        tabChat.classList.add('active');
+        tabPreview.classList.remove('active');
+      } else {
+        chatPanel.classList.add('hidden');
+        previewPanel.classList.remove('hidden');
+        previewPanel.style.display = 'flex';
+        tabPreview.classList.add('active');
+        tabChat.classList.remove('active');
+      }
+    }
+
+    // ── Textarea auto-resize + Enter to send ──
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    document.getElementById('userInput').addEventListener('input', function() { autoResize(this); });
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    // ── Persistence ──
+    function saveSession() {
+      localStorage.setItem('vibe-session-' + participantName.toLowerCase(), JSON.stringify({
+        messages: conversationMessages,
+        html: currentHtml,
+      }));
+    }
+
+    // ── Enter on name input ──
+    document.getElementById('nameInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') startSession();
+    });
+
+    // ── Init ──
+    setLang(lang);
+  </script>
+</body>
+</html>
