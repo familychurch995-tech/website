@@ -164,9 +164,31 @@
     .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
     @keyframes dotBounce { 0%,80%,100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.2); } }
 
+    /* ── Mode Toggle + New App ── */
+    .input-toolbar {
+      display: flex; align-items: center; justify-content: space-between; padding: 6px 16px;
+      background: rgba(10,10,18,0.95); border-top: 1px solid var(--border); flex-shrink: 0;
+    }
+    .mode-toggle {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.04); border-radius: 8px; padding: 3px; border: 1px solid var(--border);
+    }
+    .mode-btn {
+      padding: 4px 12px; border: none; border-radius: 6px; font-size: 0.7rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+      background: transparent; color: var(--text-dim); letter-spacing: 0.5px;
+    }
+    .mode-btn.active-plan { background: var(--accent-blue); color: var(--white); }
+    .mode-btn.active-build { background: var(--green); color: var(--bg-dark); }
+    .new-app-btn {
+      padding: 4px 12px; border: 1px solid var(--border); border-radius: 8px;
+      background: transparent; color: var(--text-dim); font-size: 0.7rem; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .new-app-btn:hover { border-color: var(--gold); color: var(--gold); }
     .input-area {
-      display: flex; gap: 8px; padding: 12px 16px; background: rgba(10,10,18,0.95);
-      border-top: 1px solid var(--border); flex-shrink: 0; align-items: flex-end;
+      display: flex; gap: 8px; padding: 8px 16px 12px; background: rgba(10,10,18,0.95);
+      flex-shrink: 0; align-items: flex-end;
     }
     .input-area textarea {
       flex: 1; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border);
@@ -284,6 +306,13 @@
       <!-- Chat Panel -->
       <div class="chat-panel" id="chatPanel">
         <div class="messages" id="messages"></div>
+        <div class="input-toolbar">
+          <div class="mode-toggle">
+            <button class="mode-btn active-plan" id="modePlan" onclick="setMode('plan')" data-en="Plan" data-pt="Planejar">Planejar</button>
+            <button class="mode-btn" id="modeBuild" onclick="setMode('build')" data-en="Build" data-pt="Criar">Criar</button>
+          </div>
+          <button class="new-app-btn" onclick="newApp()" data-en="+ New App" data-pt="+ Novo App">+ Novo App</button>
+        </div>
         <div class="input-area">
           <textarea id="userInput" rows="1" placeholder="" onkeydown="handleKey(event)"></textarea>
           <button class="send-btn" id="sendBtn" onclick="sendMessage()">
@@ -323,6 +352,7 @@
     let lang = localStorage.getItem('fc-lang') || 'pt';
     let sending = false;
     let showingCode = false;
+    let currentMode = 'plan'; // 'plan' or 'build'
 
     // ── Language ──
     function setLang(l) {
@@ -372,8 +402,8 @@
       // Welcome message
       if (conversationMessages.length === 0) {
         var welcomeMsg = lang === 'en'
-          ? "Hi " + name + "! 👋 I'm your AI coding assistant. Tell me what app you want to build — describe it in your own words and I'll create it for you!"
-          : "Oi " + name + "! 👋 Eu sou seu assistente de programação com IA. Me diz que app você quer criar — descreve com suas palavras e eu vou criar pra você!";
+          ? "Hi " + name + "! 👋 Start in Plan mode to discuss your idea, then switch to Build when you're ready to create!"
+          : "Oi " + name + "! 👋 Comece no modo Planejar para discutir sua ideia, depois mude para Criar quando estiver pronto!";
         addMsgBubble('system', welcomeMsg);
       }
 
@@ -446,11 +476,20 @@
       addTypingIndicator();
 
       try {
+        // In plan mode, prepend instruction to discuss without generating code
+        var apiMessages = conversationMessages.slice();
+        if (currentMode === 'plan') {
+          apiMessages = [
+            { role: 'user', content: '[SYSTEM: The user is in PLAN MODE. Discuss ideas, ask clarifying questions, suggest features, and help them think through their app. Do NOT generate any HTML code yet. Keep responses conversational and encouraging. When they seem ready, suggest switching to Build mode.]' },
+            { role: 'assistant', content: 'Understood! I\'m in planning mode.' }
+          ].concat(apiMessages);
+        }
+
         var res = await fetch(API_BASE + '/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: conversationMessages,
+            messages: apiMessages,
             participantName: participantName,
           }),
         });
@@ -586,6 +625,48 @@
     document.getElementById('nameInput').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') startSession();
     });
+
+    // ── Mode Toggle ──
+    function setMode(mode) {
+      currentMode = mode;
+      var planBtn = document.getElementById('modePlan');
+      var buildBtn = document.getElementById('modeBuild');
+      if (mode === 'plan') {
+        planBtn.className = 'mode-btn active-plan';
+        buildBtn.className = 'mode-btn';
+        var inp = document.getElementById('userInput');
+        inp.placeholder = lang === 'en' ? 'Describe your idea, ask questions...' : 'Descreva sua ideia, faça perguntas...';
+      } else {
+        buildBtn.className = 'mode-btn active-build';
+        planBtn.className = 'mode-btn';
+        var inp = document.getElementById('userInput');
+        inp.placeholder = lang === 'en' ? 'Describe the app you want to build...' : 'Descreva o app que você quer criar...';
+      }
+    }
+
+    // ── New App ──
+    function newApp() {
+      var msg = lang === 'en' ? 'Start a new app? Current chat will be saved.' : 'Começar um novo app? O chat atual será salvo.';
+      if (!confirm(msg)) return;
+      saveSession();
+      conversationMessages = [];
+      currentHtml = '';
+      showingCode = false;
+      currentMode = 'plan';
+      setMode('plan');
+      document.getElementById('messages').innerHTML = '';
+      document.getElementById('previewFrame').style.display = 'none';
+      document.getElementById('previewFrame').srcdoc = '';
+      document.getElementById('previewEmpty').style.display = '';
+      document.getElementById('codeViewer').style.display = 'none';
+      // Switch to chat tab on mobile
+      if (window.innerWidth < 768) switchTab('chat');
+      var welcomeMsg = lang === 'en'
+        ? "Ready for a new app! What would you like to build?"
+        : "Pronto para um novo app! O que você quer criar?";
+      addMsgBubble('system', welcomeMsg);
+      document.getElementById('userInput').focus();
+    }
 
     // ── Init ──
     setLang(lang);
