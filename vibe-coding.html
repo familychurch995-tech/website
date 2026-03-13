@@ -97,7 +97,7 @@
 
     /* ── App Screen ── */
     #app-screen {
-      display: none; position: relative; z-index: 10; height: 100vh; flex-direction: column;
+      display: none; position: relative; z-index: 10; height: 100dvh; flex-direction: column;
     }
     #app-screen.active { display: flex; }
 
@@ -118,7 +118,7 @@
     .tab-btn.active { background: var(--gold); color: var(--bg-dark); border-color: var(--gold); }
 
     /* ── Main Container ── */
-    .main-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+    .main-container { display: flex; flex: 1; overflow: hidden; position: relative; min-height: 0; }
 
     /* ── Chat Panel ── */
     .chat-panel {
@@ -185,7 +185,7 @@
 
     /* ── Preview Panel ── */
     .preview-panel {
-      display: none; flex-direction: column; width: 100%; background: #111;
+      display: flex; flex-direction: column; width: 100%; background: #111;
     }
     .preview-toolbar {
       display: flex; align-items: center; justify-content: space-between; padding: 8px 12px;
@@ -226,10 +226,11 @@
 
     /* ── Phone: stacked with tabs ── */
     @media (max-width: 767px) {
-      .chat-panel { width: 100%; }
-      .preview-panel { width: 100%; }
+      .main-container { flex-direction: column; }
+      .chat-panel { width: 100%; flex: 1; min-height: 0; flex-shrink: 1; }
+      .preview-panel { width: 100%; flex: 1; min-height: 0; display: none; }
+      .preview-panel.visible { display: flex; }
       .chat-panel.hidden { display: none; }
-      .preview-panel.hidden { display: none; }
       .top-bar-title { font-size: 0.6rem; }
     }
   </style>
@@ -539,14 +540,12 @@
       var tabPreview = document.getElementById('tabPreview');
       if (tab === 'chat') {
         chatPanel.classList.remove('hidden');
-        previewPanel.classList.add('hidden');
-        previewPanel.style.display = 'none';
+        previewPanel.classList.remove('visible');
         tabChat.classList.add('active');
         tabPreview.classList.remove('active');
       } else {
         chatPanel.classList.add('hidden');
-        previewPanel.classList.remove('hidden');
-        previewPanel.style.display = 'flex';
+        previewPanel.classList.add('visible');
         tabPreview.classList.add('active');
         tabChat.classList.remove('active');
         // Reset green highlight
