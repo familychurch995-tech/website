@@ -102,17 +102,19 @@
     #app-screen.active { display: flex; }
 
     .top-bar {
-      display: flex; align-items: center; justify-content: space-between; padding: 10px 12px;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 8px 12px;
       background: rgba(10,10,18,0.95); backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border); flex-shrink: 0; gap: 6px;
+      border-bottom: 1px solid var(--border); flex-shrink: 0; gap: 4px 8px;
       position: relative;
     }
+    .top-bar-row1 { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .top-bar-row2 { display: flex; align-items: center; justify-content: space-between; width: 100%; }
     .top-bar-title { color: var(--gold); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap; }
     .top-bar-name { color: var(--text-dim); font-size: 0.7rem; font-family: 'Share Tech Mono', monospace; }
     .tab-btns { display: flex; gap: 4px; }
     .tab-btn {
-      padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; background: transparent;
-      color: var(--text-dim); font-size: 0.75rem; font-weight: 600; cursor: pointer;
+      padding: 6px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent;
+      color: var(--text-dim); font-size: 0.8rem; font-weight: 600; cursor: pointer;
       font-family: inherit; transition: all 0.2s;
     }
     .tab-btn.active { background: var(--gold); color: var(--bg-dark); border-color: var(--gold); }
@@ -219,19 +221,19 @@
 
     /* ── iPad+ landscape: side by side ── */
     @media (min-width: 768px) {
-      .tab-btns { display: none; }
+      .top-bar-row2.tab-btns { display: none; }
       .chat-panel { width: 42%; border-right: 1px solid var(--border); }
       .preview-panel { display: flex !important; width: 58%; }
     }
 
     /* ── Phone: stacked with tabs ── */
     @media (max-width: 767px) {
-      .main-container { flex-direction: column; }
-      .chat-panel { width: 100%; flex: 1; min-height: 0; flex-shrink: 1; }
+      .chat-panel { width: 100%; flex: 1; min-height: 0; }
       .preview-panel { width: 100%; flex: 1; min-height: 0; display: none; }
       .preview-panel.visible { display: flex; }
       .chat-panel.hidden { display: none; }
-      .top-bar-title { font-size: 0.6rem; }
+      .top-bar-title { font-size: 0.65rem; }
+      .lang-bar { position: static; transform: none; }
     }
   </style>
 </head>
@@ -259,20 +261,22 @@
   <!-- APP SCREEN -->
   <div id="app-screen">
     <header class="top-bar">
-      <div>
-        <div class="top-bar-title">DONS DIGITAIS — VIBE CODING</div>
-        <div class="top-bar-name" id="displayName"></div>
+      <div class="top-bar-row1">
+        <div>
+          <div class="top-bar-title">DONS DIGITAIS — VIBE CODING</div>
+          <div class="top-bar-name" id="displayName"></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="remaining-badge" id="remainingBadge"></span>
+          <div class="lang-bar">
+            <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
+            <button class="lang-btn active" id="btnPt" onclick="setLang('pt')">PT</button>
+          </div>
+        </div>
       </div>
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <span class="remaining-badge" id="remainingBadge"></span>
-        <div class="tab-btns">
-          <button class="tab-btn active" id="tabChat" onclick="switchTab('chat')" data-en="Chat" data-pt="Chat">Chat</button>
-          <button class="tab-btn" id="tabPreview" onclick="switchTab('preview')" data-en="Result" data-pt="Resultado">Resultado</button>
-        </div>
-        <div class="lang-bar">
-          <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
-          <button class="lang-btn active" id="btnPt" onclick="setLang('pt')">PT</button>
-        </div>
+      <div class="top-bar-row2 tab-btns">
+        <button class="tab-btn active" id="tabChat" onclick="switchTab('chat')" data-en="Chat" data-pt="Chat" style="flex:1;">Chat</button>
+        <button class="tab-btn" id="tabPreview" onclick="switchTab('preview')" data-en="Result" data-pt="Resultado" style="flex:1;">Resultado</button>
       </div>
     </header>
 
