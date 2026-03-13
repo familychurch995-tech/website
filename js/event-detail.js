@@ -218,6 +218,22 @@ async function loadEventDetail() {
       if (event.flyer_en) galleryPhotos.push(event.flyer_en);
     }
 
+    // Build interactive demo link (for dons-digitais)
+    let interactiveDemoHtml = '';
+    if (event.id === 'dons-digitais-2026') {
+      interactiveDemoHtml = `
+        <div class="event-cta fade-in" style="margin-top: 2rem;">
+          <div class="cta-card" style="border: 1px solid rgba(212,165,53,0.3); background: linear-gradient(135deg, rgba(212,165,53,0.08), rgba(34,197,94,0.05));">
+            <div class="cta-content">
+              <h3 data-en="Try It Now — Interactive Demo!" data-pt="Experimente Agora — Demo Interativa!">${lang === 'en' ? 'Try It Now — Interactive Demo!' : 'Experimente Agora — Demo Interativa!'}</h3>
+              <p data-en="Learn programming logic through fun jokes — no code needed!" data-pt="Aprenda lógica de programação com piadas divertidas — sem precisar programar!">${lang === 'en' ? 'Learn programming logic through fun jokes — no code needed!' : 'Aprenda lógica de programação com piadas divertidas — sem precisar programar!'}</p>
+            </div>
+            <a href="logic-jokes.html" class="btn btn-cta-register" style="background: linear-gradient(135deg, #D4A535, #9A7A2A);" data-en="&#9654; Open Interactive App" data-pt="&#9654; Abrir App Interativo">${lang === 'en' ? '&#9654; Open Interactive App' : '&#9654; Abrir App Interativo'}</a>
+          </div>
+        </div>
+      `;
+    }
+
     // Build registration CTA
     let registrationHtml = '';
     if (event.registration_url && event.status === 'upcoming') {
@@ -279,6 +295,7 @@ async function loadEventDetail() {
         ${verseHtml}
         ${scheduleHtml}
         ${topicsHtml}
+        ${interactiveDemoHtml}
         ${registrationHtml}
         ${flyersHtml}
         ${photosHtml}

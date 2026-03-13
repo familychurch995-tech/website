@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lógica de Programação com Piadas | Dons Digitais — Family Church</title>
+  <meta name="description" content="Aprenda lógica de programação de forma divertida com piadas interativas. Parte do Workshop Dons Digitais — Family Church." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: #0A0A0F;
+      color: #F5F0E8;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .back-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,15,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(212,165,53,0.15);
+      padding: 0.7rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .back-bar a {
+      color: #D4A535;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: opacity 0.2s;
+    }
+    .back-bar a:hover { opacity: 0.7; }
+    .lang-toggle {
+      display: flex;
+      gap: 4px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 3px;
+    }
+    .lang-btn {
+      padding: 4px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: transparent;
+      color: rgba(255,255,255,0.4);
+      font-family: inherit;
+    }
+    .lang-btn.active {
+      background: #D4A535;
+      color: #0A0A0F;
+    }
+    #root { min-height: 100vh; }
+    input { font-family: inherit; }
+    button { font-family: inherit; }
+  </style>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div class="back-bar">
+    <a href="event.html?id=dons-digitais-2026" id="backLink">&larr; Voltar ao Evento</a>
+    <div class="lang-toggle">
+      <button class="lang-btn" id="btnEn" onclick="switchLang('en')">EN</button>
+      <button class="lang-btn active" id="btnPt" onclick="switchLang('pt')">PT</button>
+    </div>
+  </div>
+  <div id="root"></div>
+
+  <script>
+    // Sync with site's language system
+    var appLang = localStorage.getItem('fc-lang') || 'pt';
+    function switchLang(lang) {
+      appLang = lang;
+      localStorage.setItem('fc-lang', lang);
+      document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+      document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+      document.getElementById('btnPt').classList.toggle('active', lang === 'pt');
+      document.getElementById('backLink').innerHTML = lang === 'en' ? '&larr; Back to Event' : '&larr; Voltar ao Evento';
+      // Tell React to re-render
+      if (window.__setAppLang) window.__setAppLang(lang);
+    }
+    // Init toggle state on load
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('btnEn').classList.toggle('active', appLang === 'en');
+      document.getElementById('btnPt').classList.toggle('active', appLang === 'pt');
+      if (appLang === 'en') document.getElementById('backLink').innerHTML = '&larr; Back to Event';
+    });
+  </script>
+
+  <script type="text/babel">
+const { useState, useEffect } = React;
+
+/* ============ COLORS ============ */
+const GOLD = "#D4A535";
+const GREEN = "#22C55E";
+const RED = "#DC2626";
+const BLUE = "#3B82F6";
+const MUTED = "#8A8478";
+const BG = "#0A0A0F";
+const CARD = "#14141F";
+const WHITE = "#F5F0E8";
+
+/* ============ i18n helper ============ */
+function t(lang, pt, en) { return lang === 'en' ? en : pt; }
+
+/* ============ MAIN APP ============ */
+function LogicJokes() {
+  const [page, setPage] = useState(0);
+  const [lang, setLang] = useState(window.appLang || 'pt');
+
+  useEffect(() => {
+    window.__setAppLang = setLang;
+    return () => { window.__setAppLang = null; };
+  }, []);
+
+  const jokes = [JokeSoccer, JokeShopping, JokeMotherInLaw, JokeAdamEve, JokeFridge, JokeKids, JokeWhatsApp];
+  const titles_pt = ["SE / E (IF / AND)", "OU (OR)", "CONTÉM (CONTAINS)", "DIFERENTE (!=)", "VAZIO / NÃO VAZIO", "OU (OR)", "SE / E (IF / AND)"];
+  const titles_en = ["IF / AND", "OR", "CONTAINS", "NOT EQUAL (!=)", "EMPTY / NOT EMPTY", "OR", "IF / AND"];
+  const titles = lang === 'en' ? titles_en : titles_pt;
+  const emojis = ["⚽", "🛍️", "👵", "🍎", "🧊", "🤫", "📱"];
+  const Current = jokes[page];
+
+  return (
+    <div style={{ minHeight: "100vh", background: `linear-gradient(180deg, ${BG} 0%, #111118 100%)`, fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", display: "flex", flexDirection: "column", alignItems: "center", padding: "1.5rem 1rem 6rem" }}>
+      <div style={{ maxWidth: 540, width: "100%" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: "1rem" }}>
+          {jokes.map((_, i) => (
+            <div key={i} onClick={() => setPage(i)} style={{ width: i === page ? 28 : 10, height: 10, borderRadius: 5, background: i === page ? GOLD : "#333", cursor: "pointer", transition: "all 0.3s ease" }} />
+          ))}
+        </div>
+        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+          <span style={{ color: GOLD, fontSize: "0.7rem", fontWeight: 700, letterSpacing: 3, textTransform: "uppercase" }}>{page + 1} {t(lang, "de", "of")} 7 · {t(lang, "Lógica de Programação", "Programming Logic")}</span>
+          <h1 style={{ color: WHITE, fontSize: "1.5rem", fontWeight: 700, margin: "0.25rem 0 0" }}>{emojis[page]} {titles[page]}</h1>
+        </div>
+        <Current key={page} lang={lang} />
+      </div>
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, display: "flex", justifyContent: "center", gap: "1rem", padding: "1rem", background: "linear-gradient(transparent, #0A0A0F 30%)", zIndex: 10 }}>
+        <button disabled={page === 0} onClick={() => setPage(page - 1)} style={{ ...navBtn, opacity: page === 0 ? 0.3 : 1 }}>{t(lang, "← Anterior", "← Previous")}</button>
+        <button disabled={page === jokes.length - 1} onClick={() => setPage(page + 1)} style={{ ...navBtn, background: GOLD, color: BG, opacity: page === jokes.length - 1 ? 0.3 : 1 }}>{t(lang, "Próximo →", "Next →")}</button>
+      </div>
+      <style>{`
+        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes glow { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
+      `}</style>
+    </div>
+  );
+}
+
+const navBtn = { padding: "0.7rem 1.5rem", borderRadius: 10, border: `1px solid ${GOLD}`, background: "transparent", color: GOLD, fontSize: "0.95rem", fontWeight: 700, cursor: "pointer" };
+
+/* ============ SHARED COMPONENTS ============ */
+
+function PersonSays({ emoji, label, text, color = GREEN }) {
+  return (
+    <div style={{ marginBottom: "1.2rem" }}>
+      <div style={{ color: GOLD, fontSize: "1rem", fontWeight: 700, marginBottom: "0.4rem" }}>{emoji} {label}</div>
+      <div style={{ color: WHITE, fontSize: "1.15rem", fontWeight: 500, lineHeight: 1.5, background: `${color}10`, padding: "0.8rem 1.2rem", borderRadius: 14, border: `1px solid ${color}25`, borderLeft: `4px solid ${color}` }}>{text}</div>
+    </div>
+  );
+}
+
+function Check({ checked, onChange, label, text, accent = GREEN }) {
+  return (
+    <div onClick={onChange} style={{ display: "flex", alignItems: "center", gap: "0.8rem", padding: "0.8rem 1rem", background: checked ? `${accent}11` : CARD, borderRadius: 12, border: `2px solid ${checked ? accent : "rgba(212,165,53,0.2)"}`, cursor: "pointer", transition: "all 0.3s", userSelect: "none" }}>
+      <div style={{ width: 32, height: 32, borderRadius: 8, border: `2px solid ${checked ? accent : "#555"}`, background: checked ? accent : "transparent", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.25s", flexShrink: 0 }}>
+        {checked && <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke={BG} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+      </div>
+      <span style={{ background: checked ? GOLD : "#333", color: checked ? BG : "#888", padding: "0.15rem 0.55rem", borderRadius: 6, fontSize: "0.75rem", fontWeight: 800, letterSpacing: 1, transition: "all 0.3s", flexShrink: 0 }}>{label}</span>
+      <span style={{ color: checked ? WHITE : MUTED, fontSize: "1.05rem", fontWeight: 500, transition: "color 0.3s" }}>{text}</span>
+      <span style={{ marginLeft: "auto", fontSize: "1.3rem" }}>{checked ? "✅" : "⬜"}</span>
+    </div>
+  );
+}
+
+function OptionButton({ selected, onClick, label, emoji }) {
+  return (
+    <div onClick={onClick} style={{ display: "flex", alignItems: "center", gap: "0.8rem", padding: "0.9rem 1.2rem", background: selected ? `${GOLD}15` : CARD, borderRadius: 12, border: `2px solid ${selected ? GOLD : "rgba(212,165,53,0.2)"}`, cursor: "pointer", transition: "all 0.3s", userSelect: "none" }}>
+      <span style={{ fontSize: "1.5rem" }}>{emoji}</span>
+      <span style={{ color: selected ? WHITE : MUTED, fontSize: "1.05rem", fontWeight: 600, transition: "color 0.3s" }}>{label}</span>
+      {selected && <span style={{ marginLeft: "auto", fontSize: "1.2rem" }}>👈</span>}
+    </div>
+  );
+}
+
+function Res({ emoji, text, color }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", padding: "0.5rem 0.7rem", background: "rgba(0,0,0,0.2)", borderRadius: 8 }}>
+      <span style={{ fontSize: "1.3rem" }}>{emoji}</span>
+      <span style={{ color, fontSize: "1rem", fontWeight: 600 }}>{text}</span>
+    </div>
+  );
+}
+
+function ResultBox({ color, header, children }) {
+  return (
+    <div style={{ background: `${color}10`, border: `1px solid ${color}40`, borderRadius: 14, padding: "1rem", display: "flex", flexDirection: "column", gap: "0.6rem", animation: "fadeUp 0.4s ease-out" }}>
+      <div style={{ color, fontSize: "0.8rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: 2 }}>{header}</div>
+      {children}
+    </div>
+  );
+}
+
+function RevealLogic({ children, lang }) {
+  return (
+    <div style={{ marginTop: "1.2rem", textAlign: "center", padding: "1rem", background: `linear-gradient(135deg, ${GOLD}18, ${GOLD}08)`, borderRadius: 14, border: `1px solid ${GOLD}40`, animation: "glow 0.6s ease-out" }}>
+      <div style={{ color: GOLD, fontSize: "1.1rem", fontWeight: 700 }}>{t(lang, "☝️ Vocês acabaram de executar um programa!", "☝️ You just ran a program!")}</div>
+      <div style={{ color: WHITE, fontSize: "1.15rem", fontWeight: 800, marginTop: "0.3rem" }}>{children}</div>
+      <div style={{ color: MUTED, fontSize: "0.85rem", marginTop: "0.4rem" }}>{t(lang, "Isso É programação. Simples assim.", "That IS programming. Simple as that.")}</div>
+    </div>
+  );
+}
+
+function RealButton({ onClick, lang }) {
+  return (
+    <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
+      <button onClick={onClick} style={{ background: `linear-gradient(135deg, ${GREEN}, #166534)`, color: WHITE, border: "none", borderRadius: 12, padding: "1rem 2rem", fontSize: "1.05rem", fontWeight: 700, cursor: "pointer", boxShadow: `0 4px 24px ${GREEN}33` }}>
+        {t(lang, "Agora veja um exemplo REAL →", "Now see a REAL example →")}
+      </button>
+    </div>
+  );
+}
+
+function RealHeader({ tag, title, subtitle }) {
+  return (
+    <div style={{ textAlign: "center", marginBottom: "1.5rem", padding: "1rem", background: `${GREEN}10`, borderRadius: 14, border: `1px solid ${GREEN}30`, animation: "fadeUp 0.5s ease-out" }}>
+      <div style={{ color: GREEN, fontSize: "0.7rem", fontWeight: 700, letterSpacing: 3, textTransform: "uppercase" }}>{tag}</div>
+      <div style={{ color: WHITE, fontSize: "1.3rem", fontWeight: 700, marginTop: "0.3rem" }}>{title}</div>
+      <div style={{ color: MUTED, fontSize: "0.85rem", marginTop: "0.2rem" }}>{subtitle}</div>
+    </div>
+  );
+}
+
+function ConnectionBox({ jokeLabel, jokeLogic, realLabel, realLogic, lang }) {
+  return (
+    <div style={{ marginTop: "1.5rem", textAlign: "center", padding: "1.2rem", background: `${GREEN}10`, borderRadius: 14, border: `1px solid ${GREEN}40`, animation: "glow 0.6s ease-out" }}>
+      <div style={{ color: GREEN, fontSize: "1rem", fontWeight: 700 }}>{t(lang, "🧠 A mesma lógica!", "🧠 The same logic!")}</div>
+      <div style={{ color: WHITE, fontSize: "1rem", fontWeight: 600, marginTop: "0.4rem", lineHeight: 1.6 }}>
+        <span style={{ color: GOLD }}>{jokeLabel}:</span> {jokeLogic}
+      </div>
+      <div style={{ color: WHITE, fontSize: "1rem", fontWeight: 600, lineHeight: 1.6 }}>
+        <span style={{ color: BLUE }}>{realLabel}:</span> {realLogic}
+      </div>
+      <div style={{ color: MUTED, fontSize: "0.85rem", marginTop: "0.6rem", fontStyle: "italic" }}>
+        {t(lang, <>Apps, sites, sistemas... tudo funciona assim.<br />Vocês já entendem a lógica. Só falta falar com a IA.</>, <>Apps, websites, systems... they all work like this.<br />You already understand the logic. You just need to talk to the AI.</>)}
+      </div>
+    </div>
+  );
+}
+
+function PromptReveal({ prompt, lang }) {
+  return (
+    <div style={{ marginTop: "2rem", animation: "fadeUp 0.5s ease-out" }}>
+      <div style={{ textAlign: "center", marginBottom: "0.8rem" }}>
+        <span style={{ background: GOLD, color: BG, padding: "0.3rem 1rem", borderRadius: 20, fontSize: "0.8rem", fontWeight: 800, letterSpacing: 2 }}>
+          {t(lang, "💬 O PROMPT QUE CRIOU ISSO", "💬 THE PROMPT THAT CREATED THIS")}
+        </span>
+      </div>
+      <div style={{ background: "#1a1a2e", borderRadius: 14, padding: "1.2rem 1.4rem", border: `1px solid ${GOLD}30`, position: "relative" }}>
+        <div style={{ color: MUTED, fontSize: "0.75rem", fontWeight: 700, letterSpacing: 1, marginBottom: "0.6rem", textTransform: "uppercase" }}>
+          {t(lang, "Eu escrevi isso pro Claude:", "I wrote this to Claude:")}
+        </div>
+        <div style={{ color: WHITE, fontSize: "0.95rem", lineHeight: 1.7, fontStyle: "italic" }}>
+          "{prompt}"
+        </div>
+        <div style={{ marginTop: "1rem", textAlign: "center" }}>
+          <div style={{ color: GOLD, fontSize: "1.1rem", fontWeight: 800 }}>
+            {t(lang, "Só isso. A IA fez o resto. 🤯", "That's it. The AI did the rest. 🤯")}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HowButton({ onClick, lang }) {
+  return (
+    <div style={{ textAlign: "center", marginTop: "1.2rem" }}>
+      <button onClick={onClick} style={{ background: `${GOLD}20`, color: GOLD, border: `1px solid ${GOLD}40`, borderRadius: 10, padding: "0.7rem 1.5rem", fontSize: "0.95rem", fontWeight: 700, cursor: "pointer" }}>
+        {t(lang, "💬 Como eu criei isso? →", "💬 How did I create this? →")}
+      </button>
+    </div>
+  );
+}
+
+function Divider() {
+  return <div style={{ borderTop: `1px dashed ${GOLD}40`, margin: "0.3rem 0 1.2rem" }} />;
+}
+
+/* ====================================================
+   JOKE 1: SOCCER — IF / AND
+   ==================================================== */
+function JokeSoccer({ lang }) {
+  const [a, setA] = useState(false);
+  const [b, setB] = useState(false);
+  const [showReal, setShowReal] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [r1, setR1] = useState(false);
+  const [r2, setR2] = useState(false);
+  const both = a && b;
+  const one = (a && !b) || (!a && b);
+  const none = !a && !b;
+  const bothR = r1 && r2;
+  const oneR = (r1 && !r2) || (!r1 && r2);
+
+  return (
+    <>
+      <PersonSays emoji="👩" label={t(lang, "Esposa diz:", "Wife says:")} text={t(lang, `"Você só vai no futebol HOJE..."`, `"You can only go to soccer TODAY..."`)} />
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "1.5rem" }}>
+        <Check checked={a} onChange={() => setA(!a)} label={t(lang, "SE", "IF")} text={t(lang, "preparar o jantar", "cook dinner")} />
+        <Check checked={b} onChange={() => setB(!b)} label={t(lang, "E", "AND")} text={t(lang, "lavar a louça", "wash the dishes")} />
+      </div>
+      <Divider />
+      {both && <ResultBox color={GREEN} header={t(lang, "✅ Resultado: TUDO feito", "✅ Result: ALL done")}><Res emoji="⚽" text={t(lang, "FUTEBOL COM OS AMIGOS!", "SOCCER WITH THE BOYS!")} color={GREEN} /><Res emoji="😍" text={t(lang, "Esposa: modo FELIZ", "Wife: HAPPY mode")} color={GREEN} /><Res emoji="🍺" text={t(lang, "Bônus: pode até levar petisco", "Bonus: you can even bring snacks")} color={GOLD} /></ResultBox>}
+      {one && <ResultBox color={RED} header={t(lang, "⚠️ Resultado: Faltou...", "⚠️ Result: Missing...")}><Res emoji="🚫" text={t(lang, "NADA DE FUTEBOL", "NO SOCCER")} color={RED} /><Res emoji="😤" text={a ? t(lang, `"Fez o jantar mas não lavou a louça?!"`, `"You cooked but didn't wash the dishes?!"`) : t(lang, `"Lavou a louça mas e o jantar?!"`, `"You washed dishes but what about dinner?!"`)} color={RED} /><Res emoji="⚠️" text={t(lang, "Esposa: modo PERIGOSO", "Wife: DANGER mode")} color={RED} /></ResultBox>}
+      {none && <ResultBox color={MUTED} header={t(lang, "😶 Resultado: Não fez nada", "😶 Result: Did nothing")}><Res emoji="🛋️" text={t(lang, "Sofá. Netflix. Que ELA escolhe.", "Couch. Netflix. SHE picks the show.")} color={MUTED} /><Res emoji="💀" text={t(lang, "Nível de perigo: MÁXIMO", "Danger level: MAXIMUM")} color={RED} /></ResultBox>}
+      {both && !showReal && <><RevealLogic lang={lang}>{t(lang, "SE (condição 1) E (condição 2) → resultado", "IF (condition 1) AND (condition 2) → result")}</RevealLogic><RealButton onClick={() => setShowReal(true)} lang={lang} /></>}
+      {showReal && !showPrompt && (
+        <div style={{ marginTop: "2.5rem", animation: "fadeUp 0.6s ease-out" }}>
+          <RealHeader tag={t(lang, "Mesma lógica · Uso real", "Same logic · Real use")} title={t(lang, "🏠 Sua casa se qualifica?", "🏠 Does your home qualify?")} subtitle={t(lang, "Programa de Eficiência Energética do Governo", "Government Energy Efficiency Program")} />
+          <PersonSays emoji="🏛️" label={t(lang, "Governo diz:", "Government says:")} text={t(lang, `"Sua casa pode receber melhorias GRÁTIS..."`, `"Your home may receive FREE upgrades..."`)} color={BLUE} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "1.5rem" }}>
+            <Check checked={r1} onChange={() => setR1(!r1)} label={t(lang, "SE", "IF")} text={t(lang, "sua casa tem mais de 10 anos", "your home is over 10 years old")} accent={BLUE} />
+            <Check checked={r2} onChange={() => setR2(!r2)} label={t(lang, "E", "AND")} text={t(lang, "conta de luz maior que $200/mês", "electric bill over $200/month")} accent={BLUE} />
+          </div>
+          <Divider />
+          {bothR && <><ResultBox color={GREEN} header={t(lang, "✅ QUALIFICADO!", "✅ QUALIFIED!")}><Res emoji="🏠" text={t(lang, "Isolamento térmico GRÁTIS", "FREE thermal insulation")} color={GREEN} /><Res emoji="💡" text={t(lang, "Troca de lâmpadas e eletrodomésticos", "Bulb and appliance replacement")} color={GREEN} /><Res emoji="💰" text={t(lang, "Economia de até $1,200/ano", "Save up to $1,200/year")} color={GOLD} /></ResultBox><ConnectionBox lang={lang} jokeLabel={t(lang, "Esposa", "Wife")} jokeLogic={t(lang, "SE jantar E louça → futebol", "IF dinner AND dishes → soccer")} realLabel={t(lang, "Governo", "Government")} realLogic={t(lang, "SE casa velha E conta alta → programa grátis", "IF old house AND high bill → free program")} /><HowButton onClick={() => setShowPrompt(true)} lang={lang} /></>}
+          {oneR && <ResultBox color={GOLD} header={t(lang, "⚠️ QUASE LÁ", "⚠️ ALMOST THERE")}><Res emoji="📋" text={t(lang, "Faltou um requisito", "Missing one requirement")} color={GOLD} /><Res emoji="📞" text={t(lang, "Ligue para verificar outros programas", "Call to check other programs")} color={MUTED} /></ResultBox>}
+          {!r1 && !r2 && <ResultBox color={MUTED} header={t(lang, "📋 VERIFIQUE OS REQUISITOS", "📋 CHECK THE REQUIREMENTS")}><Res emoji="👆" text={t(lang, "Marque as condições acima", "Check the conditions above")} color={MUTED} /></ResultBox>}
+        </div>
+      )}
+      {showPrompt && <PromptReveal lang={lang} prompt={t(lang, "Cria um app interativo que ensina IF/AND usando uma piada de casal — esposa diz que o marido só vai no futebol SE preparar o jantar E lavar a louça. Checkboxes bonitos, resultados diferentes com emojis. Depois mostra um exemplo real de qualificação pra programa do governo usando a mesma lógica. Estilo escuro com dourado e verde.", "Create an interactive app that teaches IF/AND using a couple joke — wife says husband can only go to soccer IF he cooks dinner AND washes dishes. Beautiful checkboxes, different results with emojis. Then show a real example of government program qualification using the same logic. Dark style with gold and green.")} />}
+    </>
+  );
+}
+
+/* ====================================================
+   JOKE 2: SHOPPING — OR
+   ==================================================== */
+function JokeShopping({ lang }) {
+  const [choice, setChoice] = useState(null);
+  const [showReal, setShowReal] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [realChoice, setRealChoice] = useState(null);
+
+  return (
+    <>
+      <PersonSays emoji="👩" label={t(lang, "Esposa diz:", "Wife says:")} text={t(lang, `"Sábado a gente vai no shopping..."`, `"Saturday we're going to the mall..."`)} />
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "1.5rem" }}>
+        <OptionButton selected={choice === "junto"} onClick={() => setChoice("junto")} emoji="🚶‍♂️🚶‍♀️" label={t(lang, "OU → você vai comigo", "OR → you come with me")} />
+        <OptionButton selected={choice === "fica"} onClick={() => setChoice("fica")} emoji="🛋️" label={t(lang, "OU → eu vou sozinha com seu cartão", "OR → I go alone with your credit card")} />
+      </div>
+      <Divider />
+      {choice === "junto" && <ResultBox color={GOLD} header={t(lang, "💳 Você foi junto...", "💳 You went along...")}><Res emoji="💳" text={t(lang, "Dano na carteira: MÉDIO", "Wallet damage: MEDIUM")} color={GOLD} /><Res emoji="🛍️" text={t(lang, "Você carrega todas as sacolas", "You carry all the bags")} color={MUTED} /><Res emoji="😊" text={t(lang, "Esposa: modo feliz (por enquanto)", "Wife: happy mode (for now)")} color={GREEN} /></ResultBox>}
+      {choice === "fica" && <ResultBox color={RED} header={t(lang, "💳 Ela foi sozinha...", "💳 She went alone...")}><Res emoji="💳" text={t(lang, "Dano na carteira: CRÍTICO 💀", "Wallet damage: CRITICAL 💀")} color={RED} /><Res emoji="📱" text={t(lang, `Notificação: "Compra aprovada R$..."`, `Notification: "Purchase approved $..."`)} color={RED} /><Res emoji="😱" text={t(lang, "Você nem sabe o que ela comprou", "You don't even know what she bought")} color={RED} /></ResultBox>}
+      {choice && !showReal && <><RevealLogic lang={lang}>{t(lang, "OU (opção A) OU (opção B) → caminhos diferentes", "OR (option A) OR (option B) → different paths")}</RevealLogic><RealButton onClick={() => setShowReal(true)} lang={lang} /></>}
+      {showReal && !showPrompt && (
+        <div style={{ marginTop: "2.5rem", animation: "fadeUp 0.6s ease-out" }}>
+          <RealHeader tag={t(lang, "Mesma lógica · Uso real", "Same logic · Real use")} title={t(lang, "📦 Como quer receber?", "📦 How do you want it delivered?")} subtitle={t(lang, "Sistema de entrega de loja online", "Online store delivery system")} />
+          <PersonSays emoji="🏪" label={t(lang, "Loja online diz:", "Online store says:")} text={t(lang, `"Como você quer receber seu pedido?"`, `"How do you want to receive your order?"`)} color={BLUE} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "1.5rem" }}>
+            <OptionButton selected={realChoice === "entrega"} onClick={() => setRealChoice("entrega")} emoji="🚚" label={t(lang, "OU → Entrega em casa (3-5 dias)", "OR → Home delivery (3-5 days)")} />
+            <OptionButton selected={realChoice === "retira"} onClick={() => setRealChoice("retira")} emoji="🏪" label={t(lang, "OU → Retira na loja (hoje)", "OR → Store pickup (today)")} />
+          </div>
+          <Divider />
+          {realChoice === "entrega" && <ResultBox color={BLUE} header={t(lang, "🚚 ENTREGA EM CASA", "🚚 HOME DELIVERY")}><Res emoji="📦" text={t(lang, "Pedido enviado para seu endereço", "Order shipped to your address")} color={BLUE} /><Res emoji="📅" text={t(lang, "Chega em 3-5 dias úteis", "Arrives in 3-5 business days")} color={MUTED} /><Res emoji="🛋️" text={t(lang, "Você nem precisa sair de casa", "You don't even need to leave home")} color={GREEN} /></ResultBox>}
+          {realChoice === "retira" && <ResultBox color={GREEN} header={t(lang, "🏪 RETIRA NA LOJA", "🏪 STORE PICKUP")}><Res emoji="✅" text={t(lang, "Pronto para retirar AGORA", "Ready for pickup NOW")} color={GREEN} /><Res emoji="💰" text={t(lang, "Sem taxa de entrega", "No delivery fee")} color={GOLD} /><Res emoji="🏃" text={t(lang, "Só ir lá buscar", "Just go pick it up")} color={MUTED} /></ResultBox>}
+          {realChoice && <><ConnectionBox lang={lang} jokeLabel={t(lang, "Esposa", "Wife")} jokeLogic={t(lang, "OU vai junto OU cartão sozinho", "OR go together OR card alone")} realLabel={t(lang, "Loja", "Store")} realLogic={t(lang, "OU entrega OU retira na loja", "OR delivery OR store pickup")} /><HowButton onClick={() => setShowPrompt(true)} lang={lang} /></>}
+        </div>
+      )}
+      {showPrompt && <PromptReveal lang={lang} prompt={t(lang, "Faz um app interativo que ensina lógica OU usando piada de casal — esposa diz que OU o marido vai no shopping junto OU ela vai sozinha com o cartão. Mostra dois botões de escolha com resultados diferentes. Depois mostra exemplo real de loja online com opção de entrega OU retirada. Estilo escuro moderno.", "Create an interactive app that teaches OR logic using a couple joke — wife says either husband goes to the mall together OR she goes alone with his card. Two choice buttons with different results. Then show real example of online store with delivery OR pickup. Modern dark style.")} />}
+    </>
+  );
+}
+
+/* ====================================================
+   JOKE 3: MOTHER IN LAW — CONTAINS
+   ==================================================== */
+function JokeMotherInLaw({ lang }) {
+  const [resp, setResp] = useState("");
+  const [showReal, setShowReal] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const posWords = lang === 'en' ? ["great", "good", "nice", "wonderful", "awesome", "cool", "love"] : ["bom", "legal", "boa", "ótimo", "maravilh"];
+  const negWords = lang === 'en' ? ["again", "not again", "no", "really"] : ["de novo", "denovo", "outra vez", "não"];
+  const hasBom = posWords.some(w => resp.toLowerCase().includes(w));
+  const hasDeNovo = negWords.some(w => resp.toLowerCase().includes(w));
+  const typed = resp.length > 0;
+
+  const products = [
+    { name: t(lang, "Furadeira Bosch 12V", "Bosch 12V Drill"), cat: t(lang, "ferramenta", "tool"), price: "$89" },
+    { name: t(lang, "Tinta Branca Suvinil 18L", "White Paint 18L"), cat: t(lang, "tinta", "paint"), price: "$120" },
+    { name: t(lang, "Parafuso Phillips 100un", "Phillips Screws 100pc"), cat: t(lang, "ferramenta", "tool"), price: "$12" },
+    { name: t(lang, "Piso Porcelanato 60x60", "Porcelain Tile 60x60"), cat: t(lang, "piso", "flooring"), price: "$45/m²" },
+    { name: t(lang, "Pincel Rolo 23cm", "Paint Roller 23cm"), cat: t(lang, "tinta", "paint"), price: "$15" },
+    { name: t(lang, "Cimento CP-II 50kg", "Cement CP-II 50kg"), cat: t(lang, "construção", "construction"), price: "$38" },
+  ];
+  const filtered = search.length > 0 ? products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.cat.toLowerCase().includes(search.toLowerCase())) : [];
+
+  return (
+    <>
+      <PersonSays emoji="👩" label={t(lang, "Esposa diz:", "Wife says:")} text={t(lang, `"Minha mãe vem jantar amanhã"`, `"My mother is coming for dinner tomorrow"`)} />
+      <div style={{ marginBottom: "1.5rem" }}>
+        <div style={{ color: GOLD, fontSize: "0.85rem", fontWeight: 700, marginBottom: "0.5rem" }}>{t(lang, "📝 Digite sua resposta:", "📝 Type your answer:")}</div>
+        <input value={resp} onChange={e => setResp(e.target.value)} placeholder={t(lang, 'Ex: "Que bom amor!" ou "De novo?!"', 'E.g.: "How nice!" or "Again?!"')} style={{ width: "100%", padding: "0.9rem 1rem", borderRadius: 12, border: `2px solid ${GOLD}30`, background: CARD, color: WHITE, fontSize: "1.05rem", outline: "none", boxSizing: "border-box" }} />
+        {typed && (
+          <div style={{ marginTop: "0.5rem", padding: "0.4rem 0.8rem", borderRadius: 8, background: `${GOLD}15`, display: "inline-block" }}>
+            <span style={{ color: MUTED, fontSize: "0.8rem" }}>{t(lang, "Analisando se CONTÉM: ", "Checking if CONTAINS: ")}</span>
+            <span style={{ color: hasBom ? GREEN : hasDeNovo ? RED : MUTED, fontSize: "0.8rem", fontWeight: 700 }}>
+              {hasBom ? t(lang, `"positivo" → ENCONTRADO ✅`, `"positive" → FOUND ✅`) : hasDeNovo ? t(lang, `"de novo" → ENCONTRADO ⚠️`, `"again" → FOUND ⚠️`) : t(lang, "nenhuma palavra-chave...", "no keyword found...")}
+            </span>
+          </div>
+        )}
+      </div>
+      <Divider />
+      {hasBom && <ResultBox color={GREEN} header={t(lang, "✅ Resposta contém palavra positiva", "✅ Answer contains positive word")}><Res emoji="✅" text={t(lang, "Vida continua normal", "Life continues as normal")} color={GREEN} /><Res emoji="🥩" text={t(lang, "Jantar: churrasco garantido", "Dinner: BBQ guaranteed")} color={GOLD} /><Res emoji="😊" text={t(lang, "Esposa: feliz com você", "Wife: happy with you")} color={GREEN} /></ResultBox>}
+      {hasDeNovo && !hasBom && <ResultBox color={RED} header={t(lang, "⚠️ Resposta contém 'de novo'", "⚠️ Answer contains 'again'")}><Res emoji="🛋️" text={t(lang, "Sofá vira cama essa noite", "Couch becomes your bed tonight")} color={RED} /><Res emoji="📅" text={t(lang, "Dias no castigo: 3", "Days in trouble: 3")} color={RED} /><Res emoji="😤" text={t(lang, "Esposa nem olha pra sua cara", "Wife won't even look at you")} color={RED} /></ResultBox>}
+      {typed && !hasBom && !hasDeNovo && <ResultBox color={MUTED} header={t(lang, "🤔 Resposta neutra...", "🤔 Neutral answer...")}><Res emoji="😐" text={t(lang, "Ela tá te olhando desconfiada...", "She's looking at you suspiciously...")} color={MUTED} /><Res emoji="💡" text={t(lang, "Tenta de novo com mais entusiasmo", "Try again with more enthusiasm")} color={GOLD} /></ResultBox>}
+      {(hasBom || hasDeNovo) && !showReal && <><RevealLogic lang={lang}>{t(lang, `SE resposta CONTÉM "palavra" → ação`, `IF answer CONTAINS "word" → action`)}</RevealLogic><RealButton onClick={() => setShowReal(true)} lang={lang} /></>}
+      {showReal && !showPrompt && (
+        <div style={{ marginTop: "2.5rem", animation: "fadeUp 0.6s ease-out" }}>
+          <RealHeader tag={t(lang, "Mesma lógica · Uso real", "Same logic · Real use")} title={t(lang, "🔍 Busca de Produtos", "🔍 Product Search")} subtitle={t(lang, "Pesquisa em loja de material de construção", "Hardware store search")} />
+          <PersonSays emoji="🏗️" label={t(lang, "Cliente busca:", "Customer searches:")} text={t(lang, `"Preciso encontrar um produto..."`, `"I need to find a product..."`)} color={BLUE} />
+          <div style={{ marginBottom: "1.5rem" }}>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t(lang, 'Busque: "ferramenta", "tinta", "piso"...', 'Search: "tool", "paint", "flooring"...')} style={{ width: "100%", padding: "0.9rem 1rem", borderRadius: 12, border: `2px solid ${BLUE}50`, background: CARD, color: WHITE, fontSize: "1.05rem", outline: "none", boxSizing: "border-box" }} />
+          </div>
+          <Divider />
+          {search.length > 0 && filtered.length > 0 && (
+            <ResultBox color={GREEN} header={`✅ ${filtered.length} ${t(lang, "produto(s) encontrado(s)", "product(s) found")}`}>
+              {filtered.map((p, i) => <Res key={i} emoji="📦" text={`${p.name} — ${p.price}`} color={WHITE} />)}
+            </ResultBox>
+          )}
+          {search.length > 0 && filtered.length === 0 && (
+            <ResultBox color={RED} header={t(lang, "🚫 Nenhum produto encontrado", "🚫 No products found")}><Res emoji="🔍" text={t(lang, `Nada contém "${search}"`, `Nothing contains "${search}"`)} color={MUTED} /></ResultBox>
+          )}
+          {search.length === 0 && <ResultBox color={MUTED} header={t(lang, "🔍 DIGITE PARA BUSCAR", "🔍 TYPE TO SEARCH")}><Res emoji="👆" text={t(lang, "Escreva algo acima para filtrar", "Type something above to filter")} color={MUTED} /></ResultBox>}
+          {search.length > 0 && filtered.length > 0 && <><ConnectionBox lang={lang} jokeLabel={t(lang, "Esposa", "Wife")} jokeLogic={t(lang, `SE resposta CONTÉM "de novo" → sofá`, `IF answer CONTAINS "again" → couch`)} realLabel={t(lang, "Busca", "Search")} realLogic={t(lang, `SE nome CONTÉM "${search}" → mostra produto`, `IF name CONTAINS "${search}" → show product`)} /><HowButton onClick={() => setShowPrompt(true)} lang={lang} /></>}
+        </div>
+      )}
+      {showPrompt && <PromptReveal lang={lang} prompt={t(lang, "Faz um app que ensina CONTÉM usando piada de sogra — esposa diz que a mãe vem jantar, marido digita resposta, e o sistema analisa se contém palavras positivas ou negativas. Depois mostra exemplo real de busca de produtos numa loja de construção, filtrando pelo que o nome contém. Campo de texto interativo.", "Create an app that teaches CONTAINS using a mother-in-law joke — wife says mom is coming for dinner, husband types answer, and the system analyzes if it contains positive or negative words. Then show real example of product search in a hardware store, filtering by what the name contains. Interactive text field.")} />}
+    </>
+  );
+}
+
+/* ====================================================
+   JOKE 4: ADAM & EVE — != (NOT EQUAL)
+   ==================================================== */
+function JokeAdamEve({ lang }) {
+  const [fruit, setFruit] = useState(null);
+  const [showReal, setShowReal] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [age, setAge] = useState(null);
+
+  const fruits = [
+    { id: "uva", emoji: "🍇", name: t(lang, "Uva", "Grape") },
+    { id: "banana", emoji: "🍌", name: t(lang, "Banana", "Banana") },
+    { id: "proibido", emoji: "🍎", name: t(lang, "Fruto Proibido", "Forbidden Fruit") },
+    { id: "manga", emoji: "🥭", name: t(lang, "Manga", "Mango") },
+  ];
+
+  return (
+    <>
+      <PersonSays emoji="🙏" label={t(lang, "Deus diz:", "God says:")} text={t(lang, `"Podem comer de QUALQUER árvore... menos uma."`, `"You may eat from ANY tree... except one."`)} />
+      <div style={{ color: GOLD, fontSize: "0.85rem", fontWeight: 700, marginBottom: "0.5rem" }}>{t(lang, "🍎 Escolha uma fruta:", "🍎 Choose a fruit:")}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "1.5rem" }}>
+        {fruits.map(f => (
+          <OptionButton key={f.id} selected={fruit === f.id} onClick={() => setFruit(f.id)} emoji={f.emoji} label={f.name} />
+        ))}
+      </div>
+      <Divider />
+      {fruit && fruit !== "proibido" && (
+        <ResultBox color={GREEN} header={`✅ ${fruits.find(f=>f.id===fruit).emoji} ${t(lang, "DIFERENTE do proibido!", "NOT EQUAL to forbidden!")}`}>
+          <Res emoji="✅" text={t(lang, "PODE COMER! Aproveita o paraíso", "YOU CAN EAT! Enjoy paradise")} color={GREEN} />
+          <Res emoji="🌴" text={t(lang, "Vida no Éden continua tranquila", "Life in Eden continues peacefully")} color={GREEN} />
+          <Res emoji="😇" text={t(lang, "Deus: modo SATISFEITO", "God: PLEASED mode")} color={GOLD} />
+        </ResultBox>
+      )}
+      {fruit === "proibido" && (
+        <ResultBox color={RED} header={t(lang, "🚨 IGUAL ao proibido!", "🚨 EQUAL to forbidden!")}>
+          <Res emoji="🚫" text={t(lang, "ERA PRA NÃO TOCAR NESSE!", "YOU WEREN'T SUPPOSED TO TOUCH THAT!")} color={RED} />
+          <Res emoji="🐍" text={t(lang, `Cobra: "Eu avisei que ia ser bom..."`, `Snake: "I told you it'd be good..."`)} color={RED} />
+          <Res emoji="💀" text={t(lang, "Humanidade paga até hoje", "Humanity is still paying for this")} color={RED} />
+          <Res emoji="😅" text={t(lang, `Adão: "Mas foi ELA que me deu!"`, `Adam: "But SHE gave it to me!"`)} color={GOLD} />
+        </ResultBox>
+      )}
+      {fruit && !showReal && <><RevealLogic lang={lang}>{t(lang, "SE fruta != proibida → pode comer", "IF fruit != forbidden → can eat")}</RevealLogic><RealButton onClick={() => setShowReal(true)} lang={lang} /></>}
+      {showReal && !showPrompt && (
+        <div style={{ marginTop: "2.5rem", animation: "fadeUp 0.6s ease-out" }}>
+          <RealHeader tag={t(lang, "Mesma lógica · Uso real", "Same logic · Real use")} title={t(lang, "🔞 Verificação de Idade", "🔞 Age Verification")} subtitle={t(lang, "Sistema de acesso a conteúdo", "Content access system")} />
+          <PersonSays emoji="🖥️" label={t(lang, "Sistema pergunta:", "System asks:")} text={t(lang, `"Qual é a sua idade?"`, `"What is your age?"`)} color={BLUE} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "1.5rem" }}>
+            <OptionButton selected={age === "15"} onClick={() => setAge("15")} emoji="👦" label={t(lang, "15 anos", "15 years old")} />
+            <OptionButton selected={age === "18"} onClick={() => setAge("18")} emoji="🧑" label={t(lang, "18 anos", "18 years old")} />
+            <OptionButton selected={age === "25"} onClick={() => setAge("25")} emoji="👨" label={t(lang, "25 anos", "25 years old")} />
+          </div>
+          <Divider />
+          {age && age !== "15" && <ResultBox color={GREEN} header={t(lang, "✅ ACESSO LIBERADO", "✅ ACCESS GRANTED")}><Res emoji="✅" text={t(lang, `${age} anos != menor de idade`, `${age} years != underage`)} color={GREEN} /><Res emoji="🔓" text={t(lang, "Conteúdo desbloqueado", "Content unlocked")} color={GREEN} /></ResultBox>}
+          {age === "15" && <ResultBox color={RED} header={t(lang, "🚫 ACESSO NEGADO", "🚫 ACCESS DENIED")}><Res emoji="🚫" text={t(lang, "15 anos == menor de idade", "15 years == underage")} color={RED} /><Res emoji="🔒" text={t(lang, "Conteúdo bloqueado", "Content blocked")} color={RED} /></ResultBox>}
+          {age && <><ConnectionBox lang={lang} jokeLabel={t(lang, "Deus", "God")} jokeLogic={t(lang, "SE fruta != proibida → pode comer", "IF fruit != forbidden → can eat")} realLabel={t(lang, "Sistema", "System")} realLogic={t(lang, "SE idade != menor → acesso liberado", "IF age != underage → access granted")} /><HowButton onClick={() => setShowPrompt(true)} lang={lang} /></>}
+        </div>
+      )}
+      {showPrompt && <PromptReveal lang={lang} prompt={t(lang, "Faz um app que ensina o operador DIFERENTE (!=) usando a história de Adão e Eva. Deus diz que podem comer qualquer fruta DIFERENTE da proibida. Mostra opções de frutas pra escolher. Se escolhe a proibida, dá erro com humor. Depois mostra exemplo real de verificação de idade — se idade != menor, acesso liberado. Estilo bíblico divertido.", "Create an app that teaches the NOT EQUAL (!=) operator using the story of Adam and Eve. God says they can eat any fruit DIFFERENT from the forbidden one. Shows fruit options to choose. If they pick the forbidden one, error with humor. Then show real age verification example — if age != underage, access granted. Fun biblical style.")} />}
+    </>
+  );
+}
+
+/* ====================================================
+   JOKE 5: FRIDGE — IS EMPTY / NOT EMPTY
+   ==================================================== */
+function JokeFridge({ lang }) {
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState(["🥛 Leite vencido", "🧄 Um alho solitário", "💧 Garrafa de água"]);
+  const itemsEn = ["🥛 Expired milk", "🧄 A lonely garlic", "💧 Water bottle"];
+  const [cleared, setCleared] = useState(false);
+  const [showReal, setShowReal] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [cart, setCart] = useState([]);
+  const realProducts = [t(lang, "🔨 Martelo", "🔨 Hammer"), t(lang, "🪛 Chave de fenda", "🪛 Screwdriver"), t(lang, "📏 Trena", "📏 Tape measure")];
+  const isEmpty = cleared || items.length === 0;
+  const displayItems = lang === 'en' ? itemsEn : items;
+
+  return (
+    <>
+      <PersonSays emoji="👩" label={t(lang, "Esposa diz:", "Wife says:")} text={t(lang, `"Vai ver o que tem na geladeira"`, `"Go check what's in the fridge"`)} />
+      {!open && (
+        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+          <button onClick={() => setOpen(true)} style={{ background: `linear-gradient(135deg, ${GOLD}, #9A7A2A)`, color: BG, border: "none", borderRadius: 12, padding: "1rem 2.5rem", fontSize: "1.1rem", fontWeight: 700, cursor: "pointer", boxShadow: `0 4px 24px ${GOLD}33` }}>
+            {t(lang, "🧊 Abrir a Geladeira", "🧊 Open the Fridge")}
+          </button>
+        </div>
+      )}
+      {open && (
+        <>
+          <div style={{ background: CARD, borderRadius: 14, padding: "1rem", border: `2px solid ${isEmpty ? RED : GOLD}40`, marginBottom: "1rem", animation: "fadeUp 0.4s ease-out" }}>
+            <div style={{ color: isEmpty ? RED : GOLD, fontSize: "0.8rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: 2, marginBottom: "0.5rem" }}>
+              🧊 {t(lang, "Geladeira:", "Fridge:")} {isEmpty ? t(lang, "VAZIA", "EMPTY") : t(lang, "TEM ALGO", "HAS STUFF")}
+            </div>
+            {!isEmpty ? displayItems.map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.5rem 0.7rem", background: "rgba(0,0,0,0.2)", borderRadius: 8, marginBottom: "0.4rem" }}>
+                <span style={{ color: WHITE, fontSize: "1rem" }}>{item}</span>
+              </div>
+            )) : (
+              <div style={{ textAlign: "center", padding: "1.5rem", color: MUTED, fontSize: "1.1rem" }}>
+                {t(lang, "🦗 ... só o grilo cantando ...", "🦗 ... just crickets chirping ...")}
+              </div>
+            )}
+            {!isEmpty && <div style={{ textAlign: "right", marginTop: "0.5rem" }}>
+              <button onClick={() => setCleared(true)} style={{ background: `${RED}20`, color: RED, border: `1px solid ${RED}40`, borderRadius: 8, padding: "0.4rem 1rem", fontSize: "0.8rem", fontWeight: 700, cursor: "pointer" }}>{t(lang, "🗑️ Esvaziar tudo", "🗑️ Empty all")}</button>
+            </div>}
+          </div>
+          <Divider />
+          {!isEmpty && <ResultBox color={GOLD} header={t(lang, "🤔 Geladeira NÃO ESTÁ VAZIA mas...", "🤔 Fridge is NOT EMPTY but...")}><Res emoji="😤" text={t(lang, `"Tem coisa mas não tem NADA que presta"`, `"There's stuff but NOTHING good"`)} color={GOLD} /><Res emoji="📱" text={t(lang, "Abre o iFood do mesmo jeito", "Orders delivery anyway")} color={MUTED} /></ResultBox>}
+          {isEmpty && <ResultBox color={RED} header={t(lang, "😱 Geladeira ESTÁ VAZIA!", "😱 Fridge IS EMPTY!")}><Res emoji="😤" text={t(lang, `"Você não foi no mercado?!"`, `"You didn't go grocery shopping?!"`)} color={RED} /><Res emoji="📱" text={t(lang, "Abre o iFood (agora com urgência)", "Orders delivery (now urgently)")} color={RED} /><Res emoji="💸" text={t(lang, "Taxa de entrega: o dobro (é domingo)", "Delivery fee: double (it's Sunday)")} color={RED} /></ResultBox>}
+          {open && !showReal && <><RevealLogic lang={lang}>{t(lang, <>SE geladeira VAZIA → iFood urgente{"\n"}SE NÃO VAZIA → iFood mesmo assim 😂</>, <>IF fridge EMPTY → urgent delivery{"\n"}IF NOT EMPTY → delivery anyway 😂</>)}</RevealLogic><RealButton onClick={() => setShowReal(true)} lang={lang} /></>}
+        </>
+      )}
+      {showReal && !showPrompt && (
+        <div style={{ marginTop: "2.5rem", animation: "fadeUp 0.6s ease-out" }}>
+          <RealHeader tag={t(lang, "Mesma lógica · Uso real", "Same logic · Real use")} title={t(lang, "🛒 Carrinho de Compras", "🛒 Shopping Cart")} subtitle={t(lang, "Loja online de ferramentas", "Online hardware store")} />
+          <PersonSays emoji="🛒" label={t(lang, "Loja diz:", "Store says:")} text={t(lang, `"Adicione itens ao seu carrinho"`, `"Add items to your cart"`)} color={BLUE} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1rem" }}>
+            {realProducts.map((p, i) => (
+              <div key={i} onClick={() => !cart.includes(i) ? setCart([...cart, i]) : setCart(cart.filter(c => c !== i))} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.7rem 1rem", background: cart.includes(i) ? `${GREEN}15` : CARD, borderRadius: 10, border: `1px solid ${cart.includes(i) ? GREEN : MUTED}30`, cursor: "pointer", transition: "all 0.3s" }}>
+                <span style={{ color: WHITE, fontSize: "1rem" }}>{p}</span>
+                <span style={{ fontSize: "1.2rem" }}>{cart.includes(i) ? "✅" : "➕"}</span>
+              </div>
+            ))}
+          </div>
+          <Divider />
+          {cart.length === 0 && <ResultBox color={MUTED} header={t(lang, "🛒 Carrinho ESTÁ VAZIO", "🛒 Cart IS EMPTY")}><Res emoji="😶" text={t(lang, "Adicione produtos para continuar", "Add products to continue")} color={MUTED} /><Res emoji="🚫" text={t(lang, "Botão de comprar: DESATIVADO", "Buy button: DISABLED")} color={RED} /></ResultBox>}
+          {cart.length > 0 && <><ResultBox color={GREEN} header={t(lang, "🛒 Carrinho NÃO ESTÁ VAZIO", "🛒 Cart is NOT EMPTY")}><Res emoji="📦" text={`${cart.length} ${t(lang, "item(s) no carrinho", "item(s) in cart")}`} color={GREEN} /><Res emoji="✅" text={t(lang, "Botão de comprar: LIBERADO", "Buy button: ENABLED")} color={GREEN} /></ResultBox><ConnectionBox lang={lang} jokeLabel={t(lang, "Esposa", "Wife")} jokeLogic={t(lang, "SE geladeira VAZIA → problema", "IF fridge EMPTY → problem")} realLabel={t(lang, "Loja", "Store")} realLogic={t(lang, "SE carrinho VAZIO → não pode comprar", "IF cart EMPTY → can't buy")} /><HowButton onClick={() => setShowPrompt(true)} lang={lang} /></>}
+        </div>
+      )}
+      {showPrompt && <PromptReveal lang={lang} prompt={t(lang, "Faz um app que ensina VAZIO e NÃO VAZIO usando piada da geladeira — esposa manda verificar, mas mesmo com comida nada presta e pede iFood. Tem botão pra esvaziar. Depois mostra exemplo real de carrinho de compras — se vazio não pode comprar, se tem itens libera o botão. Interativo com cliques.", "Create an app that teaches EMPTY and NOT EMPTY using a fridge joke — wife tells husband to check, but even with food nothing's good so she orders delivery. Has button to empty it. Then show real shopping cart example — if empty can't buy, if has items enables button. Interactive with clicks.")} />}
+    </>
+  );
+}
+
+/* ====================================================
+   JOKE 6: KIDS QUIET — OR
+   ==================================================== */
+function JokeKids({ lang }) {
+  const [situation, setSituation] = useState(null);
+  const [showReal, setShowReal] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [realSit, setRealSit] = useState(null);
+
+  return (
+    <>
+      <PersonSays emoji="👩" label={t(lang, "Esposa diz:", "Wife says:")} text={t(lang, `"As crianças estão quietas demais..."`, `"The kids are too quiet..."`)} />
+      <div style={{ color: GOLD, fontSize: "0.85rem", fontWeight: 700, marginBottom: "0.5rem" }}>{t(lang, "🔍 O que está acontecendo?", "🔍 What's happening?")}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "1.5rem" }}>
+        <OptionButton selected={situation === "silencio"} onClick={() => setSituation("silencio")} emoji="🤫" label={t(lang, "Silêncio total", "Total silence")} />
+        <OptionButton selected={situation === "barulho"} onClick={() => setSituation("barulho")} emoji="📢" label={t(lang, "Barulho normal", "Normal noise")} />
+      </div>
+      <Divider />
+      {situation === "silencio" && <ResultBox color={RED} header={t(lang, "🤫 Silêncio OU Barulho → de qualquer jeito...", "🤫 Silence OR Noise → either way...")}><Res emoji="🚨" text={t(lang, "Silêncio = estão aprontando ALGO", "Silence = they're up to SOMETHING")} color={RED} /><Res emoji="🔍" text={t(lang, "Vai verificar AGORA!", "Go check NOW!")} color={RED} /><Res emoji="🎨" text={t(lang, "Provavelmente pintaram a parede", "They probably painted the wall")} color={GOLD} /></ResultBox>}
+      {situation === "barulho" && <ResultBox color={GOLD} header={t(lang, "📢 Silêncio OU Barulho → de qualquer jeito...", "📢 Silence OR Noise → either way...")}><Res emoji="✅" text={t(lang, "Normal. Pelo menos sabe onde estão", "Normal. At least you know where they are")} color={GREEN} /><Res emoji="🎧" text={t(lang, "Pai coloca o fone e finge que não ouve", "Dad puts on headphones and pretends not to hear")} color={MUTED} /><Res emoji="😌" text={t(lang, "Mãe: resolve sozinha (como sempre)", "Mom: handles it alone (as always)")} color={GOLD} /></ResultBox>}
+      {situation && !showReal && <><RevealLogic lang={lang}>{t(lang, "SE (silêncio) OU (barulho) → sempre tem algo acontecendo", "IF (silence) OR (noise) → something's always going on")}</RevealLogic><RealButton onClick={() => setShowReal(true)} lang={lang} /></>}
+      {showReal && !showPrompt && (
+        <div style={{ marginTop: "2.5rem", animation: "fadeUp 0.6s ease-out" }}>
+          <RealHeader tag={t(lang, "Mesma lógica · Uso real", "Same logic · Real use")} title={t(lang, "🔔 Sistema de Alertas", "🔔 Alert System")} subtitle={t(lang, "Monitoramento de segurança residencial", "Home security monitoring")} />
+          <PersonSays emoji="🏠" label={t(lang, "Alarme detecta:", "Alarm detects:")} text={t(lang, `"Atividade na sua casa..."`, `"Activity in your home..."`)} color={BLUE} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "1.5rem" }}>
+            <OptionButton selected={realSit === "porta"} onClick={() => setRealSit("porta")} emoji="🚪" label={t(lang, "OU → Porta aberta", "OR → Door opened")} />
+            <OptionButton selected={realSit === "janela"} onClick={() => setRealSit("janela")} emoji="🪟" label={t(lang, "OU → Janela aberta", "OR → Window opened")} />
+          </div>
+          <Divider />
+          {realSit === "porta" && <ResultBox color={RED} header={t(lang, "🚪 ALERTA: Porta aberta", "🚪 ALERT: Door opened")}><Res emoji="🔔" text={t(lang, "Notificação enviada pro celular", "Notification sent to your phone")} color={RED} /><Res emoji="📹" text={t(lang, "Câmera ativada automaticamente", "Camera activated automatically")} color={BLUE} /></ResultBox>}
+          {realSit === "janela" && <ResultBox color={RED} header={t(lang, "🪟 ALERTA: Janela aberta", "🪟 ALERT: Window opened")}><Res emoji="🔔" text={t(lang, "Notificação enviada pro celular", "Notification sent to your phone")} color={RED} /><Res emoji="📹" text={t(lang, "Câmera ativada automaticamente", "Camera activated automatically")} color={BLUE} /></ResultBox>}
+          {realSit && <><ConnectionBox lang={lang} jokeLabel={t(lang, "Crianças", "Kids")} jokeLogic={t(lang, "SE silêncio OU barulho → verificar", "IF silence OR noise → check")} realLabel={t(lang, "Alarme", "Alarm")} realLogic={t(lang, "SE porta OU janela aberta → alerta", "IF door OR window opened → alert")} /><HowButton onClick={() => setShowPrompt(true)} lang={lang} /></>}
+        </div>
+      )}
+      {showPrompt && <PromptReveal lang={lang} prompt={t(lang, "Cria um app que ensina OU com piada de crianças — esposa diz que estão quietas, mas silêncio OU barulho, de qualquer jeito é problema. Depois mostra exemplo real de sistema de alarme residencial — porta OU janela aberta dispara alerta. Duas opções de escolha com resultados.", "Create an app that teaches OR with a kids joke — wife says they're too quiet, but silence OR noise, either way it's trouble. Then show real home alarm system example — door OR window open triggers alert. Two choice options with results.")} />}
+    </>
+  );
+}
+
+/* ====================================================
+   JOKE 7: WHATSAPP — IF / AND
+   ==================================================== */
+function JokeWhatsApp({ lang }) {
+  const [hora, setHora] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [showReal, setShowReal] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [rHora, setRHora] = useState(null);
+  const [rSenha, setRSenha] = useState(null);
+
+  const busted = hora === "tarde" && status === "online";
+  const safe = hora === "cedo";
+  const partial = hora === "tarde" && status === "offline";
+
+  return (
+    <>
+      <PersonSays emoji="👩" label={t(lang, "Esposa verifica seu celular:", "Wife checks your phone:")} text={t(lang, `"Hmm, deixa eu ver uma coisa..."`, `"Hmm, let me check something..."`)} />
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "0.7rem" }}>
+        <div style={{ color: GOLD, fontSize: "0.85rem", fontWeight: 700 }}>{t(lang, "🕐 Que hora é?", "🕐 What time is it?")}</div>
+        <div style={{ display: "flex", gap: "0.7rem" }}>
+          <div onClick={() => setHora("cedo")} style={{ flex: 1, padding: "0.8rem", borderRadius: 12, background: hora === "cedo" ? `${GREEN}15` : CARD, border: `2px solid ${hora === "cedo" ? GREEN : MUTED + "30"}`, textAlign: "center", cursor: "pointer", transition: "all 0.3s" }}>
+            <div style={{ fontSize: "1.5rem" }}>🌤️</div>
+            <div style={{ color: hora === "cedo" ? WHITE : MUTED, fontSize: "0.9rem", fontWeight: 600 }}>{t(lang, "Antes das 23h", "Before 11 PM")}</div>
+          </div>
+          <div onClick={() => setHora("tarde")} style={{ flex: 1, padding: "0.8rem", borderRadius: 12, background: hora === "tarde" ? `${RED}15` : CARD, border: `2px solid ${hora === "tarde" ? RED : MUTED + "30"}`, textAlign: "center", cursor: "pointer", transition: "all 0.3s" }}>
+            <div style={{ fontSize: "1.5rem" }}>🌙</div>
+            <div style={{ color: hora === "tarde" ? WHITE : MUTED, fontSize: "0.9rem", fontWeight: 600 }}>{t(lang, "Depois das 23h", "After 11 PM")}</div>
+          </div>
+        </div>
+      </div>
+      {hora === "tarde" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "1.5rem", animation: "fadeUp 0.3s ease-out" }}>
+          <div style={{ color: GOLD, fontSize: "0.85rem", fontWeight: 700 }}>{t(lang, "📱 Seu status no WhatsApp?", "📱 Your WhatsApp status?")}</div>
+          <div style={{ display: "flex", gap: "0.7rem" }}>
+            <div onClick={() => setStatus("online")} style={{ flex: 1, padding: "0.8rem", borderRadius: 12, background: status === "online" ? `${GREEN}15` : CARD, border: `2px solid ${status === "online" ? GREEN : MUTED + "30"}`, textAlign: "center", cursor: "pointer", transition: "all 0.3s" }}>
+              <div style={{ fontSize: "1.5rem" }}>🟢</div>
+              <div style={{ color: status === "online" ? WHITE : MUTED, fontSize: "0.9rem", fontWeight: 600 }}>Online</div>
+            </div>
+            <div onClick={() => setStatus("offline")} style={{ flex: 1, padding: "0.8rem", borderRadius: 12, background: status === "offline" ? `${MUTED}15` : CARD, border: `2px solid ${status === "offline" ? MUTED : MUTED + "30"}`, textAlign: "center", cursor: "pointer", transition: "all 0.3s" }}>
+              <div style={{ fontSize: "1.5rem" }}>⚫</div>
+              <div style={{ color: status === "offline" ? WHITE : MUTED, fontSize: "0.9rem", fontWeight: 600 }}>Offline</div>
+            </div>
+          </div>
+        </div>
+      )}
+      <Divider />
+      {safe && <ResultBox color={GREEN} header={t(lang, "✅ Tudo tranquilo... por enquanto", "✅ All good... for now")}><Res emoji="🌤️" text={t(lang, "Hora normal, sem problema", "Normal time, no problem")} color={GREEN} /><Res emoji="😌" text={t(lang, "Esposa nem verificou", "Wife didn't even check")} color={GREEN} /></ResultBox>}
+      {partial && <ResultBox color={GOLD} header={t(lang, "😮‍💨 Escapou por pouco...", "😮‍💨 Close call...")}><Res emoji="⚫" text={t(lang, "Offline de madrugada = dormindo", "Offline late at night = sleeping")} color={MUTED} /><Res emoji="😴" text={t(lang, "Esposa: convencida (por enquanto)", "Wife: convinced (for now)")} color={GOLD} /></ResultBox>}
+      {busted && <ResultBox color={RED} header={t(lang, "🚨 PEGO NO FLAGRA!", "🚨 CAUGHT RED-HANDED!")}><Res emoji="😤" text={t(lang, `"Com quem você tá conversando?!"`, `"Who are you texting?!"`)} color={RED} /><Res emoji="🔦" text={t(lang, "Modo interrogatório: ATIVADO", "Interrogation mode: ACTIVATED")} color={RED} /><Res emoji="📱" text={t(lang, "Responder rápido demais = mais suspeito", "Replying too fast = more suspicious")} color={RED} /><Res emoji="🛋️" text={t(lang, "Sofá confirmado.", "Couch confirmed.")} color={GOLD} /></ResultBox>}
+      {(safe || partial || busted) && !showReal && <><RevealLogic lang={lang}>{t(lang, "SE hora > 23 E status == online → problema", "IF time > 11PM AND status == online → trouble")}</RevealLogic><RealButton onClick={() => setShowReal(true)} lang={lang} /></>}
+      {showReal && !showPrompt && (
+        <div style={{ marginTop: "2.5rem", animation: "fadeUp 0.6s ease-out" }}>
+          <RealHeader tag={t(lang, "Mesma lógica · Uso real", "Same logic · Real use")} title={t(lang, "🔐 Login Seguro", "🔐 Secure Login")} subtitle={t(lang, "Sistema de autenticação em 2 passos", "2-step authentication system")} />
+          <PersonSays emoji="🖥️" label={t(lang, "Sistema pergunta:", "System asks:")} text={t(lang, `"Confirme sua identidade..."`, `"Confirm your identity..."`)} color={BLUE} />
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "0.7rem" }}>
+            <div style={{ color: BLUE, fontSize: "0.85rem", fontWeight: 700 }}>{t(lang, "🕐 Horário do acesso?", "🕐 Access time?")}</div>
+            <div style={{ display: "flex", gap: "0.7rem" }}>
+              <div onClick={() => setRHora("normal")} style={{ flex: 1, padding: "0.8rem", borderRadius: 12, background: rHora === "normal" ? `${GREEN}15` : CARD, border: `2px solid ${rHora === "normal" ? GREEN : MUTED + "30"}`, textAlign: "center", cursor: "pointer", transition: "all 0.3s" }}>
+                <div style={{ fontSize: "1.3rem" }}>🏢</div>
+                <div style={{ color: rHora === "normal" ? WHITE : MUTED, fontSize: "0.85rem", fontWeight: 600 }}>{t(lang, "Horário comercial", "Business hours")}</div>
+              </div>
+              <div onClick={() => setRHora("suspeito")} style={{ flex: 1, padding: "0.8rem", borderRadius: 12, background: rHora === "suspeito" ? `${RED}15` : CARD, border: `2px solid ${rHora === "suspeito" ? RED : MUTED + "30"}`, textAlign: "center", cursor: "pointer", transition: "all 0.3s" }}>
+                <div style={{ fontSize: "1.3rem" }}>🌙</div>
+                <div style={{ color: rHora === "suspeito" ? WHITE : MUTED, fontSize: "0.85rem", fontWeight: 600 }}>{t(lang, "3 da manhã", "3 AM")}</div>
+              </div>
+            </div>
+          </div>
+          {rHora === "suspeito" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem", marginBottom: "1rem", animation: "fadeUp 0.3s ease-out" }}>
+              <div style={{ color: BLUE, fontSize: "0.85rem", fontWeight: 700 }}>{t(lang, "🔑 Senha correta?", "🔑 Correct password?")}</div>
+              <div style={{ display: "flex", gap: "0.7rem" }}>
+                <div onClick={() => setRSenha("errada")} style={{ flex: 1, padding: "0.8rem", borderRadius: 12, background: rSenha === "errada" ? `${RED}15` : CARD, border: `2px solid ${rSenha === "errada" ? RED : MUTED + "30"}`, textAlign: "center", cursor: "pointer", transition: "all 0.3s" }}>
+                  <div style={{ fontSize: "1.3rem" }}>❌</div>
+                  <div style={{ color: rSenha === "errada" ? WHITE : MUTED, fontSize: "0.85rem", fontWeight: 600 }}>{t(lang, "Errada 3x", "Wrong 3x")}</div>
+                </div>
+                <div onClick={() => setRSenha("certa")} style={{ flex: 1, padding: "0.8rem", borderRadius: 12, background: rSenha === "certa" ? `${GREEN}15` : CARD, border: `2px solid ${rSenha === "certa" ? GREEN : MUTED + "30"}`, textAlign: "center", cursor: "pointer", transition: "all 0.3s" }}>
+                  <div style={{ fontSize: "1.3rem" }}>✅</div>
+                  <div style={{ color: rSenha === "certa" ? WHITE : MUTED, fontSize: "0.85rem", fontWeight: 600 }}>{t(lang, "Correta", "Correct")}</div>
+                </div>
+              </div>
+            </div>
+          )}
+          <Divider />
+          {rHora === "normal" && <ResultBox color={GREEN} header={t(lang, "✅ ACESSO NORMAL", "✅ NORMAL ACCESS")}><Res emoji="🔓" text={t(lang, "Login liberado", "Login granted")} color={GREEN} /><Res emoji="🏢" text={t(lang, "Horário normal, sem verificação extra", "Normal hours, no extra verification")} color={MUTED} /></ResultBox>}
+          {rHora === "suspeito" && rSenha === "errada" && <ResultBox color={RED} header={t(lang, "🚨 CONTA BLOQUEADA", "🚨 ACCOUNT LOCKED")}><Res emoji="🔒" text={t(lang, "Horário suspeito E senha errada", "Suspicious time AND wrong password")} color={RED} /><Res emoji="📧" text={t(lang, "Email de alerta enviado ao dono", "Alert email sent to owner")} color={RED} /><Res emoji="🚫" text={t(lang, "Possível invasão detectada", "Possible breach detected")} color={RED} /></ResultBox>}
+          {rHora === "suspeito" && rSenha === "certa" && <ResultBox color={GOLD} header={t(lang, "⚠️ ACESSO COM VERIFICAÇÃO EXTRA", "⚠️ ACCESS WITH EXTRA VERIFICATION")}><Res emoji="📱" text={t(lang, "Código SMS enviado pro celular", "SMS code sent to your phone")} color={GOLD} /><Res emoji="🔐" text={t(lang, "Verificação em 2 passos ativada", "2-step verification activated")} color={BLUE} /></ResultBox>}
+          {((rHora === "normal") || (rHora === "suspeito" && rSenha)) && <><ConnectionBox lang={lang} jokeLabel={t(lang, "Esposa", "Wife")} jokeLogic={t(lang, "SE tarde E online → interrogatório", "IF late AND online → interrogation")} realLabel={t(lang, "Sistema", "System")} realLogic={t(lang, "SE madrugada E senha errada → bloqueio", "IF late night AND wrong password → lock")} /><HowButton onClick={() => setShowPrompt(true)} lang={lang} /></>}
+        </div>
+      )}
+      {showPrompt && <PromptReveal lang={lang} prompt={t(lang, "Cria um app que ensina IF/AND usando piada do WhatsApp — esposa verifica se é tarde da noite E marido tá online. Escolhe o horário e status com botões visuais bonitos. Depois mostra exemplo real de sistema de login seguro — se horário suspeito E senha errada, bloqueia a conta. Se tudo normal, acesso liberado.", "Create an app that teaches IF/AND using a WhatsApp joke — wife checks if it's late at night AND husband is online. Choose time and status with beautiful visual buttons. Then show real secure login system example — if suspicious time AND wrong password, lock account. If all normal, access granted.")} />}
+    </>
+  );
+}
+
+/* ============ RENDER ============ */
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<LogicJokes />);
+  </script>
+</body>
+</html>
