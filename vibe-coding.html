@@ -54,7 +54,7 @@
 
     /* ── Language Toggle ── */
     .lang-bar {
-      position: fixed; top: 12px; right: 12px; z-index: 200;
+      position: absolute; top: 50%; right: 0; transform: translateY(-50%); z-index: 200;
       display: flex; gap: 4px; background: rgba(255,255,255,0.06); border-radius: 8px; padding: 3px;
     }
     .lang-btn {
@@ -102,12 +102,13 @@
     #app-screen.active { display: flex; }
 
     .top-bar {
-      display: flex; align-items: center; justify-content: space-between; padding: 10px 16px;
+      display: flex; align-items: center; justify-content: space-between; padding: 10px 12px;
       background: rgba(10,10,18,0.95); backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border); flex-shrink: 0; gap: 8px;
+      border-bottom: 1px solid var(--border); flex-shrink: 0; gap: 6px;
+      position: relative;
     }
-    .top-bar-title { color: var(--gold); font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
-    .top-bar-name { color: var(--text-dim); font-size: 0.75rem; font-family: 'Share Tech Mono', monospace; }
+    .top-bar-title { color: var(--gold); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap; }
+    .top-bar-name { color: var(--text-dim); font-size: 0.7rem; font-family: 'Share Tech Mono', monospace; }
     .tab-btns { display: flex; gap: 4px; }
     .tab-btn {
       padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; background: transparent;
@@ -226,9 +227,10 @@
     /* ── Phone: stacked with tabs ── */
     @media (max-width: 767px) {
       .chat-panel { width: 100%; }
-      .preview-panel { width: 100%; position: absolute; inset: 0; z-index: 5; }
+      .preview-panel { width: 100%; }
       .chat-panel.hidden { display: none; }
       .preview-panel.hidden { display: none; }
+      .top-bar-title { font-size: 0.6rem; }
     }
   </style>
 </head>
@@ -237,13 +239,12 @@
   <div class="glow-orb glow-orb-1"></div>
   <div class="glow-orb glow-orb-2"></div>
 
-  <div class="lang-bar">
-    <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
-    <button class="lang-btn active" id="btnPt" onclick="setLang('pt')">PT</button>
-  </div>
-
   <!-- WELCOME SCREEN -->
   <div id="welcome-screen">
+    <div class="lang-bar" style="position: fixed; top: 12px; right: 12px; z-index: 200;">
+      <button class="lang-btn" id="btnEnWelcome" onclick="setLang('en')">EN</button>
+      <button class="lang-btn active" id="btnPtWelcome" onclick="setLang('pt')">PT</button>
+    </div>
     <div class="welcome-card">
       <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✨</div>
       <h1 data-en="Vibe Coding" data-pt="Vibe Coding">Vibe Coding</h1>
@@ -261,11 +262,15 @@
         <div class="top-bar-title">DONS DIGITAIS — VIBE CODING</div>
         <div class="top-bar-name" id="displayName"></div>
       </div>
-      <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 6px;">
         <span class="remaining-badge" id="remainingBadge"></span>
         <div class="tab-btns">
           <button class="tab-btn active" id="tabChat" onclick="switchTab('chat')" data-en="Chat" data-pt="Chat">Chat</button>
-          <button class="tab-btn" id="tabPreview" onclick="switchTab('preview')" data-en="Preview" data-pt="Preview">Preview</button>
+          <button class="tab-btn" id="tabPreview" onclick="switchTab('preview')" data-en="Result" data-pt="Resultado">Resultado</button>
+        </div>
+        <div class="lang-bar">
+          <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
+          <button class="lang-btn active" id="btnPt" onclick="setLang('pt')">PT</button>
         </div>
       </div>
     </header>
@@ -319,8 +324,10 @@
       lang = l;
       localStorage.setItem('fc-lang', l);
       document.documentElement.lang = l === 'pt' ? 'pt-BR' : 'en';
-      document.getElementById('btnEn').classList.toggle('active', l === 'en');
-      document.getElementById('btnPt').classList.toggle('active', l === 'pt');
+      document.querySelectorAll('.lang-btn').forEach(function(btn) {
+        var isEn = btn.id.indexOf('En') !== -1;
+        btn.classList.toggle('active', isEn ? l === 'en' : l === 'pt');
+      });
       document.querySelectorAll('[data-en]').forEach(function(el) {
         var text = el.getAttribute('data-' + l);
         if (text) el.innerHTML = text;
@@ -457,11 +464,12 @@
           if (data.html) {
             currentHtml = data.html;
             updatePreview(data.html);
-            // On mobile, flash preview tab
+            // On mobile, highlight preview tab to show new content is ready
             if (window.innerWidth < 768) {
-              document.getElementById('tabPreview').classList.add('active');
-              document.getElementById('tabChat').classList.remove('active');
-              setTimeout(function() { switchTab('preview'); }, 300);
+              var tabPrev = document.getElementById('tabPreview');
+              tabPrev.style.background = 'var(--green)';
+              tabPrev.style.color = 'var(--bg-dark)';
+              tabPrev.style.borderColor = 'var(--green)';
             }
           }
 
@@ -541,6 +549,10 @@
         previewPanel.style.display = 'flex';
         tabPreview.classList.add('active');
         tabChat.classList.remove('active');
+        // Reset green highlight
+        tabPreview.style.background = '';
+        tabPreview.style.color = '';
+        tabPreview.style.borderColor = '';
       }
     }
 
