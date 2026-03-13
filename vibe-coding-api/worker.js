@@ -24,7 +24,7 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:3000',
 ];
 
-const CLAUDE_MODEL = 'claude-sonnet-4-6-20250514';
+const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
 const MAX_TOKENS = 8000;
 const MAX_REQUESTS_PER_PARTICIPANT = 60;
 const RATE_LIMIT_TTL = 10800; // 3 hours
