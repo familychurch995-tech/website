@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Ferramentas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #fff;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
+
+        .card h2 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #0f0f23;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .tool-item {
+            background: #0f0f23;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-available {
+            color: #4ade80;
+        }
+
+        .status-borrowed {
+            color: #f87171;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .stat-box h3 {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .alert {
+            background: #dc2626;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .success {
+            background: #10b981;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔧 Controle de Ferramentas</h1>
+        <p>Sistema simples e eficiente</p>
+    </div>
+
+    <div id="alerts"></div>
+
+    <div class="stats">
+        <div class="stat-box">
+            <h3 id="totalTools">0</h3>
+            <p>Total</p>
+        </div>
+        <div class="stat-box">
+            <h3 id="availableTools">0</h3>
+            <p>Disponíveis</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📝 Cadastrar Ferramenta</h2>
+        <input type="text" id="toolName" placeholder="Nome da ferramenta">
+        <input type="text" id="toolBrand" placeholder="Marca">
+        <button onclick="addTool()">Adicionar Ferramenta</button>
+    </div>
+
+    <div class="card">
+        <h2>👷 Cadastrar Funcionário</h2>
+        <input type="text" id="employeeName" placeholder="Nome do funcionário">
+        <button onclick="addEmployee()">Adicionar Funcionário</button>
+    </div>
+
+    <div class="card">
+        <h2>🏗️ Cadastrar Obra</h2>
+        <input type="text" id="jobsiteName" placeholder="Nome da obra">
+        <button onclick="addJobsite()">Adicionar Obra</button>
+    </div>
+
+    <div class="card">
+        <h2>📤 Emprestar Ferramenta</h2>
+        <select id="loanTool">
+            <option value="">Selecione a ferramenta</option>
+        </select>
+        <select id="loanEmployee">
+            <option value="">Selecione o funcionário</option>
+        </select>
+        <select id="loanJobsite">
+            <option value="">Selecione a obra</option>
+        </select>
+        <button onclick="loanTool()">Emprestar</button>
+    </div>
+
+    <div class="card">
+        <h2>📥 Devolver Ferramenta</h2>
+        <select id="returnTool">
+            <option value="">Selecione a ferramenta emprestada</option>
+        </select>
+        <button onclick="returnTool()">Devolver</button>
+    </div>
+
+    <div class="card">
+        <h2>📋 Lista de Ferramentas</h2>
+        <div id="toolsList"></div>
+    </div>
+
+    <script>
+        // Dados
+        let tools = JSON.parse(localStorage.getItem('tools')) || [];
+        let employees = JSON.parse(localStorage.getItem('employees')) || [];
+        let jobsites = JSON.parse(localStorage.getItem('jobsites')) || [];
+
+        // Inicializar
+        updateDisplay();
+
+        function saveData() {
+            localStorage.setItem('tools', JSON.stringify(tools));
+            localStorage.setItem('employees', JSON.stringify(employees));
+            localStorage.setItem('jobsites', JSON.stringify(jobsites));
+        }
+
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.getElementById('alerts');
+            alertDiv.className = type;
+            alertDiv.textContent = message;
+            alertDiv.style.display = 'block';
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function addTool() {
+            const name = document.getElementById('toolName').value;
+            const brand = document.getElementById('toolBrand').value;
+            
+            if (name && brand) {
+                tools.push({
+                    id: Date.now(),
+                    name: name,
+                    brand: brand,
+                    borrowed: false,
+                    employee: '',
+                    jobsite: '',
+                    loanDate: null
+                });
+                
+                document.getElementById('toolName').value = '';
+                document.getElementById('toolBrand').value = '';
+                
+                saveData();
+                updateDisplay();
+                showAlert('✅ Ferramenta cadastrada com sucesso!');
+            }
+        }
+
+        function addEmployee() {
+            const name = document.getElementById('employeeName').value;
+            
+            if (name) {
+                employees.push({
+                    id: Date.now(),
+                    name: name
+                });
+                
+                document.getElementById('employeeName').value = '';
+                
+                saveData();
+                updateDisplay();
+                showAlert('✅ Funcionário cadastrado com sucesso!');
+            }
+        }
+
+        function addJobsite() {
+            const name = document.getElementById('jobsiteName').value;
+            
+            if (name) {
+                jobsites.push({
+                    id: Date.now(),
+                    name: name
+                });
+                
+                document.getElementById('jobsiteName').value = '';
+                
+                saveData();
+                updateDisplay();
+                showAlert('✅ Obra cadastrada com sucesso!');
+            }
+        }
+
+        function loanTool() {
+            const toolId = document.getElementById('loanTool').value;
+            const employeeId = document.getElementById('loanEmployee').value;
+            const jobsiteId = document.getElementById('loanJobsite').value;
+            
+            if (toolId && employeeId && jobsiteId) {
+                const tool = tools.find(t => t.id == toolId);
+                const employee = employees.find(e => e.id == employeeId);
+                const jobsite = jobsites.find(j => j.id == jobsiteId);
+                
+                tool.borrowed = true;
+                tool.employee = employee.name;
+                tool.jobsite = jobsite.name;
+                tool.loanDate = new Date().toLocaleDateString('pt-BR');
+                
+                saveData();
+                updateDisplay();
+                showAlert(`✅ ${tool.name} emprestada para ${employee.name}!`);
+            }
+        }
+
+        function returnTool() {
+            const toolId = document.getElementById('returnTool').value;
+            
+            if (toolId) {
+                const tool = tools.find(t => t.id == toolId);
+                
+                showAlert(`✅ ${tool.name} devolvida com sucesso!`);
+                
+                tool.borrowed = false;
+                tool.employee = '';
+                tool.jobsite = '';
+                tool.loanDate = null;
+                
+                saveData();
+                updateDisplay();
+            }
+        }
+
+        function updateDisplay() {
+            // Atualizar estatísticas
+            document.getElementById('totalTools').textContent = tools.length;
+            document.getElementById('availableTools').textContent = tools.filter(t => !t.borrowed).length;
+            
+            // Atualizar selects
+            const loanToolSelect = document.getElementById('loanTool');
+            loanToolSelect.innerHTML = '<option value="">Selecione a ferramenta</option>';
+            tools.filter(t => !t.borrowed).forEach(tool => {
+                loanToolSelect.innerHTML += `<option value="${tool.id}">${tool.name} - ${tool.brand}</option>`;
+            });
+            
+            const loanEmployeeSelect = document.getElementById('loanEmployee');
+            loanEmployeeSelect.innerHTML = '<option value="">Selecione o funcionário</option>';
+            employees.forEach(emp => {
+                loanEmployeeSelect.innerHTML += `<option value="${emp.id}">${emp.name}</option>`;
+            });
+            
+            const loanJobsiteSelect = document.getElementById('loanJobsite');
+            loanJobsiteSelect.innerHTML = '<option value="">Selecione a obra</option>';
+            jobsites.forEach(job => {
+                loanJobsiteSelect.innerHTML += `<option value="${job.id}">${job.name}</option>`;
+            });
+            
+            const returnToolSelect = document.getElementById('returnTool');
+            returnToolSelect.innerHTML = '<option value="">Selecione a ferramenta emprestada</option>';
+            tools.filter(t => t.borrowed).forEach(tool => {
+                returnToolSelect.innerHTML += `<option value="${tool.id}">${tool.name} - Com ${tool.employee}</option>`;
+            });
+            
+            // Atualizar lista de ferramentas
+            const toolsList = document.getElementById('toolsList');
+            if (tools.length === 0) {
+                toolsList.innerHTML = '<p style="opacity: 0.5;">Nenhuma ferramenta cadastrada ainda.</p>';
+            } else {
+                toolsList.innerHTML = tools.map(tool => `
+                    <div class="tool-item">
+                        <div>
+                            <strong>${tool.name}</strong> - ${tool.brand}
+                            ${tool.borrowed ? `<br><small>Com ${tool.employee} em ${tool.jobsite}</small>` : ''}
+                        </div>
+                        <span class="${tool.borrowed ? 'status-borrowed' : 'status-available'}">
+                            ${tool.borrowed ? '● Emprestada' : '● Disponível'}
+                        </span>
+                    </div>
+                `).join('');
+            }
+        }
+    </script>
+</body>
+</html>

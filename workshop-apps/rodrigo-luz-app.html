@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxDrive - Transporte Executivo Premium</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwMCIgaGVpZ2h0PSI2MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMWExYTFhO3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMyYTJhMmE7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMTAwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9InVybCgjZ3JhZCkiLz4KICA8cGF0aCBkPSJNMjAwIDMwMEw0MDAgMjAwTDYwMCAyNTBMODAwIDE1MEw4MDAgNjAwTDIwMCA2MDBaIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjAyIi8+Cjwvc3ZnPg==');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #ccc;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease-out 0.4s both;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .services {
+            padding: 80px 0;
+            background: #111;
+        }
+
+        .services h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: #FFD700;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .service-card {
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            padding: 80px 0;
+            background: #0a0a0a;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #FFD700;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            background: #0a0a0a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #FFD700;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .submit-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .success-message {
+            display: none;
+            background: #28a745;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.5);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            z-index: 1000;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .form-container { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>LuxDrive Executive</h1>
+            <p class="subtitle">Transporte executivo de alto padrão para quem valoriza conforto e elegância</p>
+            <a href="#solicitar" class="cta-button">Solicitar Orçamento</a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services">
+        <div class="container">
+            <h2>Nossos Serviços Premium</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">✈️</div>
+                    <h3>Transfer Aeroporto</h3>
+                    <p>Chegue com pontualidade e conforto ao seu destino</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💼</div>
+                    <h3>Eventos Corporativos</h3>
+                    <p>Transporte executivo para reuniões e eventos empresariais</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💐</div>
+                    <h3>Casamentos</h3>
+                    <p>Torne seu dia especial ainda mais memorável</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🌃</div>
+                    <h3>City Tour</h3>
+                    <p>Conheça a cidade com todo conforto e exclusividade</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Form Section -->
+    <section class="form-section" id="solicitar">
+        <div class="container">
+            <div class="form-container">
+                <h2>Solicite seu Orçamento</h2>
+                <form id="leadForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nome">Nome Completo*</label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefone">WhatsApp*</label>
+                            <input type="tel" id="telefone" name="telefone" placeholder="(11) 99999-9999" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="servico">Tipo de Serviço*</label>
+                        <select id="servico" name="servico" required>
+                            <option value="">Selecione o serviço desejado</option>
+                            <option value="transfer-aeroporto">Transfer Aeroporto</option>
+                            <option value="evento-corporativo">Evento Corporativo</option>
+                            <option value="casamento">Casamento</option>
+                            <option value="city-tour">City Tour</option>
+                            <option value="viagem-executiva">Viagem Executiva</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="data">Data do Serviço*</label>
+                            <input type="date" id="data" name="data" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hora">Horário*</label>
+                            <input type="time" id="hora" name="hora" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="origem">Local de Origem*</label>
+                        <input type="text" id="origem" name="origem" placeholder="Endereço de partida" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="destino">Local de Destino*</label>
+                        <input type="text" id="destino" name="destino" placeholder="Endereço de chegada" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="passageiros">Número de Passageiros*</label>
+                        <select id="passageiros" name="passageiros" required>
+                            <option value="1-2">1 a 2 passageiros</option>
+                            <option value="3-4">3 a 4 passageiros</option>
+                            <option value="5-6">5 a 6 passageiros</option>
+                            <option value="7+">Mais de 7 passageiros</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mensagem">Observações Adicionais</label>
+                        <textarea id="mensagem" name="mensagem" rows="4" placeholder="Alguma preferência ou necessidade especial?"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-button">Enviar Solicitação</button>
+                </form>
+                
+                <div id="successMessage" class="success-message">
+                    ✅ Solicitação enviada com sucesso! Entraremos em contato em breve.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/5511999999999?text=Olá! Gostaria de solicitar um orçamento para transporte executivo." 
+       target="_blank" 
+       class="whatsapp-float">
+        📱
+    </a>
+
+    <script>
+        // Form handling
+        document.getElementById('leadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = new FormData(this);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            // Format date for display
+            const dataFormatada = new Date(data.data).toLocaleDateString('pt-BR');
+            
+            // Save to localStorage (simulando um banco de dados)
+            let leads = JSON.parse(localStorage.getItem('leads')) || [];
+            leads.push({
+                ...data,
+                id: Date.now(),
+                dataEnvio: new Date().toISOString(),
+                status: 'novo'
+            });
+            localStorage.setItem('leads', JSON.stringify(leads));
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Clear form
+            this.reset();
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+            
+            // Scroll to success message
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Phone mask
+        document.getElementById('telefone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+
+        // Smooth scroll for CTA button
+        document.querySelector('.cta-button').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('solicitar').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Set minimum date to today
+        document.getElementById('data').min = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>

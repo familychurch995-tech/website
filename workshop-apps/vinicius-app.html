@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Rotina Kids - Família</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 428px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-time {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .kids-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .kid-tab {
+            flex: 1;
+            min-width: 100px;
+            padding: 15px 20px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kid-tab.active {
+            transform: scale(1.05);
+        }
+
+        .kid-tab.bryan.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .kid-tab.stella.active {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .kid-tab.jeremy.active {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+
+        .kid-tab .name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .kid-tab .age {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .kid-tab .progress {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .routine-container {
+            padding: 0 20px 100px;
+        }
+
+        .routine-section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .routine-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .task-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .task-item:active {
+            transform: scale(0.98);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            background: rgba(76, 175, 80, 0.2);
+        }
+
+        .task-icon {
+            font-size: 30px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-name {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .task-time {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .task-check {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .task-item.completed .task-check {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+
+        .task-item.completed .task-check::after {
+            content: '✓';
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .add-task-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .add-task-btn:active {
+            transform: scale(0.9);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-group select option {
+            background: #764ba2;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .icon-option {
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 24px;
+        }
+
+        .icon-option.selected {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .save-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.6;
+        }
+
+        .empty-state .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>
+                <span>🏠</span>
+                Rotina Kids
+            </h1>
+            <div class="date-time" id="dateTime"></div>
+        </div>
+
+        <div class="kids-tabs">
+            <div class="kid-tab bryan active" onclick="switchKid('bryan')">
+                <div class="name">Bryan</div>
+                <div class="age">7 anos</div>
+                <div class="progress" id="bryan-progress">0/0</div>
+            </div>
+            <div class="kid-tab stella" onclick="switchKid('stella')">
+                <div class="name">Stella</div>
+                <div class="age">2 anos</div>
+                <div class="progress" id="stella-progress">0/0</div>
+            </div>
+            <div class="kid-tab jeremy" onclick="switchKid('jeremy')">
+                <div class="name">Jeremy</div>
+                <div class="age">1 ano</div>
+                <div class="progress" id="jeremy-progress">0/0</div>
+            </div>
+        </div>
+
+        <div class="routine-container">
+            <div class="routine-section active" id="bryan-routine">
+                <div class="empty-state">
+                    <div class="icon">📝</div>
+                    <p>Nenhuma tarefa ainda.<br>Toque no + para adicionar!</p>
+                </div>
+            </div>
+
+            <div class="routine-section" id="stella-routine">
+                <div class="empty-state">
+                    <div class="icon">📝</div>
+                    <p>Nenhuma tarefa ainda.<br>Toque no + para adicionar!</p>
+                </div>
+            </div>
+
+            <div class="routine-section" id="jeremy-routine">
+                <div class="empty-state">
+                    <div class="icon">📝</div>
+                    <p>Nenhuma tarefa ainda.<br>Toque no + para adicionar!</p>
+                </div>
+            </div>
+        </div>
+
+        <button class="add-task-btn" onclick="openModal()">+</button>
+    </div>
+
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <h2>Nova Tarefa</h2>
+            <div class="form-group">
+                <label>Tarefa</label>
+                <input type="text" id="taskName" placeholder="Ex: Escovar os dentes">
+            </div>
+            <div class="form-group">
+                <label>Horário</label>
+                <input type="time" id="taskTime">
+            </div>
+            <div class="form-group">
+                <label>Ícone</label>
+                <div class="icon-grid">
+                    <div class="icon-option" onclick="selectIcon('☀️')">☀️</div>
+                    <div class="icon-option" onclick="selectIcon('🍳')">🍳</div>
+                    <div class="icon-option" onclick="selectIcon('🪥')">🪥</div>
+                    <div class="icon-option" onclick="selectIcon('👕')">👕</div>
+                    <div class="icon-option" onclick="selectIcon('🎒')">🎒</div>
+                    <div class="icon-option" onclick="selectIcon('🥤')">🥤</div>
+                    <div class="icon-option" onclick="selectIcon('🍎')">🍎</div>
+                    <div class="icon-option" onclick="selectIcon('😴')">😴</div>
+                    <div class="icon-option" onclick="selectIcon('🛁')">🛁</div>
+                    <div class="icon-option" onclick="selectIcon('🍽️')">🍽️</div>
+                    <div class="icon-option" onclick="selectIcon('📚')">📚</div>
+                    <div class="icon-option" onclick="selectIcon('🎮')">🎮</div>
+                    <div class="icon-option" onclick="selectIcon('🙏')">🙏</div>
+                    <div class="icon-option" onclick="selectIcon('🌙')">🌙</div>
+                    <div class="icon-option" onclick="selectIcon('💤')">💤</div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeModal()">Cancelar</button>
+                <button class="save-btn" onclick="saveTask()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentKid = 'bryan';
+        let selectedIcon = '☀️';
+        let routines = {
+            bryan: [],
+            stella: [],
+            jeremy: []
+        };
+
+        // Carregar dados salvos
+        if (localStorage.getItem('kidsRoutines')) {
+            routines = JSON.parse(localStorage.getItem('kidsRoutines'));
+            updateAllRoutines();
+        }
+
+        // Atualizar data/hora
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            const date = now.toLocaleDateString('pt-BR', options);
+            const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('dateTime').textContent = `${date} • ${time}`;
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+
+        function switchKid(kid) {
+            currentKid = kid;
+            
+            // Atualizar tabs
+            document.querySelectorAll('.kid-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector(`.kid-tab.${kid}`).classList.add('active');
+            
+            // Atualizar seções
+            document.querySelectorAll('.routine-section').forEach(section => section.classList.remove('active'));
+            document.getElementById(`${kid}-routine`).classList.add('active');
+        }
+
+        function selectIcon(icon) {
+            selectedIcon = icon;
+            document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function openModal() {
+            document.getElementById('taskModal').classList.add('active');
+            document.getElementById('taskName').value = '';
+            document.getElementById('taskTime').value = '';
+            selectedIcon = '☀️';
+            document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').classList.remove('active');
+        }
+
+        function saveTask() {
+            const name = document.getElementById('taskName').value;
+            const time = document.getElementById('taskTime').value;
+            
+            if (!name) {
+                alert('Por favor, adicione um nome para a tarefa!');
+                return;
+            }
+
+            const task = {
+                id: Date.now(),
+                name: name,
+                time: time || 'Sem horário',
+                icon: selectedIcon,
+                completed: false
+            };
+
+            routines[currentKid].push(task);
+            saveToStorage();
+            updateRoutine(currentKid);
+            closeModal();
+        }
+
+        function toggleTask(kid, taskId) {
+            const task = routines[kid].find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                saveToStorage();
+                updateRoutine(kid);
+                updateProgress(kid);
+            }
+        }
+
+        function deleteTask(kid, taskId) {
+            if (confirm('Remover esta tarefa?')) {
+                routines[kid] = routines[kid].filter(t => t.id !== taskId);
+                saveToStorage();
+                updateRoutine(kid);
+            }
+        }
+
+        function updateRoutine(kid) {
+            const container = document.getElementById(`${kid}-routine`);
+            const tasks = routines[kid];
+
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📝</div>
+                        <p>Nenhuma tarefa ainda.<br>Toque no + para adicionar!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Ordenar por horário
+            const sortedTasks = tasks.sort((a, b) => {
+                if (a.time === 'Sem horário') return 1;
+                if (b.time === 'Sem horário') return -1;
+                return a.time.localeCompare(b.time);
+            });
+
+            container.innerHTML = sortedTasks.map(task => `
+                <div class="task-item ${task.completed ? 'completed' : ''}" onclick="toggleTask('${kid}', ${task.id})">
+                    <div class="task-icon">${task.icon}</div>
+                    <div class="task-info">
+                        <div class="task-name">${task.name}</div>
+                        <div class="task-time">${task.time === 'Sem horário' ? task.time : '⏰ ' + task.time}</div>
+                    </div>
+                    <div class="task-check"></div>
+                </div>
+            `).join('');
+
+            updateProgress(kid);
+        }
+
+        function updateProgress(kid) {
+            const tasks = routines[kid];
+            const completed = tasks.filter(t => t.completed).length;
+            document.getElementById(`${kid}-progress`).textContent = `${completed}/${tasks.length}`;
+        }
+
+        function updateAllRoutines() {
+            ['bryan', 'stella', 'jeremy'].forEach(kid => updateRoutine(kid));
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('kidsRoutines', JSON.stringify(routines));
+        }
+
+        // Resetar tarefas diariamente
+        function checkNewDay() {
+            const lastReset = localStorage.getItem('lastReset');
+            const today = new Date().toDateString();
+            
+            if (lastReset !== today) {
+                // Resetar todas as tarefas
+                Object.keys(routines).forEach(kid => {
+                    routines[kid].forEach(task => task.completed = false);
+                });
+                saveToStorage();
+                updateAllRoutines();
+                localStorage.setItem('lastReset', today);
+            }
+        }
+
+        checkNewDay();
+        
+        // Fechar modal ao clicar fora
+        document.getElementById('taskModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>

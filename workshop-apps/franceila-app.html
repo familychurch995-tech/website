@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imaginations Party - Sempre em ritmo de festa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1a237e;
+            --gold: #ffd700;
+            --gold-light: #fff3b8;
+            --white: #ffffff;
+            --gray: #f5f5f5;
+            --dark: #0a0e3f;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            color: var(--dark);
+            overflow-x: hidden;
+            background-color: var(--white);
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--navy) 0%, #0a0e3f 100%);
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: var(--gold-light);
+            font-style: italic;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--navy) 0%, #0a0e3f 100%);
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-top: 60px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--white);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
+            color: var(--navy);
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Floating Balloons */
+        .balloon {
+            position: absolute;
+            width: 80px;
+            height: 100px;
+            opacity: 0.1;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .balloon::before {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 90px;
+            background: var(--gold);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: inset -10px -10px 0 rgba(0,0,0,0.07);
+        }
+
+        .balloon::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 80px;
+            background: var(--gold);
+            left: 50%;
+            top: 90px;
+            transform: translateX(-50%);
+        }
+
+        .balloon1 { left: 10%; animation-delay: 0s; }
+        .balloon2 { left: 30%; animation-delay: 3s; }
+        .balloon3 { left: 60%; animation-delay: 5s; }
+        .balloon4 { left: 80%; animation-delay: 7s; }
+
+        /* Products Section */
+        .products {
+            padding: 4rem 2rem;
+            background: var(--gray);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--navy);
+            margin-bottom: 3rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.5rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-description {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        /* Calculator Section */
+        .calculator {
+            padding: 4rem 2rem;
+            background: var(--white);
+        }
+
+        .calc-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--gray);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .calc-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .calc-item label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--navy);
+            font-weight: bold;
+        }
+
+        .calc-item select,
+        .calc-item input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--gold-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .calc-item select:focus,
+        .calc-item input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .total-price {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--navy);
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--gold-light);
+            border-radius: 15px;
+        }
+
+        /* Gallery */
+        .gallery {
+            padding: 4rem 2rem;
+            background: var(--gray);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            height: 250px;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--gold) 100%);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        /* Contact */
+        .contact {
+            padding: 4rem 2rem;
+            background: var(--navy);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 2rem;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.5);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-50px) rotate(5deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div>
+                <div class="logo">Imaginations Party</div>
+                <div class="tagline">Sempre em ritmo de festa</div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Início</a></li>
+                <li><a href="#produtos">Produtos</a></li>
+                <li><a href="#orcamento">Orçamento</a></li>
+                <li><a href="#galeria">Galeria</a></li>
+                <li><a href="#contato">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="balloon balloon1"></div>
+        <div class="balloon balloon2"></div>
+        <div class="balloon balloon3"></div>
+        <div class="balloon balloon4"></div>
+        
+        <h1>Transforme Momentos em Celebrações Inesquecíveis</h1>
+        <p>Cestas especiais, mesas de frios, balões e flores para todas as ocasiões</p>
+        <button class="cta-button" onclick="scrollToSection('orcamento')">Faça seu Orçamento</button>
+    </section>
+
+    <section class="products" id="produtos">
+        <div class="container">
+            <h2 class="section-title">Nossos Produtos</h2>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image">🧺</div>
+                    <div class="product-info">
+                        <h3 class="product-title">Cesta Básica</h3>
+                        <p class="product-description">Perfeita para presentear com carinho e sabor</p>
+                        <p class="product-price">A partir de R$ 89,90</p>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">🎁</div>
+                    <div class="product-info">
+                        <h3 class="product-title">Cesta Premium</h3>
+                        <p class="product-description">Produtos selecionados para ocasiões especiais</p>
+                        <p class="product-price">A partir de R$ 189,90</p>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">🏢</div>
+                    <div class="product-info">
+                        <h3 class="product-title">Cesta Corporativa</h3>
+                        <p class="product-description">Ideal para presentear colaboradores e parceiros</p>
+                        <p class="product-price">Sob consulta</p>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">🧀</div>
+                    <div class="product-info">
+                        <h3 class="product-title">Mesa de Frios</h3>
+                        <p class="product-description">Montagem no local ou bandejas prontas</p>
+                        <p class="product-price">A partir de R$ 250,00</p>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">🎈</div>
+                    <div class="product-info">
+                        <h3 class="product-title">Decoração com Balões</h3>
+                        <p class="product-description">Balões personalizados para sua festa</p>
+                        <p class="product-price">A partir de R$ 80,00</p>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">🌹</div>
+                    <div class="product-info">
+                        <h3 class="product-title">Arranjos Florais</h3>
+                        <p class="product-description">Flores frescas em arranjos exclusivos</p>
+                        <p class="product-price">A partir de R$ 120,00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="calculator" id="orcamento">
+        <div class="container">
+            <h2 class="section-title">Monte seu Pedido</h2>
+            <div class="calc-container">
+                <div class="calc-item">
+                    <label>Tipo de Cesta:</label>
+                    <select id="cestaType" onchange="calculateTotal()">
+                        <option value="0">Selecione...</option>
+                        <option value="89.90">Cesta Básica - R$ 89,90</option>
+                        <option value="189.90">Cesta Premium - R$ 189,90</option>
+                        <option value="299.90">Cesta Corporativa - R$ 299,90</option>
+                    </select>
+                </div>
+                
+                <div class="calc-item">
+                    <label>Mesa de Frios:</label>
+                    <select id="mesaFrios" onchange="calculateTotal()">
+                        <option value="0">Não incluir</option>
+                        <option value="250">Bandeja P (10 pessoas) - R$ 250,00</option>
+                        <option value="450">Bandeja M (20 pessoas) - R$ 450,00</option>
+                        <option value="650">Mesa completa (30+ pessoas) - R$ 650,00</option>
+                    </select>
+                </div>
+                
+                <div class="calc-item">
+                    <label>Decoração com Balões:</label>
+                    <select id="baloes" onchange="calculateTotal()">
+                        <option value="0">Não incluir</option>
+                        <option value="80">Kit Básico - R$ 80,00</option>
+                        <option value="150">Kit Festa - R$ 150,00</option>
+                        <option value="250">Kit Premium - R$ 250,00</option>
+                    </select>
+                </div>
+                
+                <div class="calc-item">
+                    <label>Arranjo de Flores:</label>
+                    <select id="flores" onchange="calculateTotal()">
+                        <option value="0">Não incluir</option>
+                        <option value="120">Arranjo Pequeno - R$ 120,00</option>
+                        <option value="200">Arranjo Médio - R$ 200,00</option>
+                        <option value="350">Arranjo Grande - R$ 350,00</option>
+                    </select>
+                </div>
+                
+                <div class="calc-item">
+                    <label>Data do Evento:</label>
+                    <input type="date" id="eventDate">
+                </div>
+                
+                <div class="total-price">
+                    Total Estimado: <span id="totalPrice">R$ 0,00</span>
+                </div>
+                
+                <button class="cta-button" style="width: 100%; margin-top: 2rem;" onclick="sendWhatsApp()">
+                    Solicitar Orçamento via WhatsApp
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery" id="galeria">
+        <div class="container">
+            <h2 class="section-title">Nossos Trabalhos</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contato">
+        <div class="container">
+            <h2 class="section-title" style="color: var(--gold);">Entre em Contato</h2>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <span>📱</span>
+                    <span>(11) 99999-9999</span>
+                </div>
+                <div class="contact-item">
+                    <span>📧</span>
+                    <span>contato@imaginationsparty.com.br</span>
+                </div>
+                <div class="contact-item">
+                    <span>📍</span>
+                    <span>São Paulo - SP</span>
+                </div>
+            </div>
+            <a href="https://wa.me/5511999999999" class="whatsapp-btn">
+                💬 Fale Conosco no WhatsApp
+            </a>
+        </div>
+    </section>
+
+    <script>
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function calculateTotal() {
+            const cesta = parseFloat(document.getElementById('cestaType').value) || 0;
+            const mesa = parseFloat(document.getElementById('mesaFrios').value) || 0;
+            const baloes = parseFloat(document.getElementById('baloes').value) || 0;
+            const flores = parseFloat(document.getElementById('flores').value) || 0;
+            
+            const total = cesta + mesa + baloes + flores;
+            document.getElementById('totalPrice').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        function sendWhatsApp() {
+            const cesta = document.getElementById('cestaType').selectedOptions[0].text;
+            const mesa = document.getElementById('mesaFrios').selectedOptions[0].text;
+            const baloes = document.getElementById('baloes').selectedOptions[0].text;
+            const flores = document.getElementById('flores').selectedOptions[0].text;
+            const date = document.getElementById('eventDate').value;
+            const total = document.getElementById('totalPrice').textContent;
+            
+            let message = `Olá! Gostaria de fazer um orçamento:%0A%0A`;
+            if (document.getElementById('cestaType').value !== '0') message += `✓ ${cesta}%0A`;
+            if (document.getElementById('mesaFrios').value !== '0') message += `✓ ${mesa}%0A`;
+            if (document.getElementById('baloes').value !== '0') message += `✓ ${baloes}%0A`;
+            if (document.getElementById('flores').value !== '0') message += `✓ ${flores}%0A`;
+            if (date) message += `%0A📅 Data do evento: ${date.split('-').reverse().join('/')}%0A`;
+            message += `%0A💰 ${total}%0A%0AGostaria de mais informações!`;
+            
+            window.open(`https://wa.me/5511999999999?text=${message}`, '_blank');
+        }
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

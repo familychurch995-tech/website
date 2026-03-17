@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US Tax Incentive Form Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #64ffda;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 2px #64ffda;
+        }
+
+        select option {
+            background: #2a5298;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .output-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-output {
+            background: #fff;
+            color: #333;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-header h3 {
+            color: #1e3c72;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-section h4 {
+            color: #2a5298;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .form-field {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: baseline;
+        }
+
+        .form-field-label {
+            font-weight: bold;
+            min-width: 150px;
+            color: #555;
+        }
+
+        .form-field-value {
+            flex: 1;
+            color: #333;
+        }
+
+        .incentive-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .incentive-list li {
+            background: #f5f5f5;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #64ffda;
+        }
+
+        .print-button {
+            background: linear-gradient(135deg, #20bf6b 0%, #26de81 100%);
+            margin-top: 20px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+            
+            .card, button:not(.print-button), .subtitle {
+                display: none;
+            }
+            
+            .output-section {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇺🇸 US Tax Incentive Form Generator</h1>
+        <p class="subtitle">Enter your information to generate state-specific tax incentive forms</p>
+        
+        <div class="main-grid">
+            <div class="card">
+                <h2>📋 Input Information</h2>
+                <form id="incentiveForm">
+                    <div class="form-group">
+                        <label for="state">Select State</label>
+                        <select id="state" required>
+                            <option value="">Choose a state...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="businessName">Business Name</label>
+                        <input type="text" id="businessName" placeholder="Enter business name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ein">EIN/Tax ID</label>
+                        <input type="text" id="ein" placeholder="XX-XXXXXXX" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Business Address</label>
+                        <textarea id="address" rows="3" placeholder="Street address, city, state, ZIP" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taxYear">Tax Year</label>
+                        <input type="number" id="taxYear" value="2024" min="2020" max="2030" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Select Applicable Incentives</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="R&D"> R&D Tax Credit
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="Employment"> Employment Incentives
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="Green"> Green Energy
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="Manufacturing"> Manufacturing
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="Investment"> Investment Credits
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="Training"> Job Training
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="amount">Estimated Qualifying Amount ($)</label>
+                        <input type="number" id="amount" placeholder="0.00" min="0" step="0.01" required>
+                    </div>
+                    
+                    <button type="submit">Generate Tax Forms</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2>📊 State Tax Incentive Summary</h2>
+                <div id="stateSummary">
+                    <p style="opacity: 0.7; text-align: center; padding: 40px;">
+                        Select a state to see available tax incentives
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="outputSection" class="output-section">
+            <div class="card">
+                <h2>📄 Generated Tax Incentive Forms</h2>
+                <div id="formsContainer"></div>
+                <button class="print-button" onclick="window.print()">🖨️ Print Forms</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const states = [
+            'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut',
+            'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+            'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan',
+            'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+            'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
+            'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
+            'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
+            'Wisconsin', 'Wyoming'
+        ];
+
+        const stateIncentives = {
+            'California': {
+                'R&D': { form: 'FTB 3523', rate: '15%', desc: 'California R&D Tax Credit' },
+                'Employment': { form: 'DE 44', rate: '$2,400-$56,000/employee', desc: 'California Competes Tax Credit' },
+                'Green': { form: 'FTB 3885', rate: '30%', desc: 'Solar and Clean Energy Credit' }
+            },
+            'New York': {
+                'R&D': { form: 'DTF-621', rate: '9%', desc: 'NY R&D Tax Credit' },
+                'Employment': { form: 'DTF-624', rate: 'Up to $5,000/job', desc: 'Empire State Jobs Retention' },
+                'Manufacturing': { form: 'DTF-323', rate: '4.5%', desc: 'Investment Tax Credit' }
+            },
+            'Texas': {
+                'R&D': { form: 'AP-216', rate: '5%', desc: 'Texas R&D Activities Credit' },
+                'Manufacturing': { form: 'AP-218', rate: 'Varies', desc: 'Manufacturing Exemption' },
+                'Investment': { form: 'Chapter 313', rate: 'Property tax reduction', desc: 'Economic Development Act' }
+            }
+        };
+
+        // Default incentives for states not specifically listed
+        const defaultIncentives = {
+            'R&D': { form: 'State R&D Form', rate: 'Varies', desc: 'Research & Development Credit' },
+            'Employment': { form: 'State Employment Form', rate: 'Varies', desc: 'Job Creation Incentive' },
+            'Green': { form: 'State Green Energy Form', rate: 'Varies', desc: 'Renewable Energy Credit' },
+            'Manufacturing': { form: 'State Manufacturing Form', rate: 'Varies', desc: 'Manufacturing Tax Credit' },
+            'Investment': { form: 'State Investment Form', rate: 'Varies', desc: 'Capital Investment Credit' },
+            'Training': { form: 'State Training Form', rate: 'Varies', desc: 'Workforce Development Credit' }
+        };
+
+        // Initialize state dropdown
+        const stateSelect = document.getElementById('state');
+        states.forEach(state => {
+            const option = document.createElement('option');
+            option.value = state;
+            option.textContent = state;
+            stateSelect.appendChild(option);
+        });
+
+        // Update state summary when state is selected
+        stateSelect.addEventListener('change', function() {
+            updateStateSummary(this.value);
+        });
+
+        function updateStateSummary(state) {
+            const summaryDiv = document.getElementById('stateSummary');
+            if (!state) {
+                summaryDiv.innerHTML = '<p style="opacity: 0.7; text-align: center; padding: 40px;">Select a state to see available tax incentives</p>';
+                return;
+            }
+
+            const incentives = stateIncentives[state] || defaultIncentives;
+            let html = `
+                <h3 style="color: #64ffda; margin-bottom: 20px;">${state} Tax Incentives</h3>
+                <ul class="incentive-list">
+            `;
+
+            Object.entries(incentives).forEach(([key, info]) => {
+                html += `
+                    <li>
+                        <strong>${info.desc}</strong><br>
+                        <small>Form: ${info.form} | Rate: ${info.rate}</small>
+                    </li>
+                `;
+            });
+
+            html += '</ul>';
+            summaryDiv.innerHTML = html;
+        }
+
+        // Handle form submission
+        document.getElementById('incentiveForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateForms();
+        });
+
+        function generateForms() {
+            const state = document.getElementById('state').value;
+            const businessName = document.getElementById('businessName').value;
+            const ein = document.getElementById('ein').value;
+            const address = document.getElementById('address').value;
+            const taxYear = document.getElementById('taxYear').value;
+            const amount = document.getElementById('amount').value;
+
+            const selectedIncentives = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                selectedIncentives.push(cb.value);
+            });
+
+            if (selectedIncentives.length === 0) {
+                alert('Please select at least one incentive type!');
+                return;
+            }
+
+            const incentives = stateIncentives[state] || defaultIncentives;
+            const formsContainer = document.getElementById('formsContainer');
+            formsContainer.innerHTML = '';
+
+            selectedIncentives.forEach(incentiveType => {
+                const incentiveInfo = incentives[incentiveType];
+                if (incentiveInfo) {
+                    const formHtml = `
+                        <div class="form-output">
+                            <div class="form-header">
+                                <h3>${state} ${incentiveInfo.desc}</h3>
+                                <p>Form ${incentiveInfo.form} - Tax Year ${taxYear}</p>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h4>Business Information</h4>
+                                <div class="form-field">
+                                    <span class="form-field-label">Business Name:</span>
+                                    <span class="form-field-value">${businessName}</span>
+                                </div>
+                                <div class="form-field">
+                                    <span class="form-field-label">EIN/Tax ID:</span>
+                                    <span class="form-field-value">${ein}</span>
+                                </div>
+                                <div class="form-field">
+                                    <span class="form-field-label">Address:</span>
+                                    <span class="form-field-value">${address}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h4>Incentive Details</h4>
+                                <div class="form-field">
+                                    <span class="form-field-label">Incentive Type:</span>
+                                    <span class="form-field-value">${incentiveInfo.desc}</span>
+                                </div>
+                                <div class="form-field">
+                                    <span class="form-field-label">Applicable Rate:</span>
+                                    <span class="form-field-value">${incentiveInfo.rate}</span>
+                                </div>
+                                <div class="form-field">
+                                    <span class="form-field-label">Qualifying Amount:</span>
+                                    <span class="form-field-value">$${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                                </div>
+                                <div class="form-field">
+                                    <span class="form-field-label">Estimated Benefit:</span>
+                                    <span class="form-field-value">$${calculateBenefit(amount, incentiveInfo.rate)}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h4>Filing Information</h4>
+                                <div class="form-field">
+                                    <span class="form-field-label">Form Number:</span>
+                                    <span class="form-field-value">${incentiveInfo.form}</span>
+                                </div>
+                                <div class="form-field">
+                                    <span class="form-field-label">Tax Year:</span>
+                                    <span class="form-field-value">${taxYear}</span>
+                                </div>
+                                <div class="form-field">
+                                    <span class="form-field-label">Generated Date:</span>
+                                    <span class="form-field-value">${new Date().toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 8px;">
+                                <p style="color: #666; font-size: 14px;">
+                                    <strong>Important:</strong> This is a generated summary for form ${incentiveInfo.form}. 
+                                    Please consult with a tax professional and refer to official ${state} tax documentation 
+                                    for complete filing requirements.
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    formsContainer.innerHTML += formHtml;
+                }
+            });
+
+            document.getElementById('outputSection').style.display = 'block';
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function calculateBenefit(amount, rate) {
+            if (rate.includes('%')) {
+                const percentage = parseFloat(rate) / 100;
+                return (parseFloat(amount) * percentage).toLocaleString('en-US', {minimumFractionDigits: 2});
+            }
+            return 'Varies (see rate details)';
+        }
+    </script>
+</body>
+</html>

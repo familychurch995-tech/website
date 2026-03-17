@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dons Digitais — App Showcase | Family Church</title>
+  <meta name="description" content="Apps created at the Dons Digitais — Vibe Coding Workshop. March 14, 2026. Family Church." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-dark: #0a0a12;
+      --bg-card: rgba(18, 18, 30, 0.85);
+      --gold: #FFD700;
+      --gold-dim: #b8960f;
+      --gold-glow: rgba(255, 215, 0, 0.3);
+      --green: #00FF41;
+      --green-dim: #00cc34;
+      --white: #ffffff;
+      --text: rgba(255, 255, 255, 0.9);
+      --text-dim: rgba(255, 255, 255, 0.5);
+      --border: rgba(255, 215, 0, 0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Animated Background ── */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .bg-grid::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      background-image:
+        linear-gradient(rgba(255,215,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,215,0,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove {
+      0% { transform: translate(0,0); }
+      100% { transform: translate(60px,60px); }
+    }
+    .bg-grid .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: float 15s ease-in-out infinite alternate;
+    }
+    .bg-grid .orb:nth-child(1) { width: 500px; height: 500px; background: var(--gold); top: -10%; left: -10%; }
+    .bg-grid .orb:nth-child(2) { width: 400px; height: 400px; background: var(--green); bottom: -10%; right: -10%; animation-delay: -7s; }
+    .bg-grid .orb:nth-child(3) { width: 300px; height: 300px; background: #3b6cf5; top: 50%; left: 50%; animation-delay: -3s; }
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, -30px) scale(1.1); }
+    }
+
+    /* ── Language Toggle ── */
+    .lang-bar {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 100;
+      display: flex;
+      gap: 4px;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px;
+      backdrop-filter: blur(8px);
+    }
+    .lang-bar button {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font: 600 0.75rem 'Inter', sans-serif;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-bar button.active {
+      background: var(--gold);
+      color: #000;
+    }
+
+    /* ── Header ── */
+    .header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 4rem 1.5rem 2rem;
+    }
+    .header .badge {
+      display: inline-block;
+      font: 600 0.7rem 'Share Tech Mono', monospace;
+      color: var(--green);
+      border: 1px solid rgba(0,255,65,0.3);
+      border-radius: 20px;
+      padding: 4px 14px;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .header p {
+      color: var(--text-dim);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .header .date {
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--green);
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+    }
+
+    /* ── Grid ── */
+    .grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem 1.5rem 4rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--gold-dim);
+      box-shadow: 0 8px 30px rgba(255,215,0,0.08);
+    }
+    .card .preview-wrap {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: #111;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .card .preview-wrap iframe {
+      width: 200%;
+      height: 200%;
+      transform: scale(0.5);
+      transform-origin: top left;
+      border: none;
+      pointer-events: none;
+    }
+    .card .preview-wrap .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .card .preview-wrap:hover .overlay {
+      opacity: 1;
+    }
+    .card .preview-wrap .overlay span {
+      background: var(--gold);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 8px 20px;
+      border-radius: 8px;
+    }
+    .card .info {
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .card .info .meta {
+      min-width: 0;
+    }
+    .card .info .creator {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card .info .app-title {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card .info .actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font: 600 0.78rem 'Inter', sans-serif;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: #000;
+    }
+    .btn-gold:hover { background: #ffe44d; }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--gold-dim);
+      color: var(--gold);
+    }
+
+    /* ── Modal (full preview) ── */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.9);
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal.open { display: flex; }
+    .modal .modal-content {
+      width: 100%;
+      max-width: 1000px;
+      height: 85vh;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+    .modal .modal-content iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .modal .close-btn {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: transparent;
+      border: none;
+      color: var(--white);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 4px 12px;
+    }
+    .modal .modal-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 16px;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(8px);
+    }
+    .modal .modal-bar .modal-title {
+      color: var(--white);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem 1.5rem 3rem;
+      border-top: 1px solid var(--border);
+    }
+    .footer p {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    .footer a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 500px) {
+      .grid { grid-template-columns: 1fr; padding: 1rem; }
+      .header { padding: 3.5rem 1rem 1.5rem; }
+      .card .preview-wrap { height: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+  </div>
+
+  <!-- Language Toggle -->
+  <div class="lang-bar">
+    <button onclick="setLang('pt')" id="btn-pt">PT</button>
+    <button onclick="setLang('en')" id="btn-en">EN</button>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">Dons Digitais — Vibe Coding Workshop</div>
+    <h1 data-pt="Galeria de Apps" data-en="App Showcase">Galeria de Apps</h1>
+    <p data-pt="Estes apps foram criados do zero pelos participantes do workshop — usando apenas a voz e a criatividade, com a ajuda da IA."
+       data-en="These apps were built from scratch by workshop participants — using only their voice and creativity, with the help of AI.">
+      Estes apps foram criados do zero pelos participantes do workshop — usando apenas a voz e a criatividade, com a ajuda da IA.
+    </p>
+    <div class="date"
+         data-pt="14 de Março, 2026 &bull; Family Church CT"
+         data-en="March 14, 2026 &bull; Family Church CT">
+      14 de Março, 2026 &bull; Family Church CT
+    </div>
+  </div>
+
+  <!-- App Grid -->
+  <div class="grid" id="appGrid"></div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+      <iframe id="modalFrame" sandbox="allow-scripts"></iframe>
+      <div class="modal-bar">
+        <span class="modal-title" id="modalTitle"></span>
+        <button class="btn btn-gold" id="modalDownload" onclick="downloadCurrent()">
+          <span data-pt="Baixar" data-en="Download">Baixar</span> ↓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p data-pt="Feito com fé e código na Family Church &bull; <a href='index.html'>Voltar ao site</a>"
+       data-en="Made with faith and code at Family Church &bull; <a href='index.html'>Back to site</a>">
+      Feito com fé e código na Family Church &bull; <a href="index.html">Voltar ao site</a>
+    </p>
+  </div>
+
+<script>
+const APPS = [
+  { file: 'workshop-apps/criar-app-de-pagamentos-mensal-app.html', creator: 'Criar App', title: 'Limosine Premium — Gestão de Viagens' },
+  { file: 'workshop-apps/deivid-app.html', creator: 'Deivid', title: 'Minhas Finanças — Controle Total' },
+  { file: 'workshop-apps/fabian-vieira-app.html', creator: 'Fabian Vieira', title: 'Fabian Vieira — Car Service' },
+  { file: 'workshop-apps/franceila-app.html', creator: 'Franceila', title: 'Imaginations Party — Sempre em Ritmo de Festa' },
+  { file: 'workshop-apps/giselle-leonard-app.html', creator: 'Giselle Leonard', title: 'Shalom International Realty' },
+  { file: 'workshop-apps/jessy-evelyn-app.html', creator: 'Jessy & Evelyn', title: 'Mãos de Ouro — Limpeza Profissional' },
+  { file: 'workshop-apps/marcos-augusto-app.html', creator: 'Marcos Augusto', title: 'Controle de Ferramentas' },
+  { file: 'workshop-apps/rafael-app.html', creator: 'Rafael', title: 'Master Masonry — Premium Construction' },
+  { file: 'workshop-apps/rodrigo-luz-app.html', creator: 'Rodrigo Luz', title: 'LuxDrive — Transporte Executivo Premium' },
+  { file: 'workshop-apps/ryan-lakestream-app.html', creator: 'Ryan Lakestream', title: 'US Tax Incentive Form Generator' },
+  { file: 'workshop-apps/vinicius-app.html', creator: 'Vinicius', title: 'Rotina Kids — Família' },
+  { file: 'workshop-apps/vinny-app.html', creator: 'Vinny', title: 'Nara Brazilian Pastries — Gestão de Pedidos' },
+];
+
+let currentApp = null;
+
+// ── Language ──
+function setLang(lang) {
+  localStorage.setItem('fc-lang', lang);
+  document.getElementById('btn-pt').classList.toggle('active', lang === 'pt');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.querySelectorAll('[data-pt]').forEach(el => {
+    const text = el.getAttribute(`data-${lang}`);
+    if (text) el.innerHTML = text;
+  });
+}
+
+// ── Render Grid ──
+function renderGrid() {
+  const grid = document.getElementById('appGrid');
+  const lang = localStorage.getItem('fc-lang') || 'pt';
+  const viewLabel = lang === 'pt' ? 'Ver App' : 'View App';
+
+  grid.innerHTML = APPS.map((app, i) => `
+    <div class="card">
+      <div class="preview-wrap" onclick="openModal(${i})">
+        <iframe src="${app.file}" sandbox="allow-scripts" loading="lazy"></iframe>
+        <div class="overlay"><span>${viewLabel}</span></div>
+      </div>
+      <div class="info">
+        <div class="meta">
+          <div class="creator">${app.creator}</div>
+          <div class="app-title">${app.title}</div>
+        </div>
+        <div class="actions">
+          <a class="btn btn-outline" href="${app.file}" download="${app.creator.toLowerCase().replace(/\s+/g,'-')}-app.html">↓</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Modal ──
+function openModal(index) {
+  const app = APPS[index];
+  currentApp = app;
+  document.getElementById('modalFrame').src = app.file;
+  document.getElementById('modalTitle').textContent = `${app.creator} — ${app.title}`;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('modalFrame').src = '';
+  document.body.style.overflow = '';
+  currentApp = null;
+}
+
+function downloadCurrent() {
+  if (!currentApp) return;
+  const a = document.createElement('a');
+  a.href = currentApp.file;
+  a.download = `${currentApp.creator.toLowerCase().replace(/\s+/g,'-')}-app.html`;
+  a.click();
+}
+
+// Close modal on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── Init ──
+const lang = localStorage.getItem('fc-lang') || 'pt';
+setLang(lang);
+renderGrid();
+</script>
+</body>
+</html>

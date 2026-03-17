@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nara Brazilian Pastries - Gestão de Pedidos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .form-section h2 {
+            color: #2a5298;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .product-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .product-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-item.selected {
+            background: #e3f2fd;
+            border-color: #2a5298;
+        }
+
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .product-price {
+            color: #2a5298;
+            font-size: 1.1rem;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .quantity-btn {
+            background: #2a5298;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-btn:hover {
+            background: #1e3c72;
+        }
+
+        .quantity-display {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .delivery-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .delivery-option:hover {
+            background: #e9ecef;
+        }
+
+        .delivery-option input[type="radio"] {
+            width: auto;
+        }
+
+        .delivery-fields {
+            display: none;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .total-section {
+            background: #2a5298;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .total-amount {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .orders-section {
+            margin-top: 30px;
+        }
+
+        .order-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .order-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2a5298;
+        }
+
+        .order-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .status-novo {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-preparando {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-pronto {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-entregue {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .order-details {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-prepare {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-ready {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-delivered {
+            background: #28a745;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .order-item {
+            animation: slideIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🥐 Nara Brazilian Pastries 🧁</h1>
+            <p>Sistema de Gestão de Pedidos</p>
+        </div>
+
+        <div class="main-content">
+            <div class="card form-section">
+                <h2>Novo Pedido</h2>
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label>Nome do Cliente</label>
+                        <input type="text" id="customerName" required placeholder="Digite o nome completo">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Telefone/WhatsApp</label>
+                        <input type="tel" id="customerPhone" required placeholder="(11) 99999-9999">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Produtos</label>
+                        <div class="product-grid">
+                            <div class="product-item" data-product="rosca" data-price="25">
+                                <div class="product-name">Rosca c/ Leite Condensado</div>
+                                <div class="product-price">R$ 25,00</div>
+                                <div class="quantity-control">
+                                    <button type="button" class="quantity-btn" onclick="changeQuantity('rosca', -1)">-</button>
+                                    <span class="quantity-display" id="qty-rosca">0</span>
+                                    <button type="button" class="quantity-btn" onclick="changeQuantity('rosca', 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="product-item" data-product="pao-queijo" data-price="20">
+                                <div class="product-name">Pão de Queijo Congelado (500g)</div>
+                                <div class="product-price">R$ 20,00</div>
+                                <div class="quantity-control">
+                                    <button type="button" class="quantity-btn" onclick="changeQuantity('pao-queijo', -1)">-</button>
+                                    <span class="quantity-display" id="qty-pao-queijo">0</span>
+                                    <button type="button" class="quantity-btn" onclick="changeQuantity('pao-queijo', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Entrega</label>
+                        <div class="delivery-option">
+                            <input type="radio" name="delivery" id="pickup" value="retirada" checked>
+                            <label for="pickup" style="margin: 0;">Retirada no Local</label>
+                        </div>
+                        <div class="delivery-option">
+                            <input type="radio" name="delivery" id="delivery" value="entrega">
+                            <label for="delivery" style="margin: 0;">Entrega (+ R$ 5,00)</label>
+                        </div>
+                        <div class="delivery-fields" id="deliveryFields">
+                            <div class="form-group">
+                                <label>Endereço de Entrega</label>
+                                <textarea id="deliveryAddress" rows="3" placeholder="Rua, número, bairro..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Forma de Pagamento</label>
+                        <select id="paymentMethod" required>
+                            <option value="">Selecione...</option>
+                            <option value="dinheiro">Dinheiro</option>
+                            <option value="pix">PIX</option>
+                            <option value="cartao-debito">Cartão de Débito</option>
+                            <option value="cartao-credito">Cartão de Crédito</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Data/Hora Desejada</label>
+                        <input type="datetime-local" id="deliveryTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Observações</label>
+                        <textarea id="observations" rows="3" placeholder="Alguma observação especial?"></textarea>
+                    </div>
+
+                    <div class="total-section">
+                        <div>Total do Pedido</div>
+                        <div class="total-amount" id="totalAmount">R$ 0,00</div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Confirmar Pedido</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2 style="color: #2a5298; margin-bottom: 20px;">Pedidos do Dia</h2>
+                <div id="ordersList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let quantities = {
+            'rosca': 0,
+            'pao-queijo': 0
+        };
+
+        let orders = JSON.parse(localStorage.getItem('naraOrders') || '[]');
+        let orderCounter = parseInt(localStorage.getItem('naraOrderCounter') || '1');
+
+        function changeQuantity(product, delta) {
+            quantities[product] = Math.max(0, quantities[product] + delta);
+            document.getElementById(`qty-${product}`).textContent = quantities[product];
+            
+            const productElement = document.querySelector(`[data-product="${product}"]`);
+            if (quantities[product] > 0) {
+                productElement.classList.add('selected');
+            } else {
+                productElement.classList.remove('selected');
+            }
+            
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const prices = {
+                'rosca': 25,
+                'pao-queijo': 20
+            };
+            
+            let total = 0;
+            for (let product in quantities) {
+                total += quantities[product] * prices[product];
+            }
+            
+            const deliveryOption = document.querySelector('input[name="delivery"]:checked').value;
+            if (deliveryOption === 'entrega') {
+                total += 5;
+            }
+            
+            document.getElementById('totalAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        document.querySelectorAll('input[name="delivery"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const deliveryFields = document.getElementById('deliveryFields');
+                if (this.value === 'entrega') {
+                    deliveryFields.style.display = 'block';
+                } else {
+                    deliveryFields.style.display = 'none';
+                }
+                updateTotal();
+            });
+        });
+
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const products = [];
+            for (let product in quantities) {
+                if (quantities[product] > 0) {
+                    const productElement = document.querySelector(`[data-product="${product}"]`);
+                    products.push({
+                        name: productElement.querySelector('.product-name').textContent,
+                        quantity: quantities[product],
+                        price: parseInt(productElement.dataset.price)
+                    });
+                }
+            }
+            
+            if (products.length === 0) {
+                alert('Por favor, selecione pelo menos um produto!');
+                return;
+            }
+            
+            const deliveryOption = document.querySelector('input[name="delivery"]:checked').value;
+            const order = {
+                id: orderCounter++,
+                customerName: document.getElementById('customerName').value,
+                customerPhone: document.getElementById('customerPhone').value,
+                products: products,
+                delivery: deliveryOption,
+                deliveryAddress: deliveryOption === 'entrega' ? document.getElementById('deliveryAddress').value : '',
+                paymentMethod: document.getElementById('paymentMethod').value,
+                deliveryTime: document.getElementById('deliveryTime').value,
+                observations: document.getElementById('observations').value,
+                total: document.getElementById('totalAmount').textContent,
+                status: 'novo',
+                createdAt: new Date().toLocaleString('pt-BR')
+            };
+            
+            orders.unshift(order);
+            localStorage.setItem('naraOrders', JSON.stringify(orders));
+            localStorage.setItem('naraOrderCounter', orderCounter);
+            
+            displayOrders();
+            
+            // Reset form
+            this.reset();
+            quantities = {'rosca': 0, 'pao-queijo': 0};
+            document.querySelectorAll('.quantity-display').forEach(el => el.textContent = '0');
+            document.querySelectorAll('.product-item').forEach(el => el.classList.remove('selected'));
+            document.getElementById('deliveryFields').style.display = 'none';
+            updateTotal();
+            
+            alert('Pedido cadastrado com sucesso! 🎉');
+        });
+
+        function displayOrders() {
+            const ordersList = document.getElementById('ordersList');
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p style="color: #999; text-align: center;">Nenhum pedido ainda hoje</p>';
+                return;
+            }
+            
+            ordersList.innerHTML = orders.map(order => {
+                const statusClass = `status-${order.status}`;
+                const statusTexts = {
+                    'novo': 'Novo',
+                    'preparando': 'Preparando',
+                    'pronto': 'Pronto',
+                    'entregue': 'Entregue'
+                };
+                
+                const productsList = order.products.map(p => 
+                    `${p.quantity}x ${p.name}`
+                ).join('<br>');
+                
+                return `
+                    <div class="order-item">
+                        <div class="order-header">
+                            <div class="order-number">Pedido #${order.id}</div>
+                            <div class="order-status ${statusClass}">${statusTexts[order.status]}</div>
+                        </div>
+                        <div class="order-details">
+                            <strong>Cliente:</strong> ${order.customerName} - ${order.customerPhone}<br>
+                            <strong>Produtos:</strong><br>${productsList}<br>
+                            <strong>Entrega:</strong> ${order.delivery === 'entrega' ? 'Entrega - ' + order.deliveryAddress : 'Retirada'}<br>
+                            <strong>Pagamento:</strong> ${order.paymentMethod}<br>
+                            <strong>Horário:</strong> ${new Date(order.deliveryTime).toLocaleString('pt-BR')}<br>
+                            ${order.observations ? `<strong>Obs:</strong> ${order.observations}<br>` : ''}
+                            <strong>Total:</strong> ${order.total}
+                        </div>
+                        <div class="order-actions">
+                            ${order.status === 'novo' ? `<button class="action-btn btn-prepare" onclick="updateOrderStatus(${order.id}, 'preparando')">Preparar</button>` : ''}
+                            ${order.status === 'preparando' ? `<button class="action-btn btn-ready" onclick="updateOrderStatus(${order.id}, 'pronto')">Pronto</button>` : ''}
+                            ${order.status === 'pronto' ? `<button class="action-btn btn-delivered" onclick="updateOrderStatus(${order.id}, 'entregue')">Entregue</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const orderIndex = orders.findIndex(o => o.id === orderId);
+            if (orderIndex !== -1) {
+                orders[orderIndex].status = newStatus;
+                localStorage.setItem('naraOrders', JSON.stringify(orders));
+                displayOrders();
+            }
+        }
+
+        // Initialize
+        displayOrders();
+
+        // Set minimum date/time to now
+        const now = new Date();
+        const dateTimeLocal = now.toISOString().slice(0, 16);
+        document.getElementById('deliveryTime').min = dateTimeLocal;
+    </script>
+</body>
+</html>

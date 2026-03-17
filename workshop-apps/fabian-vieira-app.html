@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabian Vieira - Car Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card-wrapper {
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .business-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        /* Header Section */
+        .card-header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .availability-tag {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: #10b981;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .service-title {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .location {
+            font-size: 14px;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        /* Main Content */
+        .card-content {
+            padding: 30px;
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .left-section {
+            flex: 1;
+        }
+
+        .phone-section {
+            margin-bottom: 25px;
+        }
+
+        .phone-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .phone-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 5px;
+        }
+
+        .call-text {
+            font-size: 13px;
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        .services {
+            margin-bottom: 20px;
+        }
+
+        .services-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #555;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .service-item span:first-child {
+            color: #2563eb;
+        }
+
+        /* QR Section */
+        .qr-section {
+            text-align: center;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .qr-code {
+            width: 120px;
+            height: 120px;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-code svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .qr-text {
+            font-size: 11px;
+            color: #666;
+        }
+
+        /* Coverage Area */
+        .coverage {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .coverage-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .coverage-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .coverage-item {
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #555;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-call {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-call:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-save {
+            background: white;
+            color: #333;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-save:hover {
+            background: #f9fafb;
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 480px) {
+            .card-content {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .name {
+                font-size: 24px;
+            }
+            
+            .phone-number {
+                font-size: 22px;
+            }
+            
+            .coverage-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card-wrapper">
+        <div class="business-card">
+            <div class="card-header">
+                <div class="availability-tag">24/7</div>
+                <h1 class="name">Fabian Vieira</h1>
+                <p class="service-title">Professional Car Service</p>
+                <p class="location">
+                    <span>📍</span>
+                    <span>Stamford, CT</span>
+                </p>
+            </div>
+
+            <div class="card-content">
+                <div class="left-section">
+                    <div class="phone-section">
+                        <p class="phone-label">Call Anytime</p>
+                        <p class="phone-number">(203) 619-2141</p>
+                        <p class="call-text">Available 24 hours, 7 days</p>
+                    </div>
+
+                    <div class="services">
+                        <p class="services-title">Services</p>
+                        <div class="service-item">
+                            <span>✈️</span>
+                            <span>Airport Transfers (All NYC Airports)</span>
+                        </div>
+                        <div class="service-item">
+                            <span>🏙️</span>
+                            <span>NYC & Local Rides</span>
+                        </div>
+                        <div class="service-item">
+                            <span>💼</span>
+                            <span>Corporate Accounts</span>
+                        </div>
+                        <div class="service-item">
+                            <span>🌟</span>
+                            <span>Special Events</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qr-section">
+                    <div class="qr-container">
+                        <div class="qr-code">
+                            <svg viewBox="0 0 200 200">
+                                <!-- QR Code Pattern -->
+                                <rect fill="#000" x="10" y="10" width="30" height="30"/>
+                                <rect fill="#000" x="50" y="10" width="10" height="10"/>
+                                <rect fill="#000" x="70" y="10" width="10" height="10"/>
+                                <rect fill="#000" x="90" y="10" width="10" height="10"/>
+                                <rect fill="#000" x="110" y="10" width="10" height="10"/>
+                                <rect fill="#000" x="130" y="10" width="10" height="10"/>
+                                <rect fill="#000" x="150" y="10" width="30" height="30"/>
+                                
+                                <rect fill="#000" x="10" y="50" width="10" height="10"/>
+                                <rect fill="#000" x="30" y="50" width="10" height="10"/>
+                                <rect fill="#000" x="50" y="50" width="30" height="30"/>
+                                <rect fill="#000" x="90" y="50" width="20" height="30"/>
+                                <rect fill="#000" x="120" y="50" width="30" height="30"/>
+                                <rect fill="#000" x="150" y="50" width="10" height="10"/>
+                                <rect fill="#000" x="170" y="50" width="10" height="10"/>
+                                
+                                <rect fill="#000" x="20" y="90" width="20" height="20"/>
+                                <rect fill="#000" x="60" y="90" width="80" height="20"/>
+                                <rect fill="#000" x="160" y="90" width="20" height="20"/>
+                                
+                                <rect fill="#000" x="10" y="120" width="30" height="10"/>
+                                <rect fill="#000" x="50" y="120" width="10" height="20"/>
+                                <rect fill="#000" x="70" y="120" width="20" height="10"/>
+                                <rect fill="#000" x="110" y="120" width="10" height="20"/>
+                                <rect fill="#000" x="130" y="120" width="20" height="10"/>
+                                <rect fill="#000" x="160" y="120" width="20" height="10"/>
+                                
+                                <rect fill="#000" x="10" y="150" width="30" height="30"/>
+                                <rect fill="#000" x="50" y="160" width="20" height="10"/>
+                                <rect fill="#000" x="90" y="150" width="10" height="20"/>
+                                <rect fill="#000" x="110" y="160" width="20" height="10"/>
+                                <rect fill="#000" x="150" y="150" width="30" height="30"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="qr-text">Scan to save contact</p>
+                </div>
+            </div>
+
+            <div class="coverage">
+                <p class="coverage-title">Service Areas</p>
+                <div class="coverage-grid">
+                    <div class="coverage-item">JFK</div>
+                    <div class="coverage-item">LGA</div>
+                    <div class="coverage-item">EWR</div>
+                    <div class="coverage-item">HPN</div>
+                    <div class="coverage-item">NYC</div>
+                    <div class="coverage-item">CT</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="action-btn btn-call" onclick="makeCall()">
+                <span>📞</span>
+                <span>Call Now</span>
+            </button>
+            <button class="action-btn btn-save" onclick="saveContact()">
+                <span>💾</span>
+                <span>Save Contact</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function makeCall() {
+            window.location.href = 'tel:+12036192141';
+        }
+
+        function saveContact() {
+            const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:Fabian Vieira
+ORG:Professional Car Service
+TEL;TYPE=CELL:(203) 619-2141
+ADR:;;Stamford;CT;;;
+NOTE:24/7 Car Service - All NYC Airports - Local Rides Anywhere, Anytime
+END:VCARD`;
+
+            const blob = new Blob([vcard], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Fabian_Vieira_Car_Service.vcf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('Contact saved! Check your downloads.');
+        }
+
+        // Simulate QR code click
+        document.querySelector('.qr-container').addEventListener('click', () => {
+            saveContact();
+        });
+
+        // Add entrance animation
+        window.addEventListener('load', () => {
+            document.querySelector('.business-card').style.animation = 'slideIn 0.5s ease-out';
+        });
+
+        // Add animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
